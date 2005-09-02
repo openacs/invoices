@@ -192,14 +192,18 @@ ad_proc -public iv::invoice::parse_data {
 	set category [lang::util::localize [category::get_name $category_id]]
     }
 
-    set file [open "/web/document.html"]
-    fconfigure $file -translation binary
-    set content [read $file]
-
-    
-    # parse template and replace placeholders
-    eval [template::adp_compile -string $content]
-    set final_content $__adp_output
+    set file_url [parameter::get -parameter MailSendBoxFileP]
+    if {![empty_string_p $file_url]} {
+	set file [open $file_url]
+	fconfigure $file -translation binary
+	set content [read $file]
+	
+	# parse template and replace placeholders
+	eval [template::adp_compile -string $content]
+	set final_content $__adp_output
+    } else {
+	set final_content ""
+    }
 
     return $final_content
 }

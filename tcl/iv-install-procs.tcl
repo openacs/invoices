@@ -211,6 +211,9 @@ ad_proc -public iv::install::after_upgrade {
 		content::type::attribute::new -content_type {iv_offer} -attribute_name {comment} -datatype {text} -pretty_name {[_ invoices.Comment]} -column_spec {text}
 		content::type::attribute::new -content_type {iv_offer_item} -attribute_name {comment} -datatype {text} -pretty_name {[_ invoices.Comment]} -column_spec {text}
 	    }
+	    0.01d7 0.01d8 {
+		apm_parameter_register "MailSendBoxFileP" "Location of the file for prefilling the mail send box." "invoices" "" "string"
+	    }
 	}
 }
 

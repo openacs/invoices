@@ -12,4 +12,16 @@
       </querytext>
 </fullquery>
 
+<fullquery name="project_data">
+      <querytext>
+
+    select p.title as project_title, p.project_code
+    from pm_projectsx p, cr_items oi
+    where oi.latest_revision = p.project_id
+    and oi.item_id = :project_id
+    
+
+      </querytext>
+</fullquery>
+
 </queryset>

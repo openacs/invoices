@@ -1,4 +1,8 @@
 <master>
+<if @organization_id@ not nil>
+  <property name="party_id">@organization_id@</property>
+</if>
+
 <property name="title">@page_title;noquote@</property>
 <property name="context">@context;noquote@</property>
 

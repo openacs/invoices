@@ -118,6 +118,11 @@ ad_proc -public -callback pm::project_links -impl invoices {
     }
 }
 
+ad_proc -public -callback iv::offer_accept {
+    {-offer_id:required}
+} {
+}
+
 ad_proc -public -callback contacts::populate::organization::customer_attributes -impl invoices {
     {-list_id:required}
 } {

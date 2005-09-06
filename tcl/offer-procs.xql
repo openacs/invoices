@@ -1,6 +1,18 @@
 <?xml version="1.0"?>
 <queryset>
 
+<fullquery name="iv::offer::edit.set_accepted_date">
+      <querytext>
+
+	update iv_offers
+	set accepted_date = (select accepted_date
+			from iv_offers
+			where offer_id = :old_rev_id)
+	where offer_id = :new_rev_id
+
+      </querytext>
+</fullquery>
+
 <fullquery name="iv::offer::data.get_data">
       <querytext>
 
@@ -11,7 +23,7 @@
 	       o.creation_user, p.first_names, p.last_name,
 	       to_char(o.creation_date, :timestamp_format) as creation_date,
 	       to_char(t.accepted_date, :timestamp_format) as accepted_date,
-	       t.amount_sum as amount_sum_, t.payment_days,
+	       t.amount_sum as amount_sum_, t.payment_days, t.date_comment,
 	       t.currency, t.organization_id, t.amount_sum
 	from iv_offers t, cr_revisions r, cr_items i, acs_objects o,
 	     persons p
@@ -34,7 +46,7 @@
 	       o.creation_user, p.first_names, p.last_name,
 	       to_char(o.creation_date, :timestamp_format) as creation_date,
 	       to_char(t.accepted_date, :timestamp_format) as accepted_date,
-	       t.amount_sum as amount_sum_, t.payment_days,
+	       t.amount_sum as amount_sum_, t.payment_days, t.date_comment,
 	       t.currency, t.organization_id, t.amount_sum
 	from iv_offers t, cr_revisions r, cr_items i, acs_objects o,
 	     persons p

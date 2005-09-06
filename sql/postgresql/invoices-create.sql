@@ -102,6 +102,7 @@ create table iv_offers (
                                 constraint iv_offers_currency_fk
                                 references currencies(codeA),
         finish_date             timestamptz,
+        date_comment            varchar(1000),
         payment_days            integer,
         vat_percent             numeric(12,5) default 0,
                                 -- %VAT

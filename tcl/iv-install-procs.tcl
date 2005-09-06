@@ -48,6 +48,7 @@ ad_proc -public iv::install::create_install {
     content::type::attribute::new -content_type {iv_offer} -attribute_name {amount_sum} -datatype {number} -pretty_name {[_ invoices.Amount_sum]} -column_spec {numeric(12,2)}
     content::type::attribute::new -content_type {iv_offer} -attribute_name {currency} -datatype {string} -pretty_name {[_ invoices.Currency]} -column_spec {char(3)}
     content::type::attribute::new -content_type {iv_offer} -attribute_name {finish_date} -datatype {date} -pretty_name {[_ invoices.Finish_date]} -column_spec {timestamptz}
+    content::type::attribute::new -content_type {iv_offer} -attribute_name {date_comment} -datatype {string} -pretty_name {[_ invoices.Date_comment]} -column_spec {varchar(1000)}
     content::type::attribute::new -content_type {iv_offer} -attribute_name {payment_days} -datatype {number} -pretty_name {[_ invoices.Payment_after__days]} -column_spec {integer}
     content::type::attribute::new -content_type {iv_offer} -attribute_name {vat_percent} -datatype {number} -pretty_name {[_ invoices.VAT]} -column_spec {numeric(12,5)}
     content::type::attribute::new -content_type {iv_offer} -attribute_name {vat} -datatype {number} -pretty_name {[_ invoices.VAT_amount]} -column_spec {numeric(12,2)}
@@ -212,6 +213,9 @@ ad_proc -public iv::install::after_upgrade {
 		content::type::attribute::new -content_type {iv_offer_item} -attribute_name {comment} -datatype {text} -pretty_name {[_ invoices.Comment]} -column_spec {text}
 	    }
 	    0.01d7 0.01d8 {
+		content::type::attribute::new -content_type {iv_offer} -attribute_name {date_comment} -datatype {string} -pretty_name {[_ invoices.Date_comment]} -column_spec {varchar(1000)}
+	    }
+	    0.01d8 0.01d9 {
 		apm_parameter_register "MailSendBoxFileP" "Location of the file for prefilling the mail send box." "invoices" "" "string"
 	    }
 	}

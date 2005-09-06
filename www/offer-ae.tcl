@@ -9,6 +9,7 @@ ad_page_contract {
     {item_nr:array,optional}
     {item_title:array,optional}
     {item_description:array,optional}
+    {item_comment:array,optional}
     {item_files:array,optional}
     {item_pages:array,optional}
     {item_category:array,optional}
@@ -21,7 +22,9 @@ ad_page_contract {
     {accept:optional}
     {send:optional}
     {send_accepted:optional}
+    {to_project:optional}
     {project_id:optional}
+    {return_url:optional ""}
 } -properties {
     context:onevalue
     page_title:onevalue
@@ -31,6 +34,18 @@ set user_id [auth::require_login]
 set date_format "YYYY-MM-DD"
 set has_submit 0
 set has_edit 0
+
+if {(![info exists offer_id] || $__new_p) && [exists_and_not_null project_id]} {
+    set _project_id $project_id
+    set offer_id [lindex [application_data_link::get_linked_content -from_object_id $project_id -to_content_type iv_offer] 0]
+
+    if {[empty_string_p $offer_id]} {
+	unset offer_id
+    } else {
+	set mode display
+    }
+}
+
 if {![info exists offer_id] || $__new_p} {
     set page_title "[_ invoices.iv_offer_Add2]"
     set _offer_id 0
@@ -49,9 +64,14 @@ if {![info exists offer_id] || $__new_p} {
         set page_title "[_ invoices.iv_offer_View]"
         set has_submit 1
 	set date_format [lc_get formbuilder_date_format]
-	set has_edit 1
+	set has_edit 0
     }
     set _offer_id [content::item::get_latest_revision -item_id $offer_id]
+}
+
+if {$_offer_id} {
+    # we are editing/displaying data
+    set _project_id [lindex [application_data_link::get_linked -from_object_id $offer_id -to_object_type content_item] 0]
 }
 
 if {[info exists accept]} {
@@ -64,6 +84,12 @@ if {[info exists send]} {
 }
 if {[info exists send_accepted]} {
     ad_returnredirect [export_vars -base offer-accept-2 {offer_id}]
+    ad_script_abort
+}
+if {[info exists to_project]} {
+    acs_object::get -object_id $_project_id -array project
+    set pm_url [lindex [site_node::get_url_from_object_id -object_id $project(package_id)] 0]
+    ad_returnredirect [export_vars -base "${pm_url}one" {{project_item_id $project_id}}]
     ad_script_abort
 }
 
@@ -81,9 +107,9 @@ set list_id [iv::price_list::get_list_id -organization_id $organization_id]
 db_multirow pricelist all_prices {}
 
 
-ad_form -name iv_offer_form -action offer-ae -mode $mode -has_submit $has_submit -has_edit $has_edit -export {organization_id} -form {
+ad_form -name iv_offer_form -action offer-ae -mode $mode -has_submit $has_submit -has_edit $has_edit -export {organization_id return_url} -form {
     {offer_id:key}
-    {organization_namex:text(inform) {label "[_ invoices.iv_offer_organization]"} {value "<a href=/contacts/${organization_id}/>$organization_name</a>"} {help_text "[_ invoices.iv_offer_organization_help]"}}
+    {organization_namex:text(inform) {label "[_ invoices.iv_offer_organization]"} {value "<a href=/contacts/${organization_id}/><font size=2>$organization_name</font></a>"}}
     {title:text {label "[_ invoices.iv_offer_Title]"} {html {size 80 maxlength 1000}} {help_text "[_ invoices.iv_offer_Title_help]"}}
     {description:text(textarea),optional {label "[_ invoices.iv_offer_Description]"} {html {rows 5 cols 80}} {help_text "[_ invoices.iv_offer_Description_help]"}}
     {comment:text(textarea),optional {label "[_ invoices.iv_offer_comment]"} {html {rows 5 cols 80}} {help_text "[_ invoices.iv_offer_comment_help]"}}
@@ -97,26 +123,23 @@ ad_form -extend -name iv_offer_form -form {
     {offer_nr:text {label "[_ invoices.iv_offer_offer_nr]"} {html {size 80 maxlength 200}} {help_text "[_ invoices.iv_offer_offer_nr_help]"}}
 }
 
-if {$_offer_id} {
-    # we are editing/displaying data
-    set _project_id [lindex [application_data_link::get_linked -from_object_id $offer_id -to_object_type content_item] 0]
-}
-
 if {[exists_and_not_null _project_id]} {
     # display linked project
 
     db_1row get_project {}
+    set project_title $project_name
     set dotlrn_club_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type "dotlrn_club"] 0]
     set pm_base_url [apm_package_url_from_id [dotlrn_community::get_package_id_from_package_key -package_key "project-manager" -community_id $dotlrn_club_id]]
     set project_name "<a href=\"[export_vars -base "${pm_base_url}one" {{project_item_id $item_id}}]\">$project_name</a>"
 
     ad_form -extend -name iv_offer_form -form {
 	{project:text(inform),optional {label "[_ invoices.iv_offer_project]"} {value $project_name} {help_text "[_ invoices.iv_offer_project_help]"}}
+	{project_id:text(hidden) {value $_project_id}}
     }
 } elseif {!$has_submit} {
     # let user assign project if not displaying data
 
-    set project_options [concat [list [list "" ""]] [db_list_of_lists open_projects {}]]
+    set project_options [concat [list [list "" ""]] [lang::util::localize [db_list_of_lists open_projects {}]]]
     if {[llength $project_options] > 1} {
 	ad_form -extend -name iv_offer_form -form {
 	    {project_id:text(select),optional {label "[_ invoices.iv_offer_project]"} {options $project_options} {help_text "[_ invoices.iv_offer_project_help]"}}
@@ -131,6 +154,7 @@ if {$has_submit} {
 	{creator_name:text,optional {label "[_ invoices.iv_offer_creation_user]"} {html {size 80 maxlength 200}} {help_text "[_ invoices.iv_offer_creation_user_help]"}}
 	{creation_date:text,optional {label "[_ invoices.iv_offer_creation_date]"} {html {size 12 maxlength 10}} {help_text "[_ invoices.iv_offer_creation_date_help]"}}
 	{finish_date:text,optional {label "[_ invoices.iv_offer_finish_date]"} {html {size 12 maxlength 10}} {help_text "[_ invoices.iv_offer_finish_date_help]"}}
+	{date_comment:text,optional {label "[_ invoices.iv_offer_date_comment]"} {html {size 80 maxlength 1000}} {help_text "[_ invoices.iv_offer_date_comment_help]"}}
     }
 
     if {![empty_string_p $accepted_date]} {
@@ -146,6 +170,7 @@ if {$has_submit} {
 	{currency:text(select) {mode display} {label "[_ invoices.iv_offer_currency]"} {options $currency_options} {help_text "[_ invoices.iv_offer_currency_help]"}}
 	{finish_date:text,optional {label "[_ invoices.iv_offer_finish_date]"} {html {size 12 maxlength 10 id sel1}} {help_text "[_ invoices.iv_offer_finish_date_help]"} {after_html {<input type='reset' value=' ... ' onclick=\"return showCalendar('sel1', 'y-m-d');\"> \[<b>y-m-d </b>\]}}}
 	{finish_time:date,optional {label "[_ invoices.iv_offer_finish_time]"} {format {[lc_get formbuilder_time_format]}} {help_text "[_ invoices.iv_offer_finish_time_help]"}}
+	{date_comment:text,optional {label "[_ invoices.iv_offer_date_comment]"} {html {size 80 maxlength 1000}} {help_text "[_ invoices.iv_offer_date_comment_help]"}}
     }
 }
 
@@ -305,7 +330,7 @@ if {!$has_submit} {
 	set start $i
     }
 
-    for {set i $start} {$i < [expr $start + 5] } {incr i} {
+    for {set i $start} {$i < [expr $start + 2] } {incr i} {
 	ad_form -extend -name iv_offer_form -form \
 	    [list [list "item_nr.${i}:text,optional" \
 		       [list label "[_ invoices.iv_offer_item_nr]"] \
@@ -409,29 +434,44 @@ if {$has_submit} {
 	    {send_accepted:text(submit) {label "[_ invoices.iv_offer_send_accepted]"} {value t}}
 	}
     }
+    ad_form -extend -name iv_offer_form -form {
+	{to_project:text(submit) {label "[_ invoices.back_to_project]"} {value t}}
+    }
 }
 
 ad_form -extend -name iv_offer_form -new_request {
-    set description ""
+    if {[exists_and_not_null _project_id]} {
+	db_1row get_project_description {}
+    } else {
+	set description ""
+    }
     set today [db_string today {}]
     set finish_date ""
     set finish_time ""
-    set title "[_ invoices.iv_offer_1] $organization_name $today"
+    if {[exists_and_not_null project_title]} {
+	set title "[_ invoices.iv_offer_1] $project_title"
+    } else {
+	set title "[_ invoices.iv_offer_1] $organization_name $today"
+    }
     set offer_nr [db_nextval iv_offer_seq]
     set amount_sum "0.00"
     set amount_total "0.00"
 
     # get this from organization_id
-    set payment_days ""
+    set payment_days "30"
     set vat_percent "16.0"
-    # set contacts_package_id [lindex [application_link::get_linked -from_package_id $package_id -to_package_key contacts] 0]
-    # array set org_data [contacts::get_values \
-#			    -group_name "#acs-translation.Customers#" \
-#			    -object_type "organization" \
-#			    -party_id $organization_id \
-#			    -contacts_package_id $contacts_package_id]
-    # set payment_days $org_data(payment_days)
-    # set vat_percent [format "%.1f" $org_data(vat_percent)]
+    set contacts_package_id [lindex [application_link::get_linked -from_package_id $package_id -to_package_key contacts] 0]
+    array set org_data [contacts::get_values \
+			    -group_name "Customers" \
+			    -object_type "organization" \
+			    -party_id $organization_id \
+			    -contacts_package_id $contacts_package_id]
+    if {[info exists org_data(payment_days)]} {
+	set payment_days $org_data(payment_days)
+    }
+    if {[info exists org_data(vat_percent)]} {
+	set vat_percent [format "%.1f" $org_data(vat_percent)]
+    }
 } -edit_request {
     db_1row get_data {}
     set creator_name "$first_names $last_name"
@@ -503,6 +543,7 @@ ad_form -extend -name iv_offer_form -new_request {
 				  -amount_sum $item_sum \
 				  -currency $currency \
 				  -finish_date $finish_date \
+				  -date_comment $date_comment \
 				  -payment_days $payment_days \
 				  -vat_percent $vat_percent \
 				  -vat $vat]
@@ -547,6 +588,7 @@ ad_form -extend -name iv_offer_form -new_request {
 				  -amount_sum $item_sum \
 				  -currency $currency \
 				  -finish_date $finish_date \
+				  -date_comment $date_comment \
 				  -payment_days $payment_days \
 				  -vat_percent $vat_percent \
 				  -vat $vat]
@@ -598,18 +640,37 @@ ad_form -extend -name iv_offer_form -new_request {
     }
 } -after_submit {
     if {[exists_and_not_null project_id]} {
-	application_data_link::new -this_object_id $offer_id -target_object_id $project_id
-    }
-    if {![empty_string_p $finish_date]} {
-	db_dml set_finish_date {
-	    update iv_offers
-	    set finish_date = to_timestamp(:finish_date_list,'YYYY MM DD HH24 MI SS')
-	    where offer_id = :new_offer_rev_id
+	catch {
+	    application_data_link::new -this_object_id $offer_id -target_object_id $project_id
+	    set _project_id $project_id
 	}
     }
 
-    ad_returnredirect [export_vars -base offer-ae {offer_id {mode display}}]
-    ad_script_abort
+    if {[exists_and_not_null _project_id]} {
+	set status [pm::project::get_status_description -project_item_id $_project_id]
+	if {$status == "#acs-kernel.common_Open#"} {
+	    db_dml set_accepted_date {}
+	}
+    }
+
+    if {![empty_string_p $finish_date]} {
+	db_dml set_finish_date {}
+
+	if {[exists_and_not_null _project_id]} {
+	    set project_rev_id [pm::project::get_project_id -project_item_id $_project_id]
+	    # no update of project deadline here
+	    # so that it can be different from the offer deadline the customer gets
+	    # db_dml set_project_deadline {}
+	}
+    }
+
+    if {[empty_string_p $return_url]} {
+	ad_returnredirect [export_vars -base offer-ae {offer_id {mode display}}]
+	ad_script_abort
+    } else {
+	ad_returnredirect $return_url
+	ad_script_abort
+    }
 }
 
 ad_return_template

@@ -28,7 +28,7 @@
 <fullquery name="open_projects">
       <querytext>
 
-    select '#' || r.item_id || ' ' || r.title as title, r.item_id
+    select r.title, r.item_id
     from cr_revisions r, cr_items i, pm_projects p, acs_rels ar
     where ar.object_id_one = :organization_id
     and ar.object_id_two = r.revision_id
@@ -40,7 +40,7 @@
                           where ar2.object_id_two = oi.item_id
                           and ar2.rel_type = 'application_data_link'
                           and oi.latest_revision = o.offer_id)
-    order by r.item_id desc
+    order by r.title desc
 
       </querytext>
 </fullquery>
@@ -59,11 +59,9 @@
 <fullquery name="get_project">
       <querytext>
 
-	select '#' || r.item_id || ' ' || r.title as project_name, r.item_id
-	from cr_revisions r, cr_items i, pm_projects p, acs_rels ar
-	where ar.object_id_one = :offer_id
-	and ar.object_id_two = i.item_id
-	and ar.rel_type = 'application_data_link'
+	select r.title as project_name, r.item_id
+	from cr_revisions r, cr_items i, pm_projects p
+	where i.item_id = :_project_id
 	and i.latest_revision = r.revision_id
 	and p.project_id = r.revision_id
 
@@ -89,6 +87,17 @@
       </querytext>
 </fullquery>
 
+<fullquery name="get_project_description">
+      <querytext>
+
+	    select r.description
+	    from cr_revisions r, cr_items i
+	    where r.revision_id = i.latest_revision
+	    and i.item_id = :_project_id
+
+      </querytext>
+</fullquery>
+
 <fullquery name="get_data">
       <querytext>
 
@@ -99,7 +108,7 @@
 	       o.creation_user, p.first_names, p.last_name,
 	       to_char(o.creation_date, :timestamp_format) as creation_date,
 	       to_char(t.accepted_date, :timestamp_format) as accepted_date,
-	       t.amount_sum as amount_sum_, t.payment_days
+	       t.amount_sum as amount_sum_, t.payment_days, t.date_comment
 	from iv_offers t, cr_revisions r, cr_items i, acs_objects o,
 	     persons p
 	where r.revision_id = t.offer_id

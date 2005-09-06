@@ -18,6 +18,7 @@ ad_proc -public iv::offer::new {
     {-amount_sum ""}
     {-currency ""}
     {-finish_date ""}
+    {-date_comment ""}
     {-payment_days ""}
     {-vat_percent ""}
     {-vat ""}
@@ -52,6 +53,7 @@ ad_proc -public iv::offer::new {
 					 [list amount_sum $amount_sum] \
 					 [list currency $currency] \
 					 [list finish_date $finish_date] \
+					 [list date_comment $date_comment] \
 					 [list payment_days $payment_days] \
 					 [list vat_percent $vat_percent] \
 					 [list vat $vat] ] ]
@@ -71,6 +73,7 @@ ad_proc -public iv::offer::edit {
     {-amount_sum ""}
     {-currency ""}
     {-finish_date ""}
+    {-date_comment ""}
     {-payment_days ""}
     {-vat_percent ""}
     {-vat ""}
@@ -81,6 +84,7 @@ ad_proc -public iv::offer::edit {
     Edit Offer
 } {
     db_transaction {
+	set old_rev_id [content::item::get_best_revision -item_id $offer_id]
 	set new_rev_id [content::revision::new \
 			    -item_id $offer_id \
 			    -content_type {iv_offer} \
@@ -94,9 +98,11 @@ ad_proc -public iv::offer::edit {
 					     [list amount_sum $amount_sum] \
 					     [list currency $currency] \
 					     [list finish_date $finish_date] \
+					     [list date_comment $date_comment] \
 					     [list payment_days $payment_days] \
 					     [list vat_percent $vat_percent] \
 					     [list vat $vat] ] ]
+	db_dml set_accepted_date {}
     }
 
     return $new_rev_id
@@ -185,20 +191,19 @@ ad_proc -public iv::offer::parse_data {
 
     set file_url [parameter::get -parameter MailSendBoxFileP]
     if { ![empty_string_p $file_url] } {
-	set file [open "$file_url"]
-	fconfigure $file -translation binary
-	set content [read $file]
-	
-	
-	# parse template and replace placeholders
-	eval [template::adp_compile -string $content]
-	set final_content $__adp_output
+        set file [open "$file_url"]
+        fconfigure $file -translation binary
+        set content [read $file]
+
+
+        # parse template and replace placeholders
+        eval [template::adp_compile -string $content]
+        set final_content $__adp_output
     } else {
-	set final_content ""
+        set final_content ""
     }
 
     return $final_content
-
 }
 
 ad_proc -public iv::offer::text {

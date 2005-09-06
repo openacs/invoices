@@ -21,7 +21,10 @@ foreach optional_unset $optional_unset_list {
 	}
     }
 }
-
+set status_id 2
+if {![info exists status_id]} {
+    db_1row get_offer_status_id {}
+}
 if {![info exists format]} {
     set format "normal"
 }
@@ -41,10 +44,14 @@ foreach element $elements {
     append row_list "$element {}\n"
 }
 
-set dotlrn_club_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type "dotlrn_club"] 0]
+if {[exists_and_not_null organization_id]} {
+    set dotlrn_club_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type "dotlrn_club"] 0]
 
-if {$dotlrn_club_id > 0} {
-    set pm_base_url [apm_package_url_from_id [dotlrn_community::get_package_id_from_package_key -package_key "project-manager" -community_id $dotlrn_club_id]]
+    if {$dotlrn_club_id > 0} {
+	set pm_base_url [apm_package_url_from_id [dotlrn_community::get_package_id_from_package_key -package_key "project-manager" -community_id $dotlrn_club_id]]
+    }
+} else {
+    set pm_base_url ""
 }
 
 #set package_id [ad_conn package_id]
@@ -53,9 +60,11 @@ set timestamp_format "$date_format [lc_get formbuilder_time_format]"
 
 if {[exists_and_not_null organization_id]} {
     set price_list_id [iv::price_list::get_list_id -organization_id $organization_id]
-    set actions [list "[_ invoices.iv_offer_New]" [export_vars -base "${base_url}offer-ae" {organization_id}] "[_ invoices.iv_offer_New2]" "[_ invoices.iv_invoice_2]" [export_vars -base "${base_url}invoice-list" {organization_id}] "[_ invoices.iv_invoice_2]" "[_ invoices.iv_price_list]" [export_vars -base "${base_url}price-list" {{list_id $price_list_id}}] "[_ invoices.iv_display_price_list]"]
-    if {[exists_and_not_null pm_base_url]} {
-	lappend actions "[_ project-manager.Projects]" $pm_base_url "[_ project-manager.Projects]"
+    if {![info exists actions]} {
+	set actions [list "[_ invoices.iv_offer_New]" [export_vars -base "${base_url}offer-ae" {organization_id}] "[_ invoices.iv_offer_New2]" "[_ invoices.iv_invoice_2]" [export_vars -base "${base_url}invoice-list" {organization_id}] "[_ invoices.iv_invoice_2]" "[_ invoices.iv_price_list]" [export_vars -base "${base_url}price-list" {{list_id $price_list_id}}] "[_ invoices.iv_display_price_list]"]
+	if {[exists_and_not_null pm_base_url]} {
+	    lappend actions "[_ project-manager.Projects]" $pm_base_url "[_ project-manager.Projects]"
+	}
     }
 } else {
     set actions ""
@@ -76,6 +85,13 @@ template::list::create \
         }
         description {
 	    label {[_ invoices.iv_offer_Description]}
+        }
+        comment {
+	    label {[_ invoices.iv_offer_comment]}
+        }
+        project_id {
+	    label {[_ invoices.iv_offer_project]}
+	    display_template {<if @iv_offer.project_id@ not nil><a href="@iv_offer.project_link@">@iv_offer.project_title@</a></if>}
         }
         amount_total {
 	    label {[_ invoices.iv_offer_amount_total]}
@@ -115,6 +131,16 @@ template::list::create \
 	    orderby {lower(cr.description)}
 	    default_direction asc
 	}
+	comment {
+	    label {[_ invoices.iv_offer_comment]}
+	    orderby {lower(t.comment)}
+	    default_direction asc
+	}
+	project_id {
+	    label {[_ invoices.iv_offer_project]}
+	    orderby {lower(pr.title)}
+	    default_direction asc
+	}
 	amount_total {
 	    label {[_ invoices.iv_offer_amount_total]}
 	    orderby {t.amount_total}
@@ -141,7 +167,7 @@ template::list::create \
 	    orderby {t.accepted_date}
 	    default_direction desc
 	}
-    } -orderby_name orderby -html {width 100%} \
+    } -orderby_name orderby \
     -page_size_variable_p 1 \
     -page_size $page_size \
     -page_flush_p 0 \
@@ -149,6 +175,12 @@ template::list::create \
     -filters {
         organization_id {
             where_clause {t.organization_id = :organization_id}
+        }
+        project_id {
+            where_clause {pi.item_id = :project_id}
+        }
+        status_id {
+            where_clause {pp.status_id = :status_id}
         }
     } \
     -formats {
@@ -166,7 +198,7 @@ template::list::create \
     }
 
 
-db_multirow -extend {creator_link edit_link delete_link title_link} iv_offer iv_offer {} {
+db_multirow -extend {creator_link edit_link delete_link title_link project_link} iv_offer iv_offer {} {
 
     # Ugly hack. We should find out which contact package is linked
     # aso. asf.
@@ -174,4 +206,5 @@ db_multirow -extend {creator_link edit_link delete_link title_link} iv_offer iv_
     set edit_link [export_vars -base "${base_url}offer-ae" {offer_id}]
     set title_link [export_vars -base "${base_url}offer-ae" {offer_id {mode display}}]
     set delete_link [export_vars -base "${base_url}offer-delete" {offer_id}]
+    set project_link [export_vars -base "${pm_base_url}one" {{project_item_id $project_id}}]
 }

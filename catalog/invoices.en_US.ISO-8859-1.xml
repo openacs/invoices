@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="invoices" package_version="0.01d6" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="invoices" package_version="0.01d9" locale="en_US" charset="ISO-8859-1">
 
   <msg key="Accepted_date">Accepted on</msg>
   <msg key="admin">Admin</msg>
   <msg key="admin_categories">Categories Administration</msg>
+  <msg key="aggregate_iv_from">Aggregate invocies from this time of years and beyond.</msg>
   <msg key="Amount">Amount</msg>
   <msg key="Amount_paid">Amount paid</msg>
   <msg key="Amount_sum">Amount sum</msg>
   <msg key="Amount_total">Total Amount</msg>
   <msg key="Apply_VAT">Apply VAT?</msg>
+  <msg key="back_to_project">Back to project</msg>
+  <msg key="back_to_year">Back to %year%</msg>
+  <msg key="back_to_years">Back to Years</msg>
   <msg key="Billable_Projects">Billable Projects</msg>
   <msg key="Cancel">Cancel</msg>
   <msg key="cancel_and_return">Cancel and Return</msg>
   <msg key="Cancelled">Cancelled?</msg>
+  <msg key="Client_Account_Man">Client Account Manager</msg>
   <msg key="continue_with_accept">Continue with Offer Acceptance</msg>
   <msg key="continue_with_delete">Continue with Delete</msg>
   <msg key="Cost">Cost</msg>
@@ -20,9 +25,12 @@
   <msg key="Cost_item">Cost item</msg>
   <msg key="Cost_number">Cost number</msg>
   <msg key="Costs">Costs</msg>
+  <msg key="count">Count</msg>
+  <msg key="CSV">CSV</msg>
   <msg key="Currency">Currency</msg>
   <msg key="Currency_paid">Currency paid</msg>
   <msg key="Customer">Customer</msg>
+  <msg key="day">Day</msg>
   <msg key="Delete">Delete</msg>
   <msg key="Due_date">Due date</msg>
   <msg key="Edit">Edit</msg>
@@ -56,6 +64,7 @@
   <msg key="iv_cost_variable_cost_p">Fixed cost?</msg>
   <msg key="iv_cost_View">View Cost</msg>
   <msg key="iv_display_price_list">Display price list</msg>
+  <msg key="iv_from_last_years">Invoices from the last %last_years% years:</msg>
   <msg key="iv_invoice_1">Invoice</msg>
   <msg key="iv_invoice_2">Invoices</msg>
   <msg key="iv_invoice_Add">Invoice &quot;%organization_name%&quot;</msg>
@@ -122,6 +131,8 @@
   <msg key="iv_invoice_vat">VAT</msg>
   <msg key="iv_invoice_vat_percent">%VAT</msg>
   <msg key="iv_invoice_View">View Invoice</msg>
+  <msg key="iv_of_month_year">Invoices of %long_month% %year%:</msg>
+  <msg key="iv_of_year">Invoices of year %year%:</msg>
   <msg key="iv_offer_1">Cost Sheet</msg>
   <msg key="iv_offer_2">Cost Sheets</msg>
   <msg key="iv_offer_accept">Accept Offer</msg>
@@ -137,6 +148,7 @@
   <msg key="iv_offer_creation_date">Created on</msg>
   <msg key="iv_offer_creation_user">Created by</msg>
   <msg key="iv_offer_currency">Currency</msg>
+  <msg key="iv_offer_date_comment">Date Comment:</msg>
   <msg key="iv_offer_Delete">Delete Cost Sheet</msg>
   <msg key="iv_offer_Description">Description</msg>
   <msg key="iv_offer_Description_help">Description of the cost sheet</msg>
@@ -224,7 +236,12 @@
   <msg key="iv_price_list_Title">Title</msg>
   <msg key="iv_price_list_View">View Price List</msg>
   <msg key="iv_price_View">View Price</msg>
+  <msg key="iv_reports">Invoice Reports</msg>
+  <msg key="last_years">Last Years</msg>
   <msg key="Link_instances">Link package instances</msg>
+  <msg key="month">Month</msg>
+  <msg key="New">New</msg>
+  <msg key="New_clients">New Clients</msg>
   <msg key="no">No</msg>
   <msg key="None">None</msg>
   <msg key="Number_of_units">Number of units</msg>
@@ -253,10 +270,12 @@
   <msg key="Received_on">Received on</msg>
   <msg key="Recipient">Recipient</msg>
   <msg key="Sort_order">Sort order</msg>
+  <msg key="Table">Table</msg>
   <msg key="Total_amount">Total amount</msg>
   <msg key="units">h</msg>
   <msg key="Unmounted">Unmounted</msg>
   <msg key="VAT">%VAT</msg>
   <msg key="VAT_amount">VAT amount</msg>
+  <msg key="year">Year</msg>
   <msg key="yes">Yes</msg>
 </message_catalog>

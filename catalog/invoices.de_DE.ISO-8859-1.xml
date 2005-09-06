@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="invoices" package_version="0.01d6" locale="de_DE" charset="ISO-8859-1">
+<message_catalog package_key="invoices" package_version="0.01d9" locale="de_DE" charset="ISO-8859-1">
 
   <msg key="Accepted_date">Akzeptiert am</msg>
   <msg key="admin">Admin</msg>
@@ -9,6 +9,7 @@
   <msg key="Amount_sum">Betrag</msg>
   <msg key="Amount_total">Gesamtsumme</msg>
   <msg key="Apply_VAT">Mehrwertsteuer?</msg>
+  <msg key="back_to_project">Zurueck zum projekt</msg>
   <msg key="Billable_Projects">Abzurechnende Projekte</msg>
   <msg key="Cancel">Abbrechen</msg>
   <msg key="cancel_and_return">Abbrechen und zurück</msg>
@@ -122,25 +123,27 @@
   <msg key="iv_invoice_vat">Mehrwertsteuer</msg>
   <msg key="iv_invoice_vat_percent">Mehrwertsteuersatz</msg>
   <msg key="iv_invoice_View">Rechnung ansehen</msg>
-  <msg key="iv_offer_1">Kostenaufstellung</msg>
-  <msg key="iv_offer_2">Kostenaufstellungen</msg>
+  <msg key="iv_offer_1">Projektaufstellung</msg>
+  <msg key="iv_offer_2">Projektaufstellungen</msg>
   <msg key="iv_offer_accept">Angebot akzeptieren</msg>
   <msg key="iv_offer_accepted_date">Akzeptiert am</msg>
   <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Angebotsbestätigung&lt;/h3&gt;%offer_text%&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_Add">Kostenaufstellung für &quot;%organization_name%&quot;</msg>
-  <msg key="iv_offer_Add2">Neue Kostenaufstellung hinzufügen</msg>
+  <msg key="iv_offer_Add2">Neue Projektaufstellung hinzufügen</msg>
   <msg key="iv_offer_amount_diff">Rabatt</msg>
   <msg key="iv_offer_amount_sum">Summe</msg>
   <msg key="iv_offer_amount_total">Gesamtsumme</msg>
-  <msg key="iv_offer_comment">Kommentar</msg>
+  <msg key="iv_offer_comment">&lt;b&gt;Interner Kommentar&lt;/b&gt;</msg>
+  <msg key="iv_offer_comment_help">Internes Kommentarfeld für alle Informationen aus dem Projektmanagement</msg>
   <msg key="iv_offer_count_total">Anzahl Positionen</msg>
   <msg key="iv_offer_creation_date">erstellt am</msg>
   <msg key="iv_offer_creation_user">erstellt von</msg>
   <msg key="iv_offer_currency">Währung</msg>
+  <msg key="iv_offer_date_comment">Teillieferung</msg>
   <msg key="iv_offer_Delete">Kostenaufstellung löschen</msg>
   <msg key="iv_offer_Description">Beschreibung</msg>
-  <msg key="iv_offer_Description_help">Description of the cost sheet</msg>
-  <msg key="iv_offer_Edit">Kostenaufstellung ändern</msg>
+  <msg key="iv_offer_Description_help">Beschreibung der Kostenaufstellung</msg>
+  <msg key="iv_offer_Edit">Projektaufstellung ändern</msg>
   <msg key="iv_offer_edit_error">Sie dürfen keine akzeptierte oder berechnete Kostenaufstellung ändern.</msg>
   <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Angebot&lt;/h3&gt;%offer_text%&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_finish_date">Timing Datum</msg>
@@ -170,9 +173,9 @@
   <msg key="iv_offer_item_Title">Titel</msg>
   <msg key="iv_offer_item_vat">Mehrwertsteuer</msg>
   <msg key="iv_offer_item_View">Kostenposition ansehen</msg>
-  <msg key="iv_offer_list">Kostenaufstellungen</msg>
-  <msg key="iv_offer_New">Neue Kostenaufstellung</msg>
-  <msg key="iv_offer_New2">Neue Kostenaufstellung hinzufügen</msg>
+  <msg key="iv_offer_list">Projektaufstellungen</msg>
+  <msg key="iv_offer_New">Neue Projektaufstellung</msg>
+  <msg key="iv_offer_New2">Neue Projektaufstellung hinzufügen</msg>
   <msg key="iv_offer_offer_nr">Angebotsnummer</msg>
   <msg key="iv_offer_offer_nr_help">Nummer der Kostenaufstellung</msg>
   <msg key="iv_offer_organization">Kunde</msg>
@@ -189,7 +192,7 @@
   <msg key="iv_offer_Title_help">Titel des Angebots</msg>
   <msg key="iv_offer_vat">Mehrwertsteuer</msg>
   <msg key="iv_offer_vat_percent">Mehrwertsteuersatz</msg>
-  <msg key="iv_offer_View">Kostenaufstellung ansehen</msg>
+  <msg key="iv_offer_View">Projektaufstellung ansehen</msg>
   <msg key="iv_payment_1">Zahlung</msg>
   <msg key="iv_payment_2">Zahlungen</msg>
   <msg key="iv_payment_Add">Zahlung hinzufügen</msg>
@@ -235,6 +238,7 @@
   <msg key="Offer_number">Angebotsnummer</msg>
   <msg key="Offers">Kostenaufstellungen</msg>
   <msg key="offers">Kostenaufstellungen</msg>
+  <msg key="order_confirmation">Auftragsbestätigung</msg>
   <msg key="Page_count">Seitenyahl</msg>
   <msg key="Parent_invoice_item">Bezug auf Rechnungsposition</msg>
   <msg key="Parent_offer_item">Bezug auf Kostenposition</msg>

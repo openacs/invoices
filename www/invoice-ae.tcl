@@ -266,6 +266,7 @@ ad_form -extend -name iv_invoice_form -new_request {
 				    -payment_days $payment_days \
 				    -vat_percent $vat_percent \
 				    -vat $vat]
+
 	if {[exists_and_not_null category_ids]} {
 	    category::map_object -object_id $new_invoice_rev_id $category_ids
 	}

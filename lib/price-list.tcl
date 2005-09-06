@@ -1,6 +1,6 @@
 set package_id [ad_conn package_id]
 set language [lang::conn::language]
-db_1row currency_name {}
+db_1row currency {}
 array set container_objects [iv::util::get_default_objects -package_id $package_id]
 
 set actions [list "[_ invoices.iv_price_Edit]" [export_vars -base "price-ae" {list_id}] "[_ invoices.iv_price_Edit]"]
@@ -9,20 +9,15 @@ template::list::create \
     -name iv_price \
     -key category_id \
     -no_data "[_ invoices.None]" \
-    -pass_properties {list_id} \
+    -pass_properties {list_id currency} \
     -elements {
-        tree_name {
-	    label {}
-        }
         category_name {
 	    label {[_ invoices.iv_price_category_id]}
 	    display_template {@iv_price.category_name;noquote@}
         }
 	amount {
 	    label {[_ invoices.iv_price_amount]}
-	}
-	currency {
-	    label {[_ invoices.iv_price_list_currency]}
+	    display_template {@iv_price.amount@ @currency@}
 	}
     } -actions $actions
 
@@ -45,7 +40,7 @@ db_foreach all_prices {} {
     }
 }
 
-multirow create iv_price category_id tree_name category_name amount currency
+multirow create iv_price category_id tree_name category_name amount
 set old_tree_id ""
 
 foreach category_id $category_list {
@@ -64,5 +59,5 @@ foreach category_id $category_list {
     }
     set amount [format "%.2f" $amount]
 
-    multirow append iv_price $category_id $tree_name $category_name $amount $currency_name
+    multirow append iv_price $category_id $tree_name $category_name $amount
 }

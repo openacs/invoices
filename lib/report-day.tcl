@@ -60,7 +60,7 @@ template::list::create \
         }
         title {
             label {[_ invoices.iv_invoice_1]}
-            link_url_eval {[export_vars -base "invoice-ae" {invoice_id {mode display}}]}
+            link_url_eval {[export_vars -base "invoice-ae" { {invoice_id $item_id} {mode display}}]}
         }
         description {
             label {[_ invoices.iv_invoice_Description]}

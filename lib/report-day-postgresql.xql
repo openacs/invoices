@@ -7,8 +7,9 @@
 		to_char(iv.due_date, 'DD') as iv_day,
 		r.description,
 		r.title,
-		i.item_id as invoice_nr,
-		invoice_id
+		invoice_nr,
+		invoice_id,
+		i.item_id
 	from 
 		iv_invoices iv,
 		cr_revisions r,

@@ -32,6 +32,11 @@ foreach unset_param {new_clients_p account_manager_p} {
     }
 }
 
+set extra_query ""
+if { [empty_string_p $organization_id] } {
+    set exrta_query "and iv.organization_id = $organization_id"
+}
+
 set actions [list "[_ invoices.back_to_years]" \
 		 [export_vars -base invoice-reports {organization_id new_clients_p account_manager_p}]]
 
@@ -103,7 +108,7 @@ db_multirow -extend { short_month iv_total_amount iv_count } iv_months iv_invoic
     } else {
 	set short_month [template::util::date::monthName $iv_month short]
     }
-    set iv_total_amount [db_string get_iv_total_amount { }]
-    set iv_count [db_string get_iv_count { }]
+    set iv_total_amount [db_string get_iv_total_amount " "]
+    set iv_count [db_string get_iv_count " "]
 }
 

@@ -10,8 +10,8 @@
 		acs_objects o
 	where 
 		to_char(iv.due_date, 'YYYY') = :year
-		and iv.organization_id = :organization_id
 		and iv.recipient_id = o.object_id
+		$extra_query
 		[template::list::filter_where_clauses -and -name iv_months]
     </querytext>
 </fullquery>
@@ -25,7 +25,7 @@
 	where 
 		to_char(due_date, 'YYYY') = :year
 		and to_char(due_date, 'MM') = :iv_month
-		and organization_id = :organization_id
+		$extra_query
     </querytext>
 </fullquery>
 
@@ -38,6 +38,7 @@
 	where 
 		to_char(due_date, 'YYYY') = :year
 		and to_char(due_date, 'MM') = :iv_month
+		$extra_query
     </querytext>
 </fullquery>
 

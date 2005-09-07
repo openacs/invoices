@@ -20,8 +20,8 @@
 		and to_char(due_date, 'MM') = :month
 		and r.revision_id = i.latest_revision
 		and iv.invoice_id = r.revision_id
-		and iv.organization_id = :organization_id
 		and iv.recipient_id = o.object_id
+		$extra_query
 		[template::list::filter_where_clauses -and -name iv_days]
 		[template::list::orderby_clause -name iv_days -orderby]	
     </querytext>
@@ -36,7 +36,7 @@
 	where 
 		to_char(due_date, 'MM') = :month
 		and to_char(due_date, 'YYYY') = :year
-		and organization_id = :organization_id
+		$extra_query
     </querytext>
 </fullquery>
 

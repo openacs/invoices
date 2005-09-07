@@ -18,10 +18,15 @@ if {![info exists base_url]} {
     set base_url [apm_package_url_from_id $package_id]
 }
 
-foreach optional_param {row_list} {
+foreach optional_param {row_list organization_id} {
     if {![info exists $optional_param]} {
 	set $optional_param {}
     }
+}
+
+set extra_query ""
+if { [empty_string_p $organization_id] } {
+    set exrta_query "and iv.organization_id = $organization_id"
 }
 
 foreach unset_param {new_clients_p account_manager_p} {
@@ -123,6 +128,6 @@ template::list::create \
     }
 
 db_multirow -extend { iv_count iv_total_amount } iv_years iv_invoice_years " " {
-    set iv_count [db_string get_iv_count { }]
-    set iv_total_amount [db_string get_iv_total_amount { }]
+    set iv_count [db_string get_iv_count " "]
+    set iv_total_amount [db_string get_iv_total_amount " "]
 }

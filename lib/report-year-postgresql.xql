@@ -10,8 +10,8 @@
 		acs_objects o
 	where 
 		iv.due_date > now() - '$last_years years' :: interval
-		and iv.organization_id = :organization_id
 		and iv.recipient_id = o.object_id
+		$extra_query
 		[template::list::filter_where_clauses -and -name iv_years]
     </querytext>
 </fullquery>
@@ -24,7 +24,7 @@
 		iv_invoices 
 	where 
 		to_char(due_date, 'YYYY') = :iv_year
-		and organization_id = :organization_id
+		$extra_query
     </querytext>
 </fullquery>
 
@@ -36,7 +36,7 @@
 		iv_invoices 
 	where 
 		to_char(due_date, 'YYYY') = :iv_year
-		and organization_id = :organization_id
+		$extra_query
     </querytext>
 </fullquery>
 </queryset>

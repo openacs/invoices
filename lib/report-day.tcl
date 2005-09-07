@@ -32,6 +32,11 @@ foreach unset_param {new_clients_p account_manager_p} {
     }
 }
 
+set extra_query ""
+if { [empty_string_p $organization_id] } {
+    set exrta_query "and iv.organization_id = $organization_id"
+}
+
 set actions [list "[_ invoices.back_to_year]" \
 		 [export_vars -base invoice-reports {organization_id year new_clients_p account_manager_p}]]
 

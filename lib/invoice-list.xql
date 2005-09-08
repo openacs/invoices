@@ -14,7 +14,6 @@
          acs_objects o, persons p
     where cr.revision_id = ci.latest_revision
     and t.invoice_id = cr.revision_id
-    and t.organization_id = :organization_id
     and ci.parent_id = cf.folder_id
     and cf.package_id = :package_id
     and o.object_id = t.invoice_id

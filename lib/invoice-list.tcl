@@ -26,12 +26,13 @@ foreach optional_param {organization_id row_list} {
 set dotlrn_club_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type "dotlrn_club"] 0]
 set pm_base_url [apm_package_url_from_id [dotlrn_community::get_package_id_from_package_key -package_key "project-manager" -community_id $dotlrn_club_id]]
 
-
 #set package_id [ad_conn package_id]
 set date_format [lc_get formbuilder_date_format]
 set timestamp_format "$date_format [lc_get formbuilder_time_format]"
-
-set actions [list "[_ invoices.iv_invoice_New]" [export_vars -base invoice-add {organization_id}] "[_ invoices.iv_invoice_New2]" "[_ invoices.iv_invoice_credit_New]" [export_vars -base invoice-credit {organization_id}] "[_ invoices.iv_invoice_credit_New2]" "[_ invoices.iv_offer_2]" [export_vars -base offer-list {organization_id}] "[_ invoices.iv_offer_2]" "[_ invoices.projects]" $pm_base_url "[_ invoices.projects]" "[_ invoices.iv_reports]" [export_vars -base invoice-reports {organization_id}]]
+set actions [list]
+if { ![empty_string_p $organization_id] } {
+    set actions [list "[_ invoices.iv_invoice_New]" [export_vars -base invoice-add {organization_id}] "[_ invoices.iv_invoice_New2]" "[_ invoices.iv_invoice_credit_New]" [export_vars -base invoice-credit {organization_id}] "[_ invoices.iv_invoice_credit_New2]" "[_ invoices.iv_offer_2]" [export_vars -base offer-list {organization_id}] "[_ invoices.iv_offer_2]" "[_ invoices.projects]" $pm_base_url "[_ invoices.projects]" "[_ invoices.iv_reports]" [export_vars -base invoice-reports {organization_id}]]
+}
 
 template::list::create \
     -name iv_invoice \
@@ -68,7 +69,7 @@ template::list::create \
 	    label {[_ invoices.iv_invoice_due_date]}
 	}
         action {
-	    display_template {<if @iv_invoice.cancelled_p@ eq f><a href="@iv_invoice.edit_link@">#invoices.Edit#</a>&nbsp;<a href="@iv_invoice.cancel_link@">#invoices.Cancel#</a></if><if @paid_currency@ nil>&nbsp;<a href="@iv_invoice.delete_link@">#invoices.Delete#</a></if>}
+	    display_template {<if @iv_invoice.cancelled_p@ eq f><a href="@iv_invoice.edit_link@">#invoices.Edit#</a>&nbsp;<if @organization_id@ not nil><a href="@iv_invoice.cancel_link@">#invoices.Cancel#</a></if></if><if @paid_currency@ nil>&nbsp;<a href="@iv_invoice.delete_link@">#invoices.Delete#</a></if>}
 	}
     } -actions $actions -sub_class narrow \
     -orderby {
@@ -137,7 +138,6 @@ template::list::create \
 	    row $row_list
 	}
     }
-
 
 db_multirow -extend {creator_link edit_link cancel_link delete_link} iv_invoice iv_invoice {} {
     # Ugly hack. We should find out which contact package is linked

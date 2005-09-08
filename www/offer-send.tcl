@@ -27,9 +27,17 @@ if {[empty_string_p $accepted_date]} {
     set offer_text "{[_ invoices.iv_offer_accepted_email]}"
 }
 
+set pdf_file [text_templates::create_pdf_from_html -html_content "$offer_text"]
+if {![empty_string_p $pdf_file]} {
+    set file_size [file size $pdf_file]
+    set file_ids [cr_import_content -title "Offer $offer_id" -description "PDF version of <a href=[export_vars -base "/invoices/offer-ae" -url {{mode display} offer_id}]>this offer</a>" $offer_id $pdf_file $file_size application/pdf "Offer $offer_id"]
+} else {
+    set file_ids ""
+}
+
 set party_ids [contact::util::get_employees -organization_id $organization_id]
 set return_url [export_vars -base offer-list {organization_id}]
-set file_ids [db_string get_files {} -default ""]
+set file_ids [concat $file_ids [db_string get_files {} -default ""]]
 set parties_new [list]
 foreach party_id $party_ids {
     

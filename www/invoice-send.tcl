@@ -20,6 +20,14 @@ set context [list [list [export_vars -base invoice-list {organization_id}] "[_ i
 
 set invoice_text [iv::invoice::parse_data -invoice_id $invoice_id -recipient_id $recipient_id]
 
+if {[empty_string_p $file_ids]} {
+    set pdf_file [text_templates::create_pdf_from_html -html_content "$invoice_text"]
+    if {![empty_string_p $pdf_file]} {
+	set file_size [file size $pdf_file]
+	set file_ids [cr_import_content -title "Invoice $invoice_id" -description "PDF version of <a href=[export_vars -base "/invoices/invoice-ae" -url {{mode display} invoice_id}]>this offer</a>" $invoice_id $pdf_file $file_size application/pdf "Invoice $invoice_id"]
+    }
+}
+
 if {$total_amount > 0} {
     # send invoice
     set invoice_text "{[_ invoices.iv_invoice_email]}"

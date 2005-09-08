@@ -62,7 +62,7 @@
       <querytext>
 
     select p.first_names || ' ' || p.last_name, p.person_id
-    from persons p, pm_projects pj, cr_items i, pm_project_assignment a
+    from persons p, pm_projects pj, cr_items i
     where i.item_id in ([join $project_id ,])
     and i.latest_revision = pj.project_id
     and p.person_id in ( select party_id from pm_project_assignment where project_id in ([join $project_id ,]))

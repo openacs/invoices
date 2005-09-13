@@ -21,7 +21,7 @@
 	select
 		sum(total_amount) 
 	from 
-		iv_invoices 
+		iv_invoices  iv
 	where 
 		to_char(due_date, 'YYYY') = :iv_year
 		$extra_query
@@ -33,7 +33,7 @@
 	select 
 		count(invoice_id) 
 	from 
-		iv_invoices 
+		iv_invoices iv
 	where 
 		to_char(due_date, 'YYYY') = :iv_year
 		$extra_query

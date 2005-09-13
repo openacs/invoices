@@ -2,35 +2,57 @@
 <property name="title">@page_title;noquote@</property>
 <property name="context">@context;noquote@</property>
 
-<if @year_p@ eq 1>
-    <include src="/packages/invoices/lib/report-year"
-        organization_id="@organization_id@" 
-        format="@format@" 
-        last_years="@last_years@"
-	new_clients_p="@new_clients_p@"
-	account_manager_p="@account_manager_p@"
-	orderby="@orderby@"
-    >
-</if>
+<formtemplate id="aggregate"></formtemplate>
 
-<if @month_p@ eq 1>
-     <include src="/packages/invoices/lib/report-month"
-        organization_id="@organization_id@" 
-        format="@format@" 
-        year="@year@"
-	new_clients_p="@new_clients_p@"
-	account_manager_p="@account_manager_p@"
-	orderby="@orderby@"
-    >
-</if>
-<if @day_p@ eq 1>
-     <include src="/packages/invoices/lib/report-day"
-        organization_id="@organization_id@" 
-        format="@format@" 
-        year="@year@"
-	month="@month@"
-	new_clients_p="@new_clients_p@"
-	account_manager_p="@account_manager_p@"
-	orderby="@orderby@"
-    >
-</if>
+<center>
+<table>
+   <tr>
+	<td>
+	<multiple name="years">
+	    <if @years.year@ eq @year@ >
+                <b>@years.year_url;noquote@ &nbsp;</b>
+	    </if>
+            <else>
+                @years.year_url;noquote@ &nbsp;
+            </else>
+	</multiple>
+	</td>
+   </tr>
+   <tr>
+	<td>
+	<multiple name="months">
+	    <if @months.month@ eq @month@>
+		<b>@months.month_url;noquote@ &nbsp;</b>
+	    </if>
+	    <else>
+		@months.month_url;noquote@ &nbsp;
+            </else>
+	</multiple>
+	</td>
+   </tr>
+   <tr>
+	<td>
+	<multiple name="days">
+	    <if @days.day@ eq @day@>
+	       <b>@days.day_url;noquote@ &nbsp;</b>
+	    </if>
+	    <else>
+	        @days.day_url;noquote@ &nbsp;
+	    </else>
+	</multiple>
+	</td>
+   </tr>
+</table>
+</center>
+
+<include src="@include_src@"
+    organization_id="@organization_id@" 
+    format="@format@" 
+    last_years="@last_years@"
+    year="@year@"	
+    month="@month@"
+    day="@day@"
+    new_clients_p="@new_clients_p@"
+    account_manager_p="@account_manager_p@"
+    orderby="@orderby@"
+>

@@ -9,8 +9,7 @@
 		iv_invoices iv,
 		acs_objects o
 	where 
-		to_char(iv.due_date, 'YYYY') = :year
-		and iv.recipient_id = o.object_id
+		iv.recipient_id = o.object_id
 		$extra_query
 		[template::list::filter_where_clauses -and -name iv_months]
     </querytext>
@@ -23,8 +22,7 @@
 	from 
 		iv_invoices
 	where 
-		to_char(due_date, 'YYYY') = :year
-		and to_char(due_date, 'MM') = :iv_month
+		to_char(due_date, 'MM') = :iv_month
 		$extra_query
     </querytext>
 </fullquery>
@@ -36,8 +34,7 @@
 	from 
 		iv_invoices 
 	where 
-		to_char(due_date, 'YYYY') = :year
-		and to_char(due_date, 'MM') = :iv_month
+		to_char(due_date, 'MM') = :iv_month
 		$extra_query
     </querytext>
 </fullquery>

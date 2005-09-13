@@ -1,4 +1,3 @@
-<formtemplate id="aggregate"></formtemplate>
 <br>
 
 <b>#invoices.iv_from_last_years#</b>

@@ -6,10 +6,6 @@ if {![info exists orderby]} {
     set orderby ""
 }
 
-if {![info exists page_size]} {
-    set page_size 25
-}
-
 if {![info exists package_id]} {
     set package_id [ad_conn package_id]
 }
@@ -35,6 +31,10 @@ foreach unset_param {new_clients_p account_manager_p} {
 set extra_query ""
 if { [empty_string_p $organization_id] } {
     set exrta_query "and iv.organization_id = $organization_id"
+}
+
+if { ![empty_string_p $day] } {
+    append extra_query " and to_char(due_date, 'DD') = :day"
 }
 
 set actions [list "[_ invoices.back_to_year]" \
@@ -108,6 +108,10 @@ template::list::create \
 	year {
 	}
 	month {
+	}
+	day {
+	}
+	last_years {
 	}
 	new_clients_p {
 	    label "[_ invoices.New_clients]"

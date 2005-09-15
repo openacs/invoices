@@ -192,7 +192,9 @@ ad_proc -public iv::invoice::parse_data {
 	set category [lang::util::localize [category::get_name $category_id]]
     }
 
-    set file_url [parameter::get -parameter MailSendBoxFileP]
+    set file_url [parameter::get -parameter InvoiceTemplate]
+    
+    # We need to add the locale to the InvoiceTemplate name, but for the time being we don't care.
     if {![empty_string_p $file_url]} {
         set file [open $file_url]
         fconfigure $file -translation binary

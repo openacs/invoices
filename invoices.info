@@ -7,7 +7,7 @@
     <initial-install-p>f</initial-install-p>
     <singleton-p>t</singleton-p>
     
-    <version name="0.01d8" url="http://openacs.org/repository/download/apm/invoices-0.01d8.apm">
+    <version name="0.01d9" url="http://openacs.org/repository/download/apm/invoices-0.01d9.apm">
         <owner url="mailto:timo@timohentschel.de">Timo Hentschel</owner>
         <summary>Invoices package that will collect costs to invoice items in invoices and store data about received payment.</summary>
         <release-date>2005-06-06</release-date>
@@ -15,7 +15,7 @@
         <description format="text/plain">Collect costs to invoice items and invoices, store payment information.</description>
         <maturity>0</maturity>
 
-        <provides url="invoices" version="0.01d8"/>
+        <provides url="invoices" version="0.01d9"/>
         <requires url="acs-content-repository" version="5.1.4d3"/>
         <requires url="acs-kernel" version="5.0d13"/>
         <requires url="acs-templating" version="5.1.5d1"/>
@@ -32,6 +32,7 @@
         </callbacks>
         <parameters>
             <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="DefaultCurrency"  default="EUR" description="Default currency code"/>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="InvoiceTemplate"  default="/packages/invoices/templates/invoice-template.adp" description="Location of the invoice template which is parsed to generate the invoice."/>
         </parameters>
 
     </version>

@@ -6,7 +6,7 @@ ad_page_contract {
 } {
     invoice_id:integer,optional
     {organization_id:integer,optional ""}
-    {project_id:multiple,optional ""}
+    {project_id:multiple}
     {offer_item_ids:array,optional}
     {__new_p 0}
     {mode edit}

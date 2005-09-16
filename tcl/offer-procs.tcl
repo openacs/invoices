@@ -275,3 +275,32 @@ ad_proc -public iv::offer::text {
 
     return $mail_text
 }
+
+
+ad_proc -public iv::offer::billed_p {
+    -offer_id:required
+} {
+    @creation-date 2005-09-16
+
+    Returns 1 if the offer has been fully billed, 0 otherwise. This procedure is cached
+} {
+    return [util_memoize [list iv::offer::billed_p_not_cached -offer_id $offer_id] 1]
+}
+
+ad_proc -public iv::offer::billed_p_not_cached {
+    -offer_id:required
+} {
+    @creation-date 2005-09-16
+
+    Returns 1 if the offer has been fully billed, 0 otherwise
+} {
+    set offer_items_count [db_string get_items_count { } -default 0]
+
+    set billed_items [db_string get_billed_items_count { } -default 0]
+
+    if { [string equal $offer_items_count $billed_items] && [exists_and_not_null offer_id] } {
+	return 1
+    } else {
+	return 0
+    }
+}

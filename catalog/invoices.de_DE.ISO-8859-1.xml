@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="invoices" package_version="0.01d9" locale="de_DE" charset="ISO-8859-1">
+<message_catalog package_key="invoices" package_version="0.01d10" locale="de_DE" charset="ISO-8859-1">
 
   <msg key="Accepted_date">Akzeptiert am</msg>
   <msg key="admin">Admin</msg>
@@ -69,7 +69,7 @@
   <msg key="iv_invoice_cancel_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Storno&lt;/h3&gt;%invoice_text%&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_invoice_closed_date">beendet am</msg>
   <msg key="iv_invoice_count_billed">berechnete Positonen</msg>
-  <msg key="iv_invoice_count_total">Positionsanzahl</msg>
+  <msg key="iv_invoice_count_total">Anzahl Positionen</msg>
   <msg key="iv_invoice_creation_date">erstellt am</msg>
   <msg key="iv_invoice_creation_user">erstellt von</msg>
   <msg key="iv_invoice_credit_1">Gutschrift</msg>
@@ -134,7 +134,6 @@
   <msg key="iv_offer_amount_sum">Summe</msg>
   <msg key="iv_offer_amount_total">Gesamtsumme</msg>
   <msg key="iv_offer_comment">&lt;b&gt;Interner Kommentar&lt;/b&gt;</msg>
-  <msg key="iv_offer_comment_help">Internes Kommentarfeld für alle Informationen aus dem Projektmanagement</msg>
   <msg key="iv_offer_count_total">Anzahl Positionen</msg>
   <msg key="iv_offer_creation_date">erstellt am</msg>
   <msg key="iv_offer_creation_user">erstellt von</msg>
@@ -238,7 +237,6 @@
   <msg key="Offer_number">Angebotsnummer</msg>
   <msg key="Offers">Kostenaufstellungen</msg>
   <msg key="offers">Kostenaufstellungen</msg>
-  <msg key="order_confirmation">Auftragsbestätigung</msg>
   <msg key="Page_count">Seitenyahl</msg>
   <msg key="Parent_invoice_item">Bezug auf Rechnungsposition</msg>
   <msg key="Parent_offer_item">Bezug auf Kostenposition</msg>

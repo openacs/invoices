@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="invoices" package_version="0.01d9" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="invoices" package_version="0.01d10" locale="en_US" charset="ISO-8859-1">
 
   <msg key="Accepted_date">Accepted on</msg>
   <msg key="admin">Admin</msg>
@@ -142,13 +142,16 @@
   <msg key="iv_offer_Add2">Add Cost Sheet</msg>
   <msg key="iv_offer_amount_diff">Rebate</msg>
   <msg key="iv_offer_amount_sum">Amount sum</msg>
+  <msg key="iv_offer_amount_sum_help">Automatically calculated sum from the summation of the offer items</msg>
   <msg key="iv_offer_amount_total">Total amount</msg>
+  <msg key="iv_offer_amount_total_help">Total sum for the invoice. This might differ from the aggregation of the offer items.</msg>
   <msg key="iv_offer_comment">Comment</msg>
   <msg key="iv_offer_count_total">Total items</msg>
   <msg key="iv_offer_creation_date">Created on</msg>
   <msg key="iv_offer_creation_user">Created by</msg>
   <msg key="iv_offer_currency">Currency</msg>
   <msg key="iv_offer_date_comment">Date Comment:</msg>
+  <msg key="iv_offer_date_comment_help">Internal Notes explaining the deadline communicated to the client</msg>
   <msg key="iv_offer_Delete">Delete Cost Sheet</msg>
   <msg key="iv_offer_Description">Description</msg>
   <msg key="iv_offer_Description_help">Description of the cost sheet</msg>
@@ -156,30 +159,43 @@
   <msg key="iv_offer_edit_error">You are not allowed to edit an accepted or invoiced cost sheet</msg>
   <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Offer&lt;/h3&gt;%offer_text%&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_finish_date">Finish on</msg>
+  <msg key="iv_offer_finish_date_help">Deadline until which the project has to be delivered to the client</msg>
   <msg key="iv_offer_finish_time">Finish time</msg>
+  <msg key="iv_offer_finish_time_help">Time of the deadline for the delivery of the project</msg>
   <msg key="iv_offer_item_1">Cost Item</msg>
   <msg key="iv_offer_item_2">Cost Items</msg>
   <msg key="iv_offer_item_Add">Add Cost Item</msg>
   <msg key="iv_offer_item_amount">Amount</msg>
+  <msg key="iv_offer_item_amount_help">Calculated total amount (multiplying units and price per unit)</msg>
   <msg key="iv_offer_item_category">Type</msg>
+  <msg key="iv_offer_item_category_help">Type of work done.</msg>
   <msg key="iv_offer_item_comment">Comment</msg>
+  <msg key="iv_offer_item_comment_help">Internal comment for the offer/invoice item</msg>
   <msg key="iv_offer_item_Delete">Delete Cost Item</msg>
   <msg key="iv_offer_item_Description">Description</msg>
+  <msg key="iv_offer_item_Description_help">Description which is also shown in the offer/invoice</msg>
   <msg key="iv_offer_item_Edit">Edit Cost Item</msg>
   <msg key="iv_offer_item_file_count">Number of files</msg>
+  <msg key="iv_offer_item_file_count_help">Number of files that are relevant for this offer/invoice item</msg>
   <msg key="iv_offer_item_files">files</msg>
   <msg key="iv_offer_item_invoice_id">Cost Sheet</msg>
   <msg key="iv_offer_item_item_units">Number of units</msg>
+  <msg key="iv_offer_item_item_units_help">Number of units (e.g. hours or lines)</msg>
   <msg key="iv_offer_item_New">New Cost Item</msg>
   <msg key="iv_offer_item_New2">Create New Cost Item</msg>
   <msg key="iv_offer_item_nr">Cost Item number</msg>
+  <msg key="iv_offer_item_nr_help">Position of the offer item</msg>
   <msg key="iv_offer_item_page_count">Number of pages</msg>
+  <msg key="iv_offer_item_page_count_help">Number of pages that are relevant for this invoice item.</msg>
   <msg key="iv_offer_item_pages">pages</msg>
   <msg key="iv_offer_item_parent_id">Parent Item</msg>
   <msg key="iv_offer_item_price_per_unit">Price per unit</msg>
+  <msg key="iv_offer_item_price_per_unit_help">Price per unit. Will be prefilled from the pricelist with the value associated with the type for this offer/invoice item</msg>
   <msg key="iv_offer_item_rebate">Rebate</msg>
+  <msg key="iv_offer_item_rebate_help">Rebate given on this offer/invoice item in percent.</msg>
   <msg key="iv_offer_item_sort_order">Sort order</msg>
   <msg key="iv_offer_item_Title">Title</msg>
+  <msg key="iv_offer_item_Title_help">Title that is shown in the offer/invoice</msg>
   <msg key="iv_offer_item_vat">VAT</msg>
   <msg key="iv_offer_item_View">View Cost Item</msg>
   <msg key="iv_offer_list">Cost Sheets</msg>
@@ -190,8 +206,10 @@
   <msg key="iv_offer_organization">Customer</msg>
   <msg key="iv_offer_organization_help">Organization Name</msg>
   <msg key="iv_offer_payment_days">Payment after .. days</msg>
+  <msg key="iv_offer_payment_days_help">How many days has the customer until the invoice has to be paid</msg>
   <msg key="iv_offer_project">Project</msg>
   <msg key="iv_offer_project_descr">Description</msg>
+  <msg key="iv_offer_project_help">Project Name</msg>
   <msg key="iv_offer_project_id">Project ID</msg>
   <msg key="iv_offer_project_title">Title</msg>
   <msg key="iv_offer_send">Send Offer</msg>
@@ -201,6 +219,7 @@
   <msg key="iv_offer_Title_help">Title of the offer</msg>
   <msg key="iv_offer_vat">VAT</msg>
   <msg key="iv_offer_vat_percent">%VAT</msg>
+  <msg key="iv_offer_vat_percent_help">What is the VAT charged for the customer</msg>
   <msg key="iv_offer_View">View Cost Sheet</msg>
   <msg key="iv_payment_1">Payment</msg>
   <msg key="iv_payment_2">Payments</msg>

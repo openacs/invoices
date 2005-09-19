@@ -61,7 +61,7 @@ set timestamp_format "$date_format [lc_get formbuilder_time_format]"
 if {[exists_and_not_null organization_id]} {
     set price_list_id [iv::price_list::get_list_id -organization_id $organization_id]
     if {![info exists actions]} {
-	set actions [list "[_ invoices.iv_offer_New]" [export_vars -base "${base_url}offer-ae" {organization_id}] "[_ invoices.iv_offer_New2]" "[_ invoices.iv_invoice_2]" [export_vars -base "${base_url}invoice-list" {organization_id}] "[_ invoices.iv_invoice_2]" "[_ invoices.iv_price_list]" [export_vars -base "${base_url}price-list" {{list_id $price_list_id}}] "[_ invoices.iv_display_price_list]"]
+	set actions [list "[_ invoices.iv_invoice_2]" [export_vars -base "${base_url}invoice-list" {organization_id}] "[_ invoices.iv_invoice_2]" "[_ invoices.iv_price_list]" [export_vars -base "${base_url}price-list" {{list_id $price_list_id}}] "[_ invoices.iv_display_price_list]"]
 	if {[exists_and_not_null pm_base_url]} {
 	    lappend actions "[_ project-manager.Projects]" $pm_base_url "[_ project-manager.Projects]"
 	}

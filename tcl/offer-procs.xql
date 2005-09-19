@@ -97,4 +97,28 @@
       </querytext>
 </fullquery>
 
+<fullquery name="iv::offer::billed_p_not_cached.get_items_count">
+      <querytext>
+	select 
+		count(offer_item_id) 
+	from 	
+		iv_offer_items 
+	where 
+		offer_id = :offer_id
+      </querytext>
+</fullquery>
+
+<fullquery name="iv::offer::billed_p_not_cached.get_billed_items_count">
+      <querytext>
+	select
+		count(i.offer_item_id)
+	from 
+		iv_invoice_items i,
+		iv_offer_items o
+	where
+		i.offer_item_id = o.offer_item_id
+		and o.offer_id = :offer_id
+      </querytext>
+</fullquery>
+
 </queryset>

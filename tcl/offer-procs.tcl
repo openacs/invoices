@@ -284,7 +284,7 @@ ad_proc -public iv::offer::billed_p {
 
     Returns 1 if the offer has been fully billed, 0 otherwise. This procedure is cached
 } {
-    return [util_memoize [list iv::offer::billed_p_not_cached -offer_id $offer_id] 1]
+    return [util_memoize [list iv::offer::billed_p_not_cached -offer_id $offer_id]]
 }
 
 ad_proc -public iv::offer::billed_p_not_cached {

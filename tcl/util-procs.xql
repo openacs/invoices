@@ -26,4 +26,15 @@
       </querytext>
 </fullquery>
 
+<fullquery name="iv::util::get_x_field.get_offer_creator_data">
+      <querytext>
+      
+	select u.password as user_password, u.salt as user_salt
+	from users u, acs_objects o
+	where u.user_id = o.creation_user
+	and o.object_id = :offer_id
+	
+      </querytext>
+</fullquery>
+
 </queryset>

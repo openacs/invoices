@@ -125,6 +125,12 @@ ad_proc -public -callback iv::offer_accept {
 } {
 }
 
+ad_proc -public -callback iv::offer_accepted {
+    {-offer_id:required}
+    {-party_id:required}
+} {
+}
+
 ad_proc -public -callback contacts::populate::organization::customer_attributes -impl invoices {
     {-list_id:required}
 } {

@@ -24,7 +24,7 @@ if {[empty_string_p $file_ids]} {
     set pdf_file [text_templates::create_pdf_from_html -html_content "$invoice_text"]
     if {![empty_string_p $pdf_file]} {
 	set file_size [file size $pdf_file]
-	set file_ids [cr_import_content -title "Invoice $invoice_id" -description "PDF version of <a href=[export_vars -base "/invoices/invoice-ae" -url {{mode display} invoice_id}]>this offer</a>" $invoice_id $pdf_file $file_size application/pdf "Invoice $invoice_id"]
+	set file_ids [cr_import_content -title "Invoice $invoice_id" -description "PDF version of <a href=[export_vars -base "/invoices/invoice-ae" -url {{mode display} invoice_id}]>this offer</a>" $invoice_id $pdf_file $file_size application/pdf "[clock seconds]-[expr round([ns_rand]*100000)]"]
     }
 }
 

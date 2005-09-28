@@ -98,23 +98,25 @@ ad_proc -public -callback pm::project_links -impl invoices {
     {-project_id:required}
 } {
 } {
-    upvar project_links project_links
-    set invoice_base_url [site_node::get_package_url -package_key invoices]
-    set offer_id [lindex [application_data_link::get_linked -from_object_id $project_id -to_object_type content_item] 0]
+    if {![apm_package_installed_p translation]} {
+	upvar project_links project_links
+	set invoice_base_url [site_node::get_package_url -package_key invoices]
+	set offer_id [lindex [application_data_link::get_linked -from_object_id $project_id -to_object_type content_item] 0]
 
-    if {![empty_string_p $offer_id]} {
-	# link to linked offer
-	append project_links "<li> <a href=\"[export_vars -base "${invoice_base_url}offer-ae" {offer_id {mode display}}]\">[_ invoices.iv_offer_View]</a></li>"
-    } else {
-	# link to offer-list
-	db_1row get_project_organization {
-	    select p.customer_id as organization_id
-	    from pm_projects p, cr_items i
-	    where i.item_id = :project_id
-	    and p.project_id = i.latest_revision
+	if {![empty_string_p $offer_id]} {
+	    # link to linked offer
+	    append project_links "<li> <a href=\"[export_vars -base "${invoice_base_url}offer-ae" {offer_id {mode display}}]\">[_ invoices.iv_offer_View]</a></li>"
+	} else {
+	    # link to offer-list
+	    db_1row get_project_organization {
+		select p.customer_id as organization_id
+		from pm_projects p, cr_items i
+		where i.item_id = :project_id
+		and p.project_id = i.latest_revision
+	    }
+
+	    append project_links "<li> <a href=\"[export_vars -base "${invoice_base_url}offer-list" {organization_id}]\">[_ invoices.iv_offer_list]</a></li>"
 	}
-
-	append project_links "<li> <a href=\"[export_vars -base "${invoice_base_url}offer-list" {organization_id}]\">[_ invoices.iv_offer_list]</a></li>"
     }
 }
 

@@ -29,6 +29,7 @@ if {![info exists invoice_id] || $__new_p} {
 } else {
     db_1row get_organization_and_currencies {}
     set cur_vat_percent [format "%.1f" $cur_vat_percent]
+    set cur_invoice_rebate [expr $cur_amount_sum - $cur_total_amount]
     if {$cancelled_p == "t"} {
 	set has_edit 1
     }
@@ -72,7 +73,8 @@ if {[exists_and_not_null parent_invoice_id]} {
     set recipient_options [db_list_of_lists credit_recipients {}]
 } else {
     # normal invoice: get recipients from projects
-    set recipient_options [db_list_of_lists recipients {}]
+    # set recipient_options [db_list_of_lists recipients {}]
+    set recipient_options [translation::get_recipients -customer_id $organization_id]
 }
 
 
@@ -94,8 +96,13 @@ ad_form -extend -name iv_invoice_form -form {
 
 if {$has_submit} {
     # we are just displaying an invoice
+    if {$cur_invoice_rebate > 0} {
+	ad_form -extend -name iv_invoice_form -form {
+	    {invoice_rebate:float {label "[_ invoices.iv_invoice_rebate]"} {html {size 5 maxlength 10}} {help_text "[_ invoices.iv_invoice_rebate_help2]"} {after_html $currency}}
+	}
+    }
+
     ad_form -extend -name iv_invoice_form -form {
-	{invoice_rebate:float {label "[_ invoices.iv_invoice_rebate]"} {html {size 5 maxlength 10}} {help_text "[_ invoices.iv_invoice_rebate_help2]"} {after_html $currency}}
 	{total_amount:integer,optional {label "[_ invoices.iv_invoice_total_amount]"} {html {size 10 maxlength 10}} {help_text "[_ invoices.iv_invoice_total_amount_help]"} {after_html $currency}}
 	{vat:float {label "[_ invoices.iv_invoice_vat]"} {html {size 10 maxlength 10}} {help_text "[_ invoices.iv_invoice_vat_help]"} {after_html "$currency ($cur_vat_percent%)"}}
     }
@@ -131,11 +138,13 @@ if {!$has_submit} {
 	{vat_percent:float {label "[_ invoices.iv_invoice_vat_percent]"} {html {size 5 maxlength 10}} {help_text "[_ invoices.iv_invoice_vat_percent_help]"} {after_html {%}}}
     }
 
-    db_1row get_open_rebate {}
-    if {$open_rebate > 0} {
-	set open_rebate [format "%.2f" $open_rebate]
-	ad_form -extend -name iv_invoice_form -form {
-	    {invoice_rebate:float {label "[_ invoices.iv_invoice_rebate]"} {html {size 5 maxlength 10}} {help_text "[_ invoices.iv_invoice_rebate_help]"} {after_html $currency}}
+    if {![empty_string_p $project_id]} {
+	db_1row get_open_rebate {}
+	if {$open_rebate > 0} {
+	    set open_rebate [format "%.2f" $open_rebate]
+	    ad_form -extend -name iv_invoice_form -form {
+		{invoice_rebate:float {label "[_ invoices.iv_invoice_rebate]"} {html {size 5 maxlength 10}} {help_text "[_ invoices.iv_invoice_rebate_help]"} {after_html $currency}}
+	    }
 	}
     }
 }
@@ -238,21 +247,21 @@ ad_form -extend -name iv_invoice_form -new_request {
     }
 } -on_submit {
     set category_ids [category::ad_form::get_categories -container_object_id $container_objects(invoice_id)]
+
+    set total_amount 0.
+    foreach offer_item_id [array names offer_item_ids] {
+	array set offer $offers($offer_item_id)
+	set total_amount [expr $total_amount + $offer(amount)]
+    }
+    set total_amount [format "%.2f" $total_amount]
+    set amount_sum $total_amount
+    if {[exists_and_not_null invoice_rebate]} {
+	set total_amount [expr $total_amount - $invoice_rebate]
+    }
+    set total_amount [format "%.2f" $total_amount]
+    set vat [format "%.2f" [expr $total_amount * $vat_percent / 100.]]
 } -new_data {
     db_transaction {
-	set total_amount 0.
-	foreach offer_item_id [array names offer_item_ids] {
-	    array set offer $offers($offer_item_id)
-	    set total_amount [expr $total_amount + $offer(amount)]
-	}
-	set total_amount [format "%.2f" $total_amount]
-	set amount_sum $total_amount
-	if {[exists_and_not_null invoice_rebate]} {
-	    set total_amount [expr $total_amount - $invoice_rebate]
-	}
-	set total_amount [format "%.2f" $total_amount]
-	set vat [format "%.2f" [expr $total_amount * $vat_percent / 100.]]
-
 	set new_invoice_rev_id [iv::invoice::new  \
 				    -title $title \
 				    -description $description  \
@@ -297,15 +306,40 @@ ad_form -extend -name iv_invoice_form -new_request {
 				    -invoice_item_id $invoice_id \
 				    -title $title \
 				    -description $description  \
+				    -recipient_id $recipient_id \
 				    -invoice_nr $invoice_nr \
 				    -organization_id $organization_id \
+				    -total_amount $total_amount \
+				    -amount_sum $amount_sum \
 				    -currency $currency \
 				    -due_date $due_date \
 				    -payment_days $payment_days \
-				    -vat_percent $vat_percent ]
+				    -vat_percent $vat_percent \
+				    -vat $vat]
 
 	if {[exists_and_not_null category_ids]} {
 	    category::map_object -object_id $new_invoice_rev_id $category_ids
+	}
+
+	set counter 0
+	foreach iv_item_id [array names offer_item_ids] {
+	    incr counter
+	    array set offer $offers($iv_item_id)
+	    set offer(vat) [expr $vat_percent * $offer(old_vat) / 100.]
+
+	    set new_item_rev_id [iv::invoice_item::edit \
+				     -iv_item_item_id $iv_item_id \
+				     -invoice_id $new_invoice_rev_id \
+				     -title $offer(title) \
+				     -description $offer(description)  \
+				     -item_nr $offer(item_nr) \
+				     -offer_item_id $offer(offer_item_id) \
+				     -item_units $offer(item_units) \
+				     -price_per_unit $offer(price_per_unit) \
+				     -rebate $offer(rebate) \
+				     -amount_total $offer(amount) \
+				     -sort_order $counter \
+				     -vat $offer(vat) ]
 	}
     }
 } -after_submit {

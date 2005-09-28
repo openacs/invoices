@@ -51,7 +51,7 @@ function calculateTotalAmount() {
     var form = document.forms.iv_offer_form;
     var total = 0.;
 
-    for (i=1; i<5+@start@; i++) {
+    for (i=1; i<2+@start@; i++) {
       item_amount = form["amount_sum."+i].value
       item_rebate = form["item_rebate."+i].value
 

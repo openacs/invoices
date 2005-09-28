@@ -7,7 +7,8 @@
 	select t.organization_id, t.currency, t.paid_currency,
 	       t.vat_percent as cur_vat_percent, t.cancelled_p,
                t.invoice_id as invoice_rev_id, t.parent_invoice_id,
-               t.total_amount as cur_total_amount
+               t.total_amount as cur_total_amount,
+               t.amount_sum as cur_amount_sum
 	from iv_invoices t, cr_items i
 	where i.latest_revision = t.invoice_id
 	and i.item_id = :invoice_id
@@ -103,10 +104,10 @@
 <fullquery name="invoice_items">
       <querytext>
 
-	select ir.title, ir.description, i.iv_item_id, i.item_units,
-	       i.price_per_unit, i.item_nr, pi.item_id as project_id,
-	       pr.title as project_title, i.vat as old_vat,
-               i.rebate, m.category_id
+	select ir.title, ir.description, ir.item_id as iv_item_id,
+               i.item_units, i.price_per_unit, i.item_nr,
+               pi.item_id as project_id, pr.title as project_title,
+               i.vat as old_vat, i.rebate, m.category_id, i.offer_item_id
 	from cr_items oi, iv_offer_items ofi, iv_invoice_items i,
 	     cr_revisions ir, cr_items pi, cr_revisions pr,
 	     cr_items vi, cr_items ii, acs_rels r, category_object_map m

@@ -18,6 +18,8 @@ db_1row offer_data {}
 set context [list [list [export_vars -base offer-list {organization_id}] "[_ invoices.iv_offer_2]"] [list [export_vars -base offer-ae {offer_id}] "[_ invoices.iv_offer_View]"] $page_title]
 
 set offer_text [iv::offer::text -offer_id $offer_id]
+set x [iv::util::get_x_field -offer_id $offer_rev_id]
+set accept_link [export_vars -base "[ad_url][ad_conn package_url]offer-accepted" {x {offer_id $offer_rev_id}}]
 
 if {[empty_string_p $accepted_date]} {
     # send pending offer

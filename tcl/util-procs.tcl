@@ -50,24 +50,22 @@ ad_proc -private iv::util::set_default_objects {
 }
 
 ad_proc -public iv::util::get_x_field {
-    -party_id:required
     -offer_id:required
 } {
-    Creates the x-field for the email (for party authentification)
+    Creates the x-field for the email (for authentification)
 } {
     db_1row get_offer_creator_data {}
-    return [ns_sha1 "$party_id $user_password $user_salt"]
+    return [ns_sha1 "$offer_id $user_password $user_salt"]
 }
 
 ad_proc -public iv::util::valid_x_field_p {
-    -party_id:required
     -offer_id:required
     -x_field:required
 } {
     Verifies the x-field in the email
 } {
     # generate the expected x-variable
-    set expected_x [iv::util::get_x_field -party_id $party_id -offer_id $offer_id]
+    set expected_x [iv::util::get_x_field -offer_id $offer_id]
     
     # Check if both values are the same and return t or f
     return [string equal $x_field $expected_x]

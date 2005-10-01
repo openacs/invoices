@@ -4,7 +4,7 @@
 <fullquery name="offer_data">
       <querytext>
 
-    select o.offer_nr, o.organization_id, o.accepted_date
+    select o.offer_nr, o.organization_id, o.accepted_date, oi.live_revision as offer_rev_id
     from iv_offers o, cr_items oi
     where oi.latest_revision = o.offer_id
     and oi.item_id = :offer_id

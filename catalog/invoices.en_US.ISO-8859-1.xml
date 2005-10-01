@@ -138,6 +138,7 @@
   <msg key="iv_offer_accept">Accept Offer</msg>
   <msg key="iv_offer_accepted_date">Accepted on</msg>
   <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Accepted Offer&lt;/h3&gt;%offer_text%&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_accepted_thanks">Thank you for accepted our offer. We will contact you as soon as possible.</msg>
   <msg key="iv_offer_Add">Cost Sheet for &quot;%organization_name%&quot;</msg>
   <msg key="iv_offer_Add2">Add Cost Sheet</msg>
   <msg key="iv_offer_amount_diff">Rebate</msg>

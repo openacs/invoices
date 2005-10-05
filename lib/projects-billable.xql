@@ -9,10 +9,10 @@
     from (
     select oi.item_id as offer_id, pr.revision_id, o.creation_date,
 	   sum(ofi.item_units * ofi.price_per_unit * (1-(ofi.rebate/100))) as amount_open,
-           p.customer_id , (oz.name ) as name
+           p.customer_id, oz.name
     from cr_items pi, cr_revisions pr, pm_projects p,
          acs_objects o, acs_rels r, iv_offer_items ofi,
-         acs_objects oo, cr_items oi , organizations oz
+         acs_objects oo, cr_items oi, organizations oz
     where pi.latest_revision = pr.revision_id
     and p.project_id = pr.revision_id
     and o.object_id = p.project_id

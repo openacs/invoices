@@ -158,7 +158,7 @@
   <msg key="iv_offer_Description_help">Description of the cost sheet</msg>
   <msg key="iv_offer_Edit">Edit Cost Sheet</msg>
   <msg key="iv_offer_edit_error">You are not allowed to edit an accepted or invoiced cost sheet</msg>
-  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Offer&lt;/h3&gt;%offer_text%&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Offer&lt;/h3&gt;%offer_text%&lt;p&gt;To accept this offer, click &lt;a href="%accept_link%"&gt;here&lt;/a&gt;.&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_finish_date">Finish on</msg>
   <msg key="iv_offer_finish_date_help">Deadline until which the project has to be delivered to the client</msg>
   <msg key="iv_offer_finish_time">Finish time</msg>

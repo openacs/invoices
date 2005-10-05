@@ -35,7 +35,7 @@
     and pr.revision_id = pi.latest_revision
     and pp.project_id = pr.revision_id
     [template::list::filter_where_clauses -and -name iv_offer]
-    [template::list::page_where_clauses -and -name iv_offer -key cr.item_id]
+    [template::list::page_where_clause -and -name iv_offer -key cr.item_id]
     [template::list::orderby_clause -name iv_offer -orderby]
     
       </querytext>

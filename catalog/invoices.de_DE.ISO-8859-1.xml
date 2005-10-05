@@ -155,7 +155,7 @@
   <msg key="iv_offer_Description_help">Beschreibung der Kostenaufstellung</msg>
   <msg key="iv_offer_Edit">Projektaufstellung ändern</msg>
   <msg key="iv_offer_edit_error">Sie dürfen keine akzeptierte oder berechnete Kostenaufstellung ändern.</msg>
-  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Angebot&lt;/h3&gt;%offer_text%&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Angebot&lt;/h3&gt;%offer_text%&lt;p&gt;Um dieses Angebot anzunehmen, klicken Sie bitte &lt;a href="%accept_link%"&gt;hier&lt;/a&gt;.&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_finish_date">Timing Datum</msg>
   <msg key="iv_offer_finish_date_help">Abgabetermin zu dem das Projekt an den Kunden ausgeliefert werden muss</msg>
   <msg key="iv_offer_finish_time">Timing Uhrzeit</msg>

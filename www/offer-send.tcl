@@ -20,6 +20,7 @@ set context [list [list [export_vars -base offer-list {organization_id}] "[_ inv
 set offer_text [iv::offer::text -offer_id $offer_id]
 set x [iv::util::get_x_field -offer_id $offer_rev_id]
 set accept_link [export_vars -base "[ad_url][ad_conn package_url]offer-accepted" {x {offer_id $offer_rev_id}}]
+content::item::set_live_revision -revision_id $offer_rev_id
 
 if {[empty_string_p $accepted_date]} {
     # send pending offer
@@ -37,8 +38,16 @@ if {![empty_string_p $pdf_file]} {
     set file_ids ""
 }
 
+set project_id [lindex [application_data_link::get_linked -from_object_id $offer_id -to_object_type content_item] 0]
+if {![empty_string_p $project_id]} {
+    acs_object::get -object_id $project_id -array project
+    set pm_url [lindex [site_node::get_url_from_object_id -object_id $project(package_id)] 0]
+    set return_url [export_vars -base "${pm_url}one" {{project_item_id $project_id}}]
+} else {
+    set return_url [export_vars -base offer-list {organization_id}]
+}
+
 set party_ids [contact::util::get_employees -organization_id $organization_id]
-set return_url [export_vars -base offer-list {organization_id}]
 set file_ids [concat $file_ids [db_string get_files {} -default ""]]
 set parties_new [list]
 foreach party_id $party_ids {

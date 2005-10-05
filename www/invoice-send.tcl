@@ -43,8 +43,8 @@ if {$total_amount > 0} {
     set invoice_text "{[_ invoices.iv_invoice_cancel_email]}"
 }
 
-set party_ids [contact::util::get_employees -organization_id $organization_id]
 set return_url [export_vars -base invoice-list {organization_id}]
+set party_ids [contact::util::get_employees -organization_id $organization_id]
 
 set parties_new [list]
 foreach party_id $party_ids {

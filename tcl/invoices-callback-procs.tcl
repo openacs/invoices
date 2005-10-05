@@ -105,7 +105,7 @@ ad_proc -public -callback pm::project_links -impl invoices {
 
 	if {![empty_string_p $offer_id]} {
 	    # link to linked offer
-	    append project_links "<li> <a href=\"[export_vars -base "${invoice_base_url}offer-ae" {offer_id {mode display}}]\">[_ invoices.iv_offer_View]</a></li>"
+	    # append project_links "<li> <a href=\"[export_vars -base "${invoice_base_url}offer-ae" {offer_id {mode display}}]\">[_ invoices.iv_offer_View]</a></li>"
 	} else {
 	    # link to offer-list
 	    db_1row get_project_organization {

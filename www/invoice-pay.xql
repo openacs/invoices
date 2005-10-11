@@ -8,7 +8,7 @@
     from iv_invoices i, cr_items ii
     where ii.latest_revision = i.invoice_id
     and ii.item_id = :invoice_id
-    and ii.status = 'new'
+    and i.status = 'paid'
 
       </querytext>
 </fullquery>

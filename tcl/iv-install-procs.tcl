@@ -24,6 +24,7 @@ ad_proc -public iv::install::create_install {
 
     # Price List
     content::type::attribute::new -content_type {iv_price_list} -attribute_name {currency} -datatype {string} -pretty_name {[_ invoices.Currency]} -column_spec {char(3)}
+    content::type::attribute::new -content_type {iv_price_list} -attribute_name {credit_percent} -datatype {number} -pretty_name {[_ invoices.Credit]} -column_spec {numeric(12,5)}
 
     # Price
     content::type::attribute::new -content_type {iv_price} -attribute_name {list_id} -datatype {number} -pretty_name {[_ invoices.Price_list]} -column_spec {integer}
@@ -52,6 +53,8 @@ ad_proc -public iv::install::create_install {
     content::type::attribute::new -content_type {iv_offer} -attribute_name {payment_days} -datatype {number} -pretty_name {[_ invoices.Payment_after__days]} -column_spec {integer}
     content::type::attribute::new -content_type {iv_offer} -attribute_name {vat_percent} -datatype {number} -pretty_name {[_ invoices.VAT]} -column_spec {numeric(12,5)}
     content::type::attribute::new -content_type {iv_offer} -attribute_name {vat} -datatype {number} -pretty_name {[_ invoices.VAT_amount]} -column_spec {numeric(12,2)}
+    content::type::attribute::new -content_type {iv_offer} -attribute_name {credit_percent} -datatype {number} -pretty_name {[_ invoices.Credit]} -column_spec {numeric(12,5)}
+    content::type::attribute::new -content_type {iv_offer} -attribute_name {status} -datatype {string} -pretty_name {[_ invoices.Status]} -column_spec {varchar(10)}
     content::type::attribute::new -content_type {iv_offer} -attribute_name {accepted_date} -datatype {date} -pretty_name {[_ invoices.Accepted_date]} -column_spec {timestamptz}
 
     # Offer Item
@@ -81,6 +84,7 @@ ad_proc -public iv::install::create_install {
     content::type::attribute::new -content_type {iv_invoice} -attribute_name {payment_days} -datatype {number} -pretty_name {[_ invoices.Payment_after__days]} -column_spec {integer}
     content::type::attribute::new -content_type {iv_invoice} -attribute_name {vat_percent} -datatype {number} -pretty_name {[_ invoices.VAT]} -column_spec {numeric(12,5)}
     content::type::attribute::new -content_type {iv_invoice} -attribute_name {vat} -datatype {number} -pretty_name {[_ invoices.VAT_amount]} -column_spec {numeric(12,2)}
+    content::type::attribute::new -content_type {iv_invoice} -attribute_name {status} -datatype {string} -pretty_name {[_ invoices.Status]} -column_spec {varchar(10)}
     content::type::attribute::new -content_type {iv_invoice} -attribute_name {cancelled_p} -datatype {boolean} -pretty_name {[_ invoices.Cancelled]} -column_spec {char(1)}
 
     # Invoice Item
@@ -217,6 +221,12 @@ ad_proc -public iv::install::after_upgrade {
 	    }
 	    0.01d8 0.01d9 {
 		apm_parameter_register "MailSendBoxFileP" "Location of the file for prefilling the mail send box." "invoices" "" "string"
+	    }
+	    0.01d10 0.01d11 {
+		content::type::attribute::new -content_type {iv_price_list} -attribute_name {credit_percent} -datatype {number} -pretty_name {[_ invoices.Credit]} -column_spec {numeric(12,5)}
+		content::type::attribute::new -content_type {iv_offer} -attribute_name {credit_percent} -datatype {number} -pretty_name {[_ invoices.Credit]} -column_spec {numeric(12,5)}
+		content::type::attribute::new -content_type {iv_offer} -attribute_name {status} -datatype {string} -pretty_name {[_ invoices.Status]} -column_spec {varchar(10)}
+		content::type::attribute::new -content_type {iv_invoice} -attribute_name {status} -datatype {string} -pretty_name {[_ invoices.Status]} -column_spec {varchar(10)}
 	    }
 	}
 }

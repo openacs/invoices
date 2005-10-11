@@ -7,7 +7,7 @@
     <initial-install-p>f</initial-install-p>
     <singleton-p>t</singleton-p>
     
-    <version name="0.01d10" url="http://openacs.org/repository/download/apm/invoices-0.01d10.apm">
+    <version name="0.01d13" url="http://openacs.org/repository/download/apm/invoices-0.01d13.apm">
         <owner url="mailto:timo@timohentschel.de">Timo Hentschel</owner>
         <summary>Invoices package that will collect costs to invoice items in invoices and store data about received payment.</summary>
         <release-date>2005-06-06</release-date>
@@ -15,7 +15,7 @@
         <description format="text/plain">Collect costs to invoice items and invoices, store payment information.</description>
         <maturity>0</maturity>
 
-        <provides url="invoices" version="0.01d10"/>
+        <provides url="invoices" version="0.01d13"/>
         <requires url="acs-content-repository" version="5.1.4d3"/>
         <requires url="acs-kernel" version="5.0d13"/>
         <requires url="acs-templating" version="5.1.5d1"/>
@@ -31,8 +31,12 @@
             <callback type="after-upgrade"  proc="iv::install::after_upgrade"/>
         </callbacks>
         <parameters>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="CancelTemplate"  default="/templates/pdf/cancel" description="Location of the template which is parsed to generate the invoice cancellation."/>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="CreditTemplate"  default="/templates/pdf/credit" description="Location of the template which is parsed to generate the credit document."/>
             <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="DefaultCurrency"  default="EUR" description="Default currency code"/>
-            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="InvoiceTemplate"  default="/packages/invoices/templates/invoice-template.adp" description="Location of the invoice template which is parsed to generate the invoice."/>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="InvoiceTemplate"  default="/templates/pdf/invoice" description="Location of the invoice template which is parsed to generate the invoice."/>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="OfferAcceptedTemplate"  default="/templates/pdf/accepted" description="Location of the template which is parsed to generate the acceptance."/>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="OfferTemplate"  default="/templates/pdf/offer" description="Location of the offer template which is parsed to generate the offer."/>
         </parameters>
 
     </version>

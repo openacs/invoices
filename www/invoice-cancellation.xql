@@ -27,7 +27,8 @@
       <querytext>
 
 	    update iv_invoices
-	    set cancelled_p = 't'
+	    set cancelled_p = 't',
+                status = 'cancelled'
 	    where invoice_id in (:parent_id, :new_invoice_rev_id)
 
       </querytext>

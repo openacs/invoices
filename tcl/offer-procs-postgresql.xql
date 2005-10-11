@@ -7,7 +7,8 @@
       <querytext>
       
 	update iv_offers
-	set accepted_date = now()
+	set accepted_date = now(),
+            status = 'accepted'
 	where offer_id = (select latest_revision
 			  from cr_items
 			  where item_id = :offer_id)

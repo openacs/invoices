@@ -12,6 +12,7 @@ ad_proc -public iv::price_list::new {
     {-title ""}
     {-description ""}
     {-currency ""}
+    {-credit_percent "0"}
 } {
     @author Timo Hentschel (timo@timohentschel.de)
     @creation-date 2005-06-06
@@ -36,7 +37,8 @@ ad_proc -public iv::price_list::new {
 			-title $title \
 			-description $description \
 			-attributes [list \
-					 [list currency $currency] ] ]
+					 [list currency $currency] \
+					 [list credit_percent $credit_percent] ] ]
     }
 
     return $new_id
@@ -47,6 +49,7 @@ ad_proc -public iv::price_list::edit {
     {-title ""}
     {-description ""}
     {-currency ""}
+    {-credit_percent "0"}
 } {
     @author Timo Hentschel (timo@timohentschel.de)
     @creation-date 2005-06-06
@@ -60,7 +63,8 @@ ad_proc -public iv::price_list::edit {
 			    -title $title \
 			    -description $description \
 			    -attributes [list \
-					     [list currency $currency] ] ]
+					     [list currency $currency] \
+					     [list credit_percent $credit_percent] ] ]
     }
 
     return $new_rev_id

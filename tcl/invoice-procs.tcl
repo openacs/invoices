@@ -116,6 +116,18 @@ ad_proc -public iv::invoice::edit {
     return $new_rev_id
 }
 
+ad_proc -public iv::invoice::set_status {
+    -invoice_id:required
+    {-status "new"}
+} {
+    @author Timo Hentschel (timo@timohentschel.de)
+    @creation-date 2005-10-04
+
+    Edit Invoice status
+} {
+    db_dml update_status {}
+}
+
 ad_proc -public iv::invoice::data {
     -invoice_id:required
     -invoice_array:required
@@ -142,7 +154,7 @@ ad_proc -public iv::invoice::data {
     set invoice(amount_sum) [format "%.2f" $invoice(amount_sum)]
     set invoice(amount_diff) [format "%.2f" [expr $invoice(total_amount) - $invoice(amount_sum)]]
     set invoice(total_amount) [format "%.2f" $invoice(total_amount)]
-    set invoice(recipient_name) "$invoice(rep_first_names) $invoice(rep_last_name)"
+    set invoice(final_amount) [format "%.2f" [expr $invoice(total_amount)+$invoice(vat)]]
 
     # Get recipient information
     set recipient(recipient_name) "$invoice(rep_first_names) $invoice(rep_last_name)"
@@ -159,6 +171,8 @@ ad_proc -public iv::invoice::data {
 ad_proc -public iv::invoice::parse_data {
     -invoice_id:required
     -recipient_id:required
+    -template:required
+    -locale:required
 } {
     @author Timo Hentschel (timo@timohentschel.de)
     @creation-date 2005-06-21
@@ -166,48 +180,86 @@ ad_proc -public iv::invoice::parse_data {
     Create array and multirow in callers context with invoice data, invoice items
 } {
     set package_id [ad_conn package_id]
-    set date_format [lc_get formbuilder_date_format]
-    set timestamp_format "$date_format [lc_get formbuilder_time_format]"
 
     # Get the invoice data
     db_1row get_data {} -column_array invoice
     set invoice(creator_name) "$invoice(first_names) $invoice(last_name)"
-    set invoice(vat_percent) [format "%.1f" $invoice(vat_percent)]
-    set invoice(vat) [format "%.2f" $invoice(vat)]
-    set invoice(amount_sum) [format "%.2f" $invoice(amount_sum)]
-    set invoice(amount_diff) [format "%.2f" [expr $invoice(total_amount) - $invoice(amount_sum)]]
-    set invoice(total_amount) [format "%.2f" $invoice(total_amount)]
+    set invoice(amount_diff) [lc_numeric [format "%.2f" [expr $invoice(total_amount) - $invoice(amount_sum)]] "" $locale]
+    set invoice(final_amount) [lc_numeric [format "%.2f" [expr $invoice(total_amount)+$invoice(vat)]] "" $locale]
+    set invoice(vat_percent) [lc_numeric [format "%.1f" $invoice(vat_percent)] "" $locale]
+    set invoice(vat) [lc_numeric [format "%.2f" $invoice(vat)] "" $locale]
+    set invoice(amount_sum) [lc_numeric [format "%.2f" $invoice(amount_sum)] "" $locale]
+    set invoice(total_amount) [lc_numeric [format "%.2f" $invoice(total_amount)] "" $locale]
+
+    set time_format [lc_get -locale $locale d_fmt]
+    set invoice(creation_date) [lc_time_fmt $invoice(creation_date) $time_format]
+    set invoice(due_date) [lc_time_fmt $invoice(due_date) $time_format]
+
     set name [contact::name -party_id $recipient_id]
-    set first_names [lindex $name 0]
-    set last_name [lindex $name 1]
+    set invoice(rep_first_names) [lindex $name 0]
+    set invoice(rep_last_name) [lindex $name 1]
+    set invoice(recipient_name) "$invoice(rep_first_names) $invoice(rep_last_name)"
     set rec_organization_id [contact::util::get_employee_organization -employee_id $invoice(recipient_id)]
-    set mailing_address [contact::message::mailing_address -party_id $rec_organization_id -format "text/html"]
-    set organization_name [contact::name -party_id $rec_organization_id]
+    set invoice(mailing_address) [contact::message::mailing_address -party_id $invoice(organization_id) -format "text/html"]
+    set invoice(organization_name) [contact::name -party_id $invoice(organization_id)]
+    # set locale [lang::user::site_wide_locale -user_id $invoice(recipient_id)]
+    # set locale de_DE
 
     db_multirow -local -extend {amount_sum amount_total category} invoice_items invoice_items {} {
-	set price_per_unit [format "%.2f" $price_per_unit]
 	set amount_sum [format "%.2f" [expr $item_units * $price_per_unit]]
-	set amount_total [format "%.2f" [expr (1. - ($rebate / 100.)) * $amount_sum]]
-	set rebate [format "%.1f" $rebate]
+	set amount_total [lc_numeric [format "%.2f" [expr (1. - ($rebate / 100.)) * $amount_sum]] "" $locale]
+	set amount_sum [lc_numeric $amount_sum "" $locale]
+	set price_per_unit [lc_numeric [format "%.2f" $price_per_unit] "" $locale]
+	set item_units [lc_numeric [format "%.2f" $item_units] "" $locale]
+	set rebate [lc_numeric [format "%.1f" $rebate] "" $locale]
 	set category [lang::util::localize [category::get_name $category_id]]
     }
 
-    set file_url [parameter::get -parameter InvoiceTemplate]
+    set file_url [parameter::get -parameter $template]
     
-    # We need to add the locale to the InvoiceTemplate name, but for the time being we don't care.
     if {![empty_string_p $file_url]} {
-        set file [open "[acs_root_dir]/$file_url"]
-        fconfigure $file -translation binary
-        set content [read $file]
+	set content [iv::invoice::template_file -template $file_url -locale $locale]
 
-        # parse template and replace placeholders
-        eval [template::adp_compile -string $content]
+	# parse template and replace placeholders
+	eval [template::adp_compile -string $content]
         set final_content $__adp_output
     } else {
         set final_content ""
     }
 
     return $final_content
+}
+
+ad_proc -public iv::invoice::template_file {
+    -template:required
+    -locale:required
+} {
+    @author Timo Hentschel (timo@timohentschel.de)
+    @creation-date 2005-10-07
+
+    Get template file matching locale
+} {
+    set filename "[acs_root_dir]/$template"
+    set system_locale [lang::system::site_wide_locale]
+    set language_locale [lang::util::default_locale_from_lang [lindex [split $locale "_"] 0]]
+
+    if {[file exists "${filename}_${locale}.html"]} {
+	# file found directly
+	set filename "${filename}_${locale}.html"
+    } elseif {[file exists "${filename}_${language_locale}.html"]} {
+	# file found for language locale
+	set filename "${filename}_${language_locale}.html"
+    } else {
+	# take default file
+	set filename "${filename}_${system_locale}.html"
+    }
+
+    set file [open $filename]
+    fconfigure $file -translation binary
+    set content [read $file]
+    close $file
+
+    return $content
 }
 
 ad_proc -public iv::invoice::text {

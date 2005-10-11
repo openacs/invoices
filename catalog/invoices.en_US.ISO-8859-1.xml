@@ -75,6 +75,7 @@
   <msg key="iv_invoice_cancel_1">Cancellation</msg>
   <msg key="iv_invoice_cancel_Add">Add invoice cancellation</msg>
   <msg key="iv_invoice_cancel_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Cancellation&lt;/h3&gt;%invoice_text%&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_invoice_credit_email_subject">Cancellation # %invoice_nr%</msg>
   <msg key="iv_invoice_closed_date">Finished on</msg>
   <msg key="iv_invoice_count_billed">Billed items</msg>
   <msg key="iv_invoice_count_total">Total items</msg>
@@ -83,6 +84,7 @@
   <msg key="iv_invoice_credit_1">Credit</msg>
   <msg key="iv_invoice_credit_Add">Add invoice credit</msg>
   <msg key="iv_invoice_credit_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Credit&lt;/h3&gt;%invoice_text%&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_invoice_credit_email_subject">Credit # %invoice_nr%</msg>
   <msg key="iv_invoice_credit_New">New Credit</msg>
   <msg key="iv_invoice_credit_New2">Create New Credit</msg>
   <msg key="iv_invoice_currency">Currency</msg>
@@ -92,6 +94,7 @@
   <msg key="iv_invoice_Edit">Edit Invoice</msg>
   <msg key="iv_invoice_edit_error">You are not allowed to edit a paid or cancelled invoice</msg>
   <msg key="iv_invoice_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Invoice&lt;/h3&gt;%invoice_text%&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_invoice_email_subject">Invoice # %invoice_nr%</msg>
   <msg key="iv_invoice_invoice_nr">Invoice number</msg>
   <msg key="iv_invoice_item_1">Invoice Item</msg>
   <msg key="iv_invoice_item_2">Invoice Items</msg>
@@ -117,6 +120,7 @@
   <msg key="iv_invoice_paid_amount">Amount paid</msg>
   <msg key="iv_invoice_paid_currency">Currency paid</msg>
   <msg key="iv_invoice_parent_id">Invoice reference</msg>
+  <msg key="iv_invoice_pay">Pay invoices</msg>
   <msg key="iv_invoice_payment_days">Payment after .. days</msg>
   <msg key="iv_invoice_project_descr">Description</msg>
   <msg key="iv_invoice_project_id">Project ID</msg>
@@ -126,6 +130,11 @@
   <msg key="iv_invoice_rebate_help">Maximum rebate %open_rebate% %currency%</msg>
   <msg key="iv_invoice_recipient">Invoice Recipient</msg>
   <msg key="iv_invoice_send">Send</msg>
+  <msg key="iv_invoice_status">Status</msg>
+  <msg key="iv_invoice_status_billed">Billed</msg>
+  <msg key="iv_invoice_status_cancelled">Cancelled</msg>
+  <msg key="iv_invoice_status_new">Unbilled</msg>
+  <msg key="iv_invoice_status_paid">Paid</msg>
   <msg key="iv_invoice_Title">Title</msg>
   <msg key="iv_invoice_total_amount">Total amount</msg>
   <msg key="iv_invoice_vat">VAT</msg>
@@ -138,6 +147,7 @@
   <msg key="iv_offer_accept">Accept Offer</msg>
   <msg key="iv_offer_accepted_date">Accepted on</msg>
   <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Accepted Offer&lt;/h3&gt;%offer_text%&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_accepted_email_subject">Offer acceptance # %offer_nr%</msg>
   <msg key="iv_offer_accepted_thanks">Thank you for accepted our offer. We will contact you as soon as possible.</msg>
   <msg key="iv_offer_Add">Cost Sheet for &quot;%organization_name%&quot;</msg>
   <msg key="iv_offer_Add2">Add Cost Sheet</msg>
@@ -159,6 +169,7 @@
   <msg key="iv_offer_Edit">Edit Cost Sheet</msg>
   <msg key="iv_offer_edit_error">You are not allowed to edit an accepted or invoiced cost sheet</msg>
   <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Offer&lt;/h3&gt;%offer_text%&lt;p&gt;To accept this offer, click &lt;a href="%accept_link%"&gt;here&lt;/a&gt;.&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_email_subject">Offer # %offer_nr%</msg>
   <msg key="iv_offer_finish_date">Finish on</msg>
   <msg key="iv_offer_finish_date_help">Deadline until which the project has to be delivered to the client</msg>
   <msg key="iv_offer_finish_time">Finish time</msg>
@@ -290,6 +301,7 @@
   <msg key="Received_on">Received on</msg>
   <msg key="Recipient">Recipient</msg>
   <msg key="Sort_order">Sort order</msg>
+  <msg key="Status">Status</msg>
   <msg key="Table">Table</msg>
   <msg key="Total_amount">Total amount</msg>
   <msg key="units">h</msg>

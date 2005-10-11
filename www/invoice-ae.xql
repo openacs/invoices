@@ -7,7 +7,7 @@
 	select t.organization_id, t.currency, t.paid_currency,
 	       t.vat_percent as cur_vat_percent, t.cancelled_p,
                t.invoice_id as invoice_rev_id, t.parent_invoice_id,
-               t.total_amount as cur_total_amount,
+               t.total_amount as cur_total_amount, t.status,
                t.amount_sum as cur_amount_sum
 	from iv_invoices t, cr_items i
 	where i.latest_revision = t.invoice_id
@@ -75,7 +75,7 @@
 <fullquery name="offer_items">
       <querytext>
 
-    select cr.title, cr.description, ofi.offer_item_id, ofi.item_units,
+    select cr.title, cr.description, ofi.offer_item_id, ofi.item_units, ofi.offer_id,
            ofi.price_per_unit, ofi.item_nr, pi.item_id as project_id,
            pr.title as project_title, ofi.vat, ofi.rebate, m.category_id
     from iv_offer_items ofi, cr_items oi, cr_revisions cr,
@@ -105,7 +105,7 @@
       <querytext>
 
 	select ir.title, ir.description, ir.item_id as iv_item_id,
-               i.item_units, i.price_per_unit, i.item_nr,
+               i.item_units, i.price_per_unit, i.item_nr, ofi.offer_id,
                pi.item_id as project_id, pr.title as project_title,
                i.vat as old_vat, i.rebate, m.category_id, i.offer_item_id
 	from cr_items oi, iv_offer_items ofi, iv_invoice_items i,
@@ -171,6 +171,31 @@
 	and i.item_id = :invoice_id
 	and o.object_id = t.invoice_id
 	and p.person_id = o.creation_user
+
+      </querytext>
+</fullquery>
+
+<fullquery name="check_offer_status">
+      <querytext>
+
+		select count(*) as unbilled_items
+		from iv_offers o, iv_offer_items ofi
+		where o.offer_id = :offer_id
+		and ofi.offer_id = o.offer_id
+		and not exists (select 1
+				from iv_invoice_items ii
+				where ii.offer_item_id = ofi.offer_item_id)
+		group by o.offer_id
+
+      </querytext>
+</fullquery>
+
+<fullquery name="set_status">
+      <querytext>
+
+		update iv_offers
+		set status = :status
+		where offer_id = :offer_id
 
       </querytext>
 </fullquery>

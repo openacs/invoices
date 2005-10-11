@@ -53,13 +53,16 @@ if {![empty_string_p [category_tree::get_mapped_trees $container_objects(list_id
 ad_form -extend -name iv_price_list_form -form {
     {organization_id:text(multiselect),optional,multiple {label "[_ invoices.iv_price_list_organization]"} {options $organization_options} {help_text "[_ invoices.iv_price_list_organization_help]"} {values {$organization_values}}}
     {currency:text(select) {label "[_ invoices.iv_price_list_currency]"} {options $currency_options} {help_text "[_ invoices.iv_price_list_currency_help]"}}
+    {credit_percent:float {label "[_ invoices.iv_price_list_credit_percent]"} {html {size 5 maxlength 10}} {help_text "[_ invoices.iv_price_list_credit_percent_help]"} {after_html {%}}}
 } -new_request {
     set title ""
     set description ""
     set organization_id ""
     set currency [parameter::get -parameter "DefaultCurrency" -default "EUR"]
+    set credit_percent 0
 } -edit_request {
     db_1row get_data {}
+    set credit_percent [format "%.1f" $credit_percent]
 } -on_submit {
     set category_ids [category::ad_form::get_categories -container_object_id $container_objects(list_id)]
 } -new_data {
@@ -67,7 +70,8 @@ ad_form -extend -name iv_price_list_form -form {
 	set new_list_rev_id [iv::price_list::new  \
 				 -title $title \
 				 -description $description \
-				 -currency $currency ]
+				 -currency $currency \
+				 -credit_percent $credit_percent]
 
 	if {[exists_and_not_null category_ids]} {
 	    category::map_object -object_id $new_list_rev_id $category_ids
@@ -79,7 +83,8 @@ ad_form -extend -name iv_price_list_form -form {
 				 -list_item_id $list_id \
 				 -title $title \
 				 -description $description \
-				 -currency $currency ]
+				 -currency $currency \
+				 -credit_percent $credit_percent]
 
 	if {[exists_and_not_null category_ids]} {
 	    category::map_object -object_id $new_list_rev_id $category_ids

@@ -1,6 +1,29 @@
 <?xml version="1.0"?>
 <queryset>
 
+<fullquery name="iv::offer::set_status.set_status">
+      <querytext>
+
+	update iv_offers
+	set status = :status
+	where offer_id = (select latest_revision
+                          from cr_items
+                          where item_id = :offer_id)
+
+      </querytext>
+</fullquery>
+
+<fullquery name="iv::offer::get_status.offer_status">
+      <querytext>
+
+	select o.status
+        from iv_offers o, cr_items i
+        where i.item_id = :offer_id
+        and i.latest_revision = o.offer_id
+
+      </querytext>
+</fullquery>
+
 <fullquery name="iv::offer::edit.set_accepted_date">
       <querytext>
 
@@ -39,22 +62,28 @@
 <fullquery name="iv::offer::parse_data.get_data">
       <querytext>
 
-	select t.offer_id as offer_rev_id, r.title, r.description,
+	select t.offer_id as offer_rev_id, cr.title, cr.description,
 	       t.offer_nr, t.amount_total, t.vat, t.vat_percent, t.comment,
 	       to_char(t.finish_date, 'YYYY-MM-DD HH24:MI:SS') as finish_ansi,
-	       to_char(t.finish_date, :timestamp_format) as finish_date,
+	       to_char(t.finish_date, 'YYYY-MM-DD HH24:MI:SS') as finish_date,
 	       o.creation_user, p.first_names, p.last_name,
-	       to_char(o.creation_date, :timestamp_format) as creation_date,
-	       to_char(t.accepted_date, :timestamp_format) as accepted_date,
-	       t.amount_sum as amount_sum_, t.payment_days, t.date_comment,
-	       t.currency, t.organization_id, t.amount_sum
-	from iv_offers t, cr_revisions r, cr_items i, acs_objects o,
-	     persons p
-	where r.revision_id = t.offer_id
-	and i.latest_revision = r.revision_id
-	and i.item_id = :offer_id
+	       to_char(o.creation_date, 'YYYY-MM-DD HH24:MI:SS') as creation_date,
+	       to_char(t.accepted_date, 'YYYY-MM-DD HH24:MI:SS') as accepted_date,
+	       t.amount_sum, t.payment_days, t.date_comment, t.currency,
+               t.organization_id, pr.title as project_title, ci.item_id as offer_id,
+               pp.project_code, pi.item_id as project_id
+	from iv_offers t, cr_revisions cr, cr_items ci, acs_objects o,
+	     persons p, acs_rels r, cr_items pi, cr_revisions pr, pm_projects pp
+	where cr.revision_id = t.offer_id
+	and ci.latest_revision = cr.revision_id
+	and ci.item_id = :offer_id
 	and o.object_id = t.offer_id
 	and p.person_id = o.creation_user
+        and r.object_id_two = ci.item_id
+        and r.object_id_one = pi.item_id
+        and r.rel_type = 'application_data_link'
+        and pi.latest_revision = pr.revision_id
+        and pr.revision_id = pp.project_id
 
       </querytext>
 </fullquery>

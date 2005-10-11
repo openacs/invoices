@@ -38,7 +38,8 @@
       <querytext>
       
 	    update iv_offers
-	    set accepted_date = now()
+	    set accepted_date = now(),
+                status = 'accepted'
 	    where offer_id = :new_offer_rev_id
 	    and accepted_date is null
     

@@ -12,7 +12,9 @@ ad_page_contract {
     page_title:onevalue
 }
 
+set package_id [ad_conn package_id]
 set user_id [auth::require_login]
+permission::require_permission -party_id $user_id -object_id $package_id -privilege invoice_cancel
 set date_format "YYYY-MM-DD"
 
 set page_title "[_ invoices.iv_invoice_credit_Add]"
@@ -21,7 +23,6 @@ set currency [iv::price_list::get_currency -organization_id $organization_id]
 set organization_name [organizations::name -organization_id $organization_id]
 
 set context [list [list "invoice-list" "[_ invoices.iv_invoice_2]"] [list [export_vars -base invoice-add {organization_id}] "[_ invoices.iv_invoice_Add]"] $page_title]
-set package_id [ad_conn package_id]
 array set container_objects [iv::util::get_default_objects -package_id $package_id]
 set timestamp_format "$date_format [lc_get formbuilder_time_format]"
 

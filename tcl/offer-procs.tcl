@@ -22,6 +22,7 @@ ad_proc -public iv::offer::new {
     {-payment_days ""}
     {-vat_percent ""}
     {-vat ""}
+    {-credit_percent 0}
 } {
     @author Timo Hentschel (timo@timohentschel.de)
     @creation-date 2005-06-18
@@ -56,7 +57,8 @@ ad_proc -public iv::offer::new {
 					 [list date_comment $date_comment] \
 					 [list payment_days $payment_days] \
 					 [list vat_percent $vat_percent] \
-					 [list vat $vat] ] ]
+					 [list vat $vat] \
+					 [list credit_percent $credit_percent] ] ]
     }
 
     return $new_id
@@ -77,6 +79,7 @@ ad_proc -public iv::offer::edit {
     {-payment_days ""}
     {-vat_percent ""}
     {-vat ""}
+    {-credit_percent 0}
 } {
     @author Timo Hentschel (timo@timohentschel.de)
     @creation-date 2005-06-18
@@ -84,6 +87,7 @@ ad_proc -public iv::offer::edit {
     Edit Offer
 } {
     db_transaction {
+	set status [iv::offer::get_status -offer_id $offer_id]
 	set old_rev_id [content::item::get_best_revision -item_id $offer_id]
 	set new_rev_id [content::revision::new \
 			    -item_id $offer_id \
@@ -100,14 +104,39 @@ ad_proc -public iv::offer::edit {
 					     [list finish_date $finish_date] \
 					     [list date_comment $date_comment] \
 					     [list payment_days $payment_days] \
+					     [list status $status] \
 					     [list vat_percent $vat_percent] \
-					     [list vat $vat] ] ]
+					     [list vat $vat] \
+					     [list credit_percent $credit_percent] ] ]
 	db_dml set_accepted_date {}
     }
 
     return $new_rev_id
 }
     
+ad_proc -public iv::offer::set_status {
+    -offer_id:required
+    {-status "new"}
+} {
+    @author Timo Hentschel (timo@timohentschel.de)
+    @creation-date 2005-10-04
+
+    Edit Offer status
+} {
+    db_dml update_status {}
+}
+
+ad_proc -public iv::offer::get_status {
+    -offer_id:required
+} {
+    @author Timo Hentschel (timo@timohentschel.de)
+    @creation-date 2005-10-04
+
+    Get Offer status
+} {
+    db_1row offer_status {}
+}
+
 ad_proc -public iv::offer::accept {
     -offer_id:required
 } {
@@ -156,6 +185,9 @@ ad_proc -public iv::offer::data {
 ad_proc -public iv::offer::parse_data {
     -offer_id:required
     -recipient_id:required
+    -template:required
+    -locale:required
+    {-accept_link ""}
 } {
     @author Timo Hentschel (timo@timohentschel.de)
     @creation-date 2005-06-21
@@ -163,41 +195,51 @@ ad_proc -public iv::offer::parse_data {
     Create array and multirow in callers context with offer data, offer items
 } {
     set package_id [ad_conn package_id]
-    set date_format [lc_get formbuilder_date_format]
-    set timestamp_format "$date_format [lc_get formbuilder_time_format]"
 
+    # Get the offer data
     db_1row get_data {} -column_array offer
-
-    set name [contact::name -party_id $recipient_id]
-    set first_names [lindex $name 0]
-    set last_name [lindex $name 1]
-    set mailing_address [contact::message::mailing_address -party_id $offer(organization_id) -format "text/html"]
-    set organization_name [contact::name -party_id $offer(organization_id)]
     set offer(creator_name) "$offer(first_names) $offer(last_name)"
-    set offer(vat_percent) [format "%.1f" $offer(vat_percent)]
-    set offer(vat) [format "%.2f" $offer(vat)]
-    set offer(amount_sum) [format "%.2f" $offer(amount_sum)]
-    set offer(amount_diff) [format "%.2f" [expr $offer(amount_total) - $offer(amount_sum)]]
-    set offer(amount_total) [format "%.2f" $offer(amount_total)]
-    set offer(offer_id) $offer_id
+    set offer(amount_diff) [lc_numeric [format "%.2f" [expr $offer(amount_total) - $offer(amount_sum)]] "" $locale]
+    set offer(final_amount) [lc_numeric [format "%.2f" [expr $offer(amount_total)+$offer(vat)]] "" $locale]
+    set offer(vat_percent) [lc_numeric [format "%.1f" $offer(vat_percent)] "" $locale]
+    set offer(vat) [lc_numeric [format "%.2f" $offer(vat)] "" $locale]
+    set offer(amount_sum) [lc_numeric [format "%.2f" $offer(amount_sum)] "" $locale]
+    set offer(amount_total) [lc_numeric [format "%.2f" $offer(amount_total)] "" $locale]
+    set revision_id [contact::live_revision -party_id $recipient_id]
+    # set offer(salutation) [ams::value -attribute_name "salutation" -object_id $revision_id -locale $locale]
+    set offer(salutation) "Sehr geehrter"
+
+    set time_format "[lc_get -locale $locale d_fmt] [lc_get -locale $locale t_fmt]"
+    set offer(finish_date) [lc_time_fmt $offer(finish_date) $time_format]
+    set offer(creation_date) [lc_time_fmt $offer(creation_date) $time_format]
+    set offer(accepted_date) [lc_time_fmt $offer(accepted_date) $time_format]
+
+    set offer(recipient_id) $recipient_id
+    set offer(name) [contact::name -party_id $recipient_id]
+    set offer(rep_first_names) [lindex $offer(name) 0]
+    set offer(rep_last_name) [lindex $offer(name) 1]
+    set offer(recipient_name) "$offer(rep_first_names) $offer(rep_last_name)"
+    set rec_organization_id [contact::util::get_employee_organization -employee_id $offer(recipient_id)]
+    set offer(mailing_address) [contact::message::mailing_address -party_id $offer(organization_id) -format "text/html"]
+    set offer(organization_name) [contact::name -party_id $offer(organization_id)]
 
     db_multirow -local -extend {amount_sum amount_total category} offer_items offer_items {} {
-	set price_per_unit [format "%.2f" $price_per_unit]
 	set amount_sum [format "%.2f" [expr $item_units * $price_per_unit]]
-	set amount_total [format "%.2f" [expr (1. - ($rebate / 100.)) * $amount_sum]]
-	set rebate [format "%.1f" $rebate]
+	set amount_total [lc_numeric [format "%.2f" [expr (1. - ($rebate / 100.)) * $amount_sum]] "" $locale]
+	set amount_sum [lc_numeric $amount_sum "" $locale]
+	set price_per_unit [lc_numeric [format "%.2f" $price_per_unit] "" $locale]
+	set item_units [lc_numeric [format "%.2f" $item_units] "" $locale]
+	set rebate [lc_numeric [format "%.1f" $rebate] "" $locale]
 	set category [lang::util::localize [category::get_name $category_id]]
     }
 
-    set file_url [parameter::get -parameter MailSendBoxFileP]
-    if { ![empty_string_p $file_url] } {
-        set file [open "$file_url"]
-        fconfigure $file -translation binary
-        set content [read $file]
+    set file_url [parameter::get -parameter $template]
+    
+    if {![empty_string_p $file_url]} {
+	set content [iv::invoice::template_file -template $file_url -locale $locale]
 
-
-        # parse template and replace placeholders
-        eval [template::adp_compile -string $content]
+	# parse template and replace placeholders
+	eval [template::adp_compile -string $content]
         set final_content $__adp_output
     } else {
         set final_content ""

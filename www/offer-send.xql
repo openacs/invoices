@@ -12,13 +12,14 @@
       </querytext>
 </fullquery>
 
-<fullquery name="get_files">
+<fullquery name="project_data">
       <querytext>
 
-      select max(item_id) as file_ids
-      from cr_items ci
-      where parent_id = :offer_id
-      and ci.storage_type = 'file'
+    select p.title as project_title, p.project_code, contact_id
+    from pm_projectsx p, cr_items oi
+    where oi.latest_revision = p.project_id
+    and oi.item_id = :project_id
+
       </querytext>
 </fullquery>
 

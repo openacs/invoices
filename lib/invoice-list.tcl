@@ -26,12 +26,19 @@ foreach optional_param {organization_id row_list} {
 set dotlrn_club_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type "dotlrn_club"] 0]
 set pm_base_url [apm_package_url_from_id [dotlrn_community::get_package_id_from_package_key -package_key "project-manager" -community_id $dotlrn_club_id]]
 
-#set package_id [ad_conn package_id]
+set user_id [ad_conn user_id]
 set date_format [lc_get formbuilder_date_format]
 set timestamp_format "$date_format [lc_get formbuilder_time_format]"
+set bulk_actions [list "[_ invoices.iv_invoice_pay]" "${base_url}invoice-pay" "[_ invoices.iv_invoice_pay]"]
+set invoice_cancel_p [permission::permission_p -party_id $user_id -object_id $package_id -privilege invoice_cancel]
+
 set actions [list]
 if { ![empty_string_p $organization_id] } {
-    set actions [list "[_ invoices.iv_invoice_New]" [export_vars -base invoice-add {organization_id}] "[_ invoices.iv_invoice_New2]" "[_ invoices.iv_invoice_credit_New]" [export_vars -base invoice-credit {organization_id}] "[_ invoices.iv_invoice_credit_New2]" "[_ invoices.iv_offer_2]" [export_vars -base offer-list {organization_id}] "[_ invoices.iv_offer_2]" "[_ invoices.projects]" $pm_base_url "[_ invoices.projects]" "[_ invoices.iv_reports]" [export_vars -base invoice-reports {organization_id}]]
+    if {$invoice_cancel_p} {
+	set actions [list "[_ invoices.iv_invoice_New]" [export_vars -base invoice-add {organization_id}] "[_ invoices.iv_invoice_New2]" "[_ invoices.iv_invoice_credit_New]" [export_vars -base invoice-credit {organization_id}] "[_ invoices.iv_invoice_credit_New2]" "[_ invoices.iv_offer_2]" [export_vars -base offer-list {organization_id}] "[_ invoices.iv_offer_2]" "[_ invoices.projects]" $pm_base_url "[_ invoices.projects]" "[_ invoices.iv_reports]" [export_vars -base invoice-reports {organization_id}]]
+    } else {
+	set actions [list "[_ invoices.iv_invoice_New]" [export_vars -base invoice-add {organization_id}] "[_ invoices.iv_invoice_New2]" "[_ invoices.iv_offer_2]" [export_vars -base offer-list {organization_id}] "[_ invoices.iv_offer_2]" "[_ invoices.projects]" $pm_base_url "[_ invoices.projects]" "[_ invoices.iv_reports]" [export_vars -base invoice-reports {organization_id}]]
+    }
 }
 
 template::list::create \
@@ -68,10 +75,15 @@ template::list::create \
 	due_date {
 	    label {[_ invoices.iv_invoice_due_date]}
 	}
+	status {
+	    label {[_ invoices.iv_invoice_status]}
+	    display_template {[_ invoices.iv_invoice_status_@iv_invoice.status@]}
+	}
         action {
-	    display_template {<if @iv_invoice.cancelled_p@ eq f><a href="@iv_invoice.edit_link@">#invoices.Edit#</a>&nbsp;<if @organization_id@ not nil><a href="@iv_invoice.cancel_link@">#invoices.Cancel#</a></if></if><if @paid_currency@ nil>&nbsp;<a href="@iv_invoice.delete_link@">#invoices.Delete#</a></if>}
+	    display_template {<if @iv_invoice.status@ eq new><a href="@iv_invoice.edit_link@">#invoices.Edit#</a>&nbsp;<if @organization_id@ not nil and @invoice_cancel_p@ true><a href="@iv_invoice.cancel_link@">#invoices.Cancel#</a></if></if><if @iv_invoice.status@ ne billed>&nbsp;<a href="@iv_invoice.delete_link@">#invoices.Delete#</a></if>}
 	}
     } -actions $actions -sub_class narrow \
+    -bulk_actions $bulk_actions \
     -orderby {
 	default_value invoice_nr
 	invoice_nr {
@@ -124,6 +136,7 @@ template::list::create \
     -page_size $page_size \
     -page_flush_p 0 \
     -page_query_name iv_invoice_paginated \
+    -pass_properties {invoice_cancel_p} \
     -filters {organization_id {}} \
     -formats {
 	normal {

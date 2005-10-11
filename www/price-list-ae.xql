@@ -15,7 +15,7 @@
       <querytext>
 
 	select r.title, r.description, t.list_id as list_rev_id,
-	       t.currency
+	       t.currency, t.credit_percent
 	from iv_price_lists t, cr_revisions r, cr_items i
 	where r.revision_id = t.list_id
 	and i.latest_revision = r.revision_id

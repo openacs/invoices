@@ -16,7 +16,9 @@ create table iv_price_lists (
                                 references cr_revisions,
         currency                char(3)
                                 constraint iv_prices_currency_fk
-                                references currencies(codeA)
+                                references currencies(codeA),
+        credit_percent          numeric(12,5) default 0
+                                -- %credit
 );
 
 create index iv_price_lists_currency_idx on iv_price_lists(currency);
@@ -108,6 +110,10 @@ create table iv_offers (
                                 -- %VAT
         vat                     numeric(12,2) default 0,
                                 -- VAT amount
+        credit_percent          numeric(12,5) default 0
+                                -- %credit
+        status                  varchar(10) default 'new',
+                                -- new, accepted, billed, credit
         accepted_date           timestamptz
                                 -- offer accepted by customer?
 );
@@ -192,6 +198,8 @@ create table iv_invoices (
                                 -- %VAT
         vat                     numeric(12,2) default 0,
                                 -- VAT amount
+        status                  varchar(10) default 'new',
+                                -- new, cancelled, billed, paid
         cancelled_p             char(1) default 'f'
                                 constraint iv_invoices_cancelled_p
                                 check (cancelled_p in ('t','f'))

@@ -20,23 +20,21 @@ set party_ids [contact::util::get_employees -organization_id $organization_id]
 set project_id [lindex [application_data_link::get_linked -from_object_id $offer_id -to_object_type content_item] 0]
 
 db_1row project_data {}
+set locale [lang::user::site_wide_locale -user_id $contact_id]
 
 set context [list [list [export_vars -base offer-list {organization_id}] "[_ invoices.iv_offer_2]"] [list [export_vars -base offer-ae {offer_id}] "[_ invoices.iv_offer_View]"] $page_title]
 
-# set offer_text [iv::offer::text -offer_id $offer_id]
-
-set offer_text [iv::offer::parse_data -offer_id $offer_id -recipient_id [lindex $party_ids 0]]
+set subject [lang::util::localize "#invoices.iv_offer_accepted_email_subject#" $locale]
+set template "OfferAcceptedTemplate"
+set offer_text [iv::offer::parse_data -offer_id $offer_id -recipient_id $contact_id -template $template -locale $locale]
 
 if {[empty_string_p $file_ids]} {
     set pdf_file [text_templates::create_pdf_from_html -html_content "$offer_text"]
     if {![empty_string_p $pdf_file]} {
 	set file_size [file size $pdf_file]
-	set file_ids [cr_import_content -title "Offer $offer_id" -description "PDF version of <a href=[export_vars -base "/invoices/offer-ae" -url {{mode display} organization_id}]>this offer</a>" $offer_id $pdf_file $file_size application/pdf "Offer $offer_id"]
+	set file_ids [cr_import_content -title "Accepted_Offer_${offer_id}.pdf" -description "PDF version of <a href=[export_vars -base "/invoices/offer-ae" -url {{mode display} offer_id}]>this offer</a>" $offer_id $pdf_file $file_size application/pdf "[clock seconds]-[expr round([ns_rand]*100000)]"]
     }
 }
-
-set offer_text "{[_ invoices.iv_offer_accepted_email]}"
-
 
 set parties_new [list]
 foreach party_id $party_ids {

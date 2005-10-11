@@ -111,7 +111,7 @@ template::list::create \
 	    label {[_ invoices.iv_offer_accepted_date]}
 	}
         action {
-	    display_template {<if @iv_offer.accepted_date@ nil><a href="@iv_offer.edit_link@">#invoices.Edit#</a>&nbsp;<a href="@iv_offer.delete_link@">#invoices.Delete#</a></if>}
+	    display_template {<if @iv_offer.status@ eq new><a href="@iv_offer.edit_link@">#invoices.Edit#</a>&nbsp;<a href="@iv_offer.delete_link@">#invoices.Delete#</a></if>}
 	}
     } -actions $actions -sub_class narrow \
     -orderby {

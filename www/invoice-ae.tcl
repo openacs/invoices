@@ -16,11 +16,15 @@ ad_page_contract {
     page_title:onevalue
 }
 
+set package_id [ad_conn package_id]
 set user_id [auth::require_login]
 set date_format "YYYY-MM-DD"
 set has_submit 0
 set has_edit 0
 if {![info exists invoice_id] || $__new_p} {
+    if {$__new_p} {
+	set project_id [string trim $project_id "{}"]
+    }
     set page_title "[_ invoices.iv_invoice_Add2]"
     set _invoice_id 0
     set invoice_rev_id 0
@@ -34,7 +38,7 @@ if {![info exists invoice_id] || $__new_p} {
 	set has_edit 1
     }
     if {$mode == "edit" && ![info exists send]} {
-	if {![empty_string_p $paid_currency] || $cancelled_p == "t"} {
+	if {![empty_string_p $paid_currency] || $cancelled_p == "t" || $status != "new"} {
 	    # do not allow to edit a paid invoice
 	    ad_return_complaint 1 "[_ invoices.iv_invoice_edit_error]"
 	}
@@ -54,7 +58,6 @@ if {[info exists send]} {
 
 set organization_name [organizations::name -organization_id $organization_id]
 set context [list [list "invoice-list" "[_ invoices.iv_invoice_2]"] [list [export_vars -base invoice-add {organization_id}] "[_ invoices.iv_invoice_Add]"] $page_title]
-set package_id [ad_conn package_id]
 array set container_objects [iv::util::get_default_objects -package_id $package_id]
 set timestamp_format "$date_format [lc_get formbuilder_time_format]"
 
@@ -74,7 +77,7 @@ if {[exists_and_not_null parent_invoice_id]} {
 } else {
     # normal invoice: get recipients from projects
     # set recipient_options [db_list_of_lists recipients {}]
-    set recipient_options [translation::get_recipients -customer_id $organization_id]
+    set recipient_options [wieners::get_recipients -customer_id $organization_id]
 }
 
 
@@ -152,9 +155,6 @@ if {!$has_submit} {
 if {!$_invoice_id} {
     # adding a new invoice
     if {![empty_string_p $project_id]} {
-	if {$__new_p} {
-	    set project_id [string trim $project_id "{}"]
-	}
 	
 	db_foreach offer_items {} -column_array offer {
 	    set offer(price_per_unit) [format "%.2f" $offer(price_per_unit)]
@@ -219,7 +219,7 @@ if {!$_invoice_id} {
     }
 }
 
-if {$mode == "display"} {
+if {$mode == "display" && $status == "new"} {
     ad_form -extend -name iv_invoice_form -form {
 	{send:text(submit) {label "[_ invoices.iv_invoice_send]"} {value t}}
     }
@@ -343,6 +343,32 @@ ad_form -extend -name iv_invoice_form -new_request {
 	}
     }
 } -after_submit {
+    db_transaction {
+	# get all offer_ids
+	set offer_ids {}
+	foreach iv_item_id [array names offers] {
+	    array set offer $offers($iv_item_id)
+	    if {[lsearch -exact $offer_ids $offer(offer_id)] == -1} {
+		lappend offer_ids $offer(offer_id)
+	    }
+	}
+
+	# foreach offer_id: check if there's an item that's not billed -> status new, else status billed
+	foreach offer_id $offer_ids {
+	    db_0or1row check_offer_status {}
+
+	    if {$unbilled_items == 0} {
+		# all offer items billed
+		set status billed
+	    } else {
+		# there are still unbilled offer items
+		set status new
+	    }
+
+	    db_dml set_status {}
+	}
+    }
+
     ad_returnredirect [export_vars -base invoice-list {organization_id}]
     ad_script_abort
 }

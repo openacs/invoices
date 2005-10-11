@@ -45,8 +45,13 @@ template::list::create \
     -name iv_invoice \
     -key invoice_id \
     -no_data "[_ invoices.None]" \
+    -has_checkboxes \
     -selected_format $format \
     -elements {
+	checkbox {
+	    label {}
+	    display_template {@iv_invoice.checkbox;noquote@}
+	}
 	invoice_nr {
 	    label {[_ invoices.iv_invoice_invoice_nr]}
 	}
@@ -80,7 +85,7 @@ template::list::create \
 	    display_template {[_ invoices.iv_invoice_status_@iv_invoice.status@]}
 	}
         action {
-	    display_template {<if @iv_invoice.status@ eq new><a href="@iv_invoice.edit_link@">#invoices.Edit#</a>&nbsp;<if @organization_id@ not nil and @invoice_cancel_p@ true><a href="@iv_invoice.cancel_link@">#invoices.Cancel#</a></if></if><if @iv_invoice.status@ ne billed>&nbsp;<a href="@iv_invoice.delete_link@">#invoices.Delete#</a></if>}
+	    display_template {<if @iv_invoice.status@ eq new><a href="@iv_invoice.edit_link@">#invoices.Edit#</a>&nbsp;<if @organization_id@ not nil and @invoice_cancel_p@ true><a href="@iv_invoice.cancel_link@">#invoices.Cancel#</a></if></if><if @iv_invoice.status@ ne billed and @iv_invoice.status@ ne paid>&nbsp;<a href="@iv_invoice.delete_link@">#invoices.Delete#</a></if>}
 	}
     } -actions $actions -sub_class narrow \
     -bulk_actions $bulk_actions \
@@ -152,7 +157,7 @@ template::list::create \
 	}
     }
 
-db_multirow -extend {creator_link edit_link cancel_link delete_link} iv_invoice iv_invoice {} {
+db_multirow -extend {creator_link edit_link cancel_link delete_link checkbox} iv_invoice iv_invoice {} {
     # Ugly hack. We should find out which contact package is linked
     set creator_link "/contacts/$creation_user"
     set edit_link [export_vars -base "${base_url}invoice-ae" {invoice_id}]
@@ -164,5 +169,10 @@ db_multirow -extend {creator_link edit_link cancel_link delete_link} iv_invoice 
     set total_amount [format "%.2f" $total_amount]
     if {![empty_string_p $paid_amount]} {
 	set paid_amount [format "%.2f" $paid_amount]
+    }
+    if {$status == "billed"} {
+	set checkbox "<input type=checkbox name=invoice_id value=\"$invoice_id\">"
+    } else {
+	set checkbox ""
     }
 }

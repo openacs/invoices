@@ -1,9 +1,24 @@
-set package_id [ad_conn package_id]
+if {![exists_and_not_null package_id]} {
+    set package_id [apm_package_id_from_key invoices]
+}
+if {![exists_and_not_null base_url]} {
+    set base_url [apm_package_url_from_id $package_id]
+}
+if {![info exists return_url]} {
+    set contacts_url [apm_package_url_from_key contacts]
+    set return_url $contacts_url
+    set return_url ""
+}
+
 set language [lang::conn::language]
 db_1row currency {}
 array set container_objects [iv::util::get_default_objects -package_id $package_id]
 
-set actions [list "[_ invoices.iv_price_Edit]" [export_vars -base "price-ae" {list_id}] "[_ invoices.iv_price_Edit]"]
+set actions [list "[_ invoices.iv_price_Edit]" [export_vars -base "${base_url}price-ae" {list_id}] "[_ invoices.iv_price_Edit]"]
+
+if {![empty_string_p $return_url]} {
+    lappend actions "[_ invoices.back]" $return_url "[_ invoices.back]"
+}
 
 template::list::create \
     -name iv_price \

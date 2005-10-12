@@ -12,6 +12,8 @@ ad_page_contract {
 }
 
 set package_id [ad_conn package_id]
+set contact_package_id [apm_package_id_from_key contacts]
+set contact_master [parameter::get -parameter ContactMaster -package_id $contact_package_id]
 
 if {[empty_string_p $list_id]} {
     set list_id [iv::price_list::get_list_id -organization_id $organization_id -package_id $package_id]

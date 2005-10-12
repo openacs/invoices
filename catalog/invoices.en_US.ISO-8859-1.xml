@@ -10,6 +10,7 @@
   <msg key="Amount_sum">Amount sum</msg>
   <msg key="Amount_total">Total Amount</msg>
   <msg key="Apply_VAT">Apply VAT?</msg>
+  <msg key="back">Back</msg>
   <msg key="back_to_project">Back to project</msg>
   <msg key="back_to_year">Back to %year%</msg>
   <msg key="back_to_years">Back to Years</msg>

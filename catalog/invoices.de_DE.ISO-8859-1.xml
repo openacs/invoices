@@ -9,7 +9,8 @@
   <msg key="Amount_sum">Betrag</msg>
   <msg key="Amount_total">Gesamtsumme</msg>
   <msg key="Apply_VAT">Mehrwertsteuer?</msg>
-  <msg key="back_to_project">Zurueck zum projekt</msg>
+  <msg key="back">Zurück</msg>
+  <msg key="back_to_project">Zurück zum projekt</msg>
   <msg key="back_to_year">Zurück zu %year%</msg>
   <msg key="back_to_years">Zurück zu den Jahren</msg>
   <msg key="Billable_Projects">Abzurechnende Projekte</msg>

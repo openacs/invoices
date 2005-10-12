@@ -110,7 +110,7 @@ create table iv_offers (
                                 -- %VAT
         vat                     numeric(12,2) default 0,
                                 -- VAT amount
-        credit_percent          numeric(12,5) default 0
+        credit_percent          numeric(12,5) default 0,
                                 -- %credit
         status                  varchar(10) default 'new',
                                 -- new, accepted, billed, credit

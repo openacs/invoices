@@ -216,3 +216,73 @@ ad_proc -public -callback contacts::after_instantiate -impl invoices {
 	application_link::new -this_package_id $package_id -target_package_id $invoices_package_id
     }
 }
+
+ad_proc -public -callback acs_mail_lite::email_form_elements -impl invoices {
+    -varname:required
+} {
+} {
+    upvar elements $varname template_list template_list template_type template_type template_object template_object
+
+    if {[exists_and_not_null template_list]} {
+	append elements {
+	    {template:text(select)
+		{label "[_ invoices.email_template]"}
+		{options $template_list}
+		{section "[_ contacts.Message]"}
+	    }
+	    {template_type:text(hidden)
+		{value $template_type}
+	    }
+	    {template_object:text(hidden)
+		{value $template_object}
+	    }
+	}
+    }
+}
+
+ad_proc -public -callback acs_mail_lite::files -impl invoices {
+    -varname:required
+    -recipient_id
+} {
+} {
+    upvar file_ids $varname template template template_type template_type template_object template_object
+
+    if {[exists_and_not_null template_type] && $template_type == "invoice"} {
+
+	switch $template_type {
+	    invoice        { set pdf_title "Invoice" }
+	    invoice_cancel { set pdf_title "Cancellation" }
+	    invoice_credit { set pdf_title "Credit" }
+	    offer          { set pdf_title "Offer" }
+	    offer_accpeted { set pdf_title "Accepted_Offer" }
+	}
+
+	if {$template_type == "invoice" || $template_type == "invoice_cancel" || $template_type == "invoice_credit"} {
+	    set invoice_id $template_object
+	    set locale [lang::user::site_wide_locale -user_id $recipient_id]
+	    set invoice_text [iv::invoice::parse_data -invoice_id $invoice_id -recipient_id $recipient_id -template $template -locale $locale]
+
+	    set pdf_file [text_templates::create_pdf_from_html -html_content "$invoice_text"]
+	    if {![empty_string_p $pdf_file]} {
+		set file_size [file size $pdf_file]
+		lappend file_ids [cr_import_content -title "${pdf_title}_${invoice_id}.pdf" -description "PDF version of <a href=[export_vars -base "/invoices/invoice-ae" -url {{mode display} invoice_id}]>this offer</a>" $invoice_id $pdf_file $file_size application/pdf "[clock seconds]-[expr round([ns_rand]*100000)]"]]
+	    }
+        }
+
+	if {$template_type == "offer" || $template_type == "offer_accepted"} {
+	    set offer_id $template_object
+	    set offer_rev_id [content::item::get_live_revision -item_id $offer_id]
+	    set locale [lang::user::site_wide_locale -user_id $recipient_id]
+
+	    set x [iv::util::get_x_field -offer_id $offer_rev_id]
+	    set accept_link [export_vars -base "[ad_url][ad_conn package_url]offer-accepted" {x {offer_id $offer_rev_id}}]
+	    set offer_text [iv::offer::parse_data -offer_id $offer_id -recipient_id $recipient_id -template $template -locale $locale -accept_link $accept_link]
+
+	    set pdf_file [text_templates::create_pdf_from_html -html_content "$offer_text"]
+	    if {![empty_string_p $pdf_file]} {
+		set file_size [file size $pdf_file]
+		lappend file_ids [cr_import_content -title "${pdf_title}_${offer_id}.pdf" -description "PDF version of <a href=[export_vars -base "/invoices/offer-ae" -url {{mode display} offer_id}]>this offer</a>" $offer_id $pdf_file $file_size application/pdf "[clock seconds]-[expr round([ns_rand]*100000)]"]
+	    }
+        }
+    }
+}

@@ -45,7 +45,8 @@
 </table>
 </center>
 
-<include src="@include_src@"
+<include src="/packages/invoices/lib/reports-portlet"
+    include_src="@include_src@"
     organization_id="@organization_id@" 
     format="@format@" 
     last_years="@last_years@"

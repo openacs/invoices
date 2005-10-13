@@ -26,13 +26,13 @@ foreach element $elements {
     append row_list "$element {}\n"
 }
 
-if {![info exists format]} {
+if {![exists_and_not_null format]} {
     set format "normal"
 }
-if {![info exists orderby]} {
+if {![exists_and_not_null orderby]} {
     set orderby ""
 }
-if {![info exists page_size]} {
+if {![exists_and_not_null page_size]} {
     set page_size "25"
 }
 

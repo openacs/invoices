@@ -21,7 +21,8 @@ foreach optional_unset $optional_unset_list {
 	}
     }
 }
-set status_id 2
+# set status_id 2
+# db_1row get_offer_status_id {}
 if {![info exists status_id]} {
     db_1row get_offer_status_id {}
 }
@@ -93,6 +94,10 @@ template::list::create \
 	    label {[_ invoices.iv_offer_project]}
 	    display_template {<if @iv_offer.project_id@ not nil><a href="@iv_offer.project_link@">@iv_offer.project_title@</a></if>}
         }
+	project_contact {
+	    label {[_ invoices.iv_offer_project_contact]}
+	    display_template {<a href="@iv_offer.contact_link@">@iv_offer.contact_first_names@ @iv_offer.contact_last_name@</a>}
+	}
         amount_total {
 	    label {[_ invoices.iv_offer_amount_total]}
 	    display_template {@iv_offer.amount_total@ @iv_offer.currency@}
@@ -139,6 +144,12 @@ template::list::create \
 	project_id {
 	    label {[_ invoices.iv_offer_project]}
 	    orderby {lower(pr.title)}
+	    default_direction asc
+	}
+	project_contact {
+	    label {[_ invoices.iv_offer_project_contact]}
+	    orderby_desc {lower(p2.last_name) desc, lower(p2.first_names) desc}
+	    orderby_asc {lower(p2.last_name) asc, lower(p2.first_names) asc}
 	    default_direction asc
 	}
 	amount_total {
@@ -198,11 +209,12 @@ template::list::create \
     }
 
 
-db_multirow -extend {creator_link edit_link delete_link title_link project_link} iv_offer iv_offer {} {
+db_multirow -extend {creator_link contact_link edit_link delete_link title_link project_link} iv_offer iv_offer {} {
 
     # Ugly hack. We should find out which contact package is linked
     # aso. asf.
     set creator_link "/contacts/$creation_user"
+    set contact_link "/contacts/$contact_id"
     set edit_link [export_vars -base "${base_url}offer-ae" {offer_id}]
     set title_link [export_vars -base "${base_url}offer-ae" {offer_id {mode display}}]
     set delete_link [export_vars -base "${base_url}offer-delete" {offer_id}]

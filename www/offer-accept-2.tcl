@@ -36,19 +36,8 @@ if {[empty_string_p $file_ids]} {
     }
 }
 
-set parties_new [list]
-foreach party_id $party_ids {
-    
-    # Check if the party has a valid e-mail address
-    if {![empty_string_p [cc_email_from_party $party_id]]} {
-	lappend parties_new $party_id
-    }
-}
-
-if {[empty_string_p $parties_new]} {
-    ad_return_error "No Recipient" "None of the recipients has a valid e-mail address. Please go back and make sure that you provide an e-mail address first."
-} else {
-    set party_ids $parties_new
+if {[empty_string_p [cc_email_from_party $contact_id]]} {
+    ad_return_error "No Recipient" "The recipient does not have a valid e-mail address. Please go back and make sure that you provide an e-mail address first."
 }
 
 set cancel_url [export_vars -base offer-list {organization_id}]

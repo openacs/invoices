@@ -379,6 +379,7 @@ if {!$has_submit} {
 	    [list [list "item_units.${i}:float,optional" \
 		       [list label "[_ invoices.iv_offer_item_item_units]"] \
 		       [list html [list size 5 maxlength 5 onChange calculateItemAmount(${i})]] \
+		       [list value 0] \
 		       [list help_text "[_ invoices.iv_offer_item_item_units_help]"] \
 		       [list after_html "[_ invoices.units]"] \
 		       [list section "[_ invoices.iv_offer_item_1] $i"] ] ]

@@ -217,6 +217,7 @@
   <msg key="iv_offer_payment_days">Zahlungsziel (Tage)</msg>
   <msg key="iv_offer_payment_days_help">Wie viele Tage hat der Kunde, bis die Rechnung gezahlt werden muss</msg>
   <msg key="iv_offer_project">Projekt</msg>
+  <msg key="iv_offer_project_contact">Ansprechpartner</msg>
   <msg key="iv_offer_project_descr">Beschreibung</msg>
   <msg key="iv_offer_project_help">Projektname</msg>
   <msg key="iv_offer_project_id">Projekt Nummer</msg>

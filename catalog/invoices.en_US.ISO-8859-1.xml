@@ -76,7 +76,7 @@
   <msg key="iv_invoice_cancel_1">Cancellation</msg>
   <msg key="iv_invoice_cancel_Add">Add invoice cancellation</msg>
   <msg key="iv_invoice_cancel_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Cancellation&lt;/h3&gt;%invoice_text%&lt;/html&gt;&lt;/body&gt;</msg>
-  <msg key="iv_invoice_credit_email_subject">Cancellation # %invoice_nr%</msg>
+  <msg key="iv_invoice_cancel_email_subject">Cancellation # %invoice_nr%</msg>
   <msg key="iv_invoice_closed_date">Finished on</msg>
   <msg key="iv_invoice_count_billed">Billed items</msg>
   <msg key="iv_invoice_count_total">Total items</msg>
@@ -221,6 +221,7 @@
   <msg key="iv_offer_payment_days">Payment after .. days</msg>
   <msg key="iv_offer_payment_days_help">How many days has the customer until the invoice has to be paid</msg>
   <msg key="iv_offer_project">Project</msg>
+  <msg key="iv_offer_project_contact">Contact</msg>
   <msg key="iv_offer_project_descr">Description</msg>
   <msg key="iv_offer_project_help">Project Name</msg>
   <msg key="iv_offer_project_id">Project ID</msg>

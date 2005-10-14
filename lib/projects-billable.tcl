@@ -1,5 +1,5 @@
 set required_param_list [list organization_id]
-set optional_param_list [list orderby elements base_url package_id]
+set optional_param_list [list orderby elements base_url package_id no_actions_p]
 set optional_unset_list [list]
 
 foreach required_param $required_param_list {
@@ -24,6 +24,10 @@ foreach optional_unset $optional_unset_list {
 
 foreach element $elements {
     append row_list "$element {}\n"
+}
+
+if {[empty_string_p $no_actions_p]} {
+    set no_actions_p 0
 }
 
 if {![exists_and_not_null format]} {
@@ -54,7 +58,13 @@ set timestamp_format "$date_format [lc_get formbuilder_time_format]"
 set currency [iv::price_list::get_currency -organization_id $organization_id]
 set contacts_url [apm_package_url_from_key contacts]
 
-set actions [list "[_ invoices.iv_invoice_New]" "${base_url}invoice-ae" "[_ invoices.iv_invoice_New2]" ]
+if {$no_actions_p} {
+    set actions ""
+    set bulk_id_list ""
+} else {
+    set actions [list "[_ invoices.iv_invoice_New]" "${base_url}invoice-ae" "[_ invoices.iv_invoice_New2]" ]
+    set bulk_id_list [list organization_id]
+}
 
 template::list::create \
     -name projects \
@@ -91,7 +101,7 @@ template::list::create \
 	    label {[_ invoices.iv_invoice_closed_date]}
 	}
     } -bulk_actions $actions \
-    -bulk_action_export_vars {organization_id} \
+    -bulk_action_export_vars $bulk_id_list \
     -sub_class narrow \
     -orderby {
 	default_value project_id

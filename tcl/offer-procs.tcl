@@ -58,6 +58,7 @@ ad_proc -public iv::offer::new {
 					 [list payment_days $payment_days] \
 					 [list vat_percent $vat_percent] \
 					 [list vat $vat] \
+					 [list status new] \
 					 [list credit_percent $credit_percent] ] ]
     }
 

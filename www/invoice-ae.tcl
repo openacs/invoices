@@ -355,7 +355,7 @@ ad_form -extend -name iv_invoice_form -new_request {
 
 	# foreach offer_id: check if there's an item that's not billed -> status new, else status billed
 	foreach offer_id $offer_ids {
-	    db_0or1row check_offer_status {}
+	    set unbilled_items [db_string check_offer_status {} -default 0]
 
 	    if {$unbilled_items == 0} {
 		# all offer items billed

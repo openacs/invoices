@@ -51,27 +51,15 @@ if {[empty_string_p $file_ids]} {
     set pdf_file [text_templates::create_pdf_from_html -html_content "$invoice_text"]
     if {![empty_string_p $pdf_file]} {
 	set file_size [file size $pdf_file]
-	set file_ids [cr_import_content -title "Invoice_${invoice_id}.pdf" -description "PDF version of <a href=[export_vars -base "/invoices/invoice-ae" -url {{mode display} invoice_id}]>this offer</a>" $invoice_id $pdf_file $file_size application/pdf "[clock seconds]-[expr round([ns_rand]*100000)]"]]
-	set return_url [export_vars -base invoice-pdf {invoice_id {file_id $file_ids}}]
+	set file_ids [cr_import_content -title "Invoice_${invoice_id}.pdf" -description "PDF version of <a href=[export_vars -base "/invoices/invoice-ae" -url {{mode display} invoice_id}]>this offer</a>" $invoice_id $pdf_file $file_size application/pdf "[clock seconds]-[expr round([ns_rand]*100000)]"]
+        set return_url [export_vars -base invoice-pdf {invoice_id {file_id $file_ids}}]
     }
-}
-
-
-set return_url [export_vars -base invoice-list {organization_id}]
-set party_ids [contact::util::get_employees -organization_id $organization_id]
-
-set parties_new [list]
-foreach party_id $party_ids {
-    
-    # Check if the party has a valid e-mail address
-    if {![empty_string_p [cc_email_from_party $party_id]]} {
-	lappend parties_new $party_id
-    }
-}
-
-if {[empty_string_p $parties_new]} {
-    ad_return_error "No Recipient" "None of the recipients has a valid e-mail address. Please go back and make sure that you provide an e-mail address first."
 } else {
-    set party_ids $parties_new
+    set return_url [export_vars -base invoice-list {organization_id}]
 }
+
+if {[empty_string_p [cc_email_from_party $recipient_id]]} {
+    ad_return_error "No Recipient" "The recipient does not have a valid e-mail address. Please go back and make sure that you provide an e-mail address first."
+}
+
 ad_return_template

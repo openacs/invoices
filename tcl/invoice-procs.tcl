@@ -61,6 +61,7 @@ ad_proc -public iv::invoice::new {
 					 [list payment_days $payment_days] \
 					 [list vat_percent $vat_percent] \
 					 [list vat $vat] \
+					 [list status new] \
 					 [list cancelled_p f] ] ]
     }
 
@@ -110,6 +111,7 @@ ad_proc -public iv::invoice::edit {
 					     [list payment_days $payment_days] \
 					     [list vat_percent $vat_percent] \
 					     [list vat $vat] \
+					     [list status new] \
 					     [list cancelled_p f] ] ]
     }
 

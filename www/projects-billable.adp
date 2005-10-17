@@ -1,5 +1,7 @@
 <master>
-<table width="50%">
+<property name="title">@page_title;noquote@</property>
+<property name="context">@context;noquote@</property>
+<table width="100%">
 <tr>
    <td>
 	<include src="/packages/invoices/lib/projects-billable-portlet" 

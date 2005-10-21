@@ -26,6 +26,7 @@ foreach optional_unset $optional_unset_list {
 if {![info exists status_id]} {
     db_1row get_offer_status_id {}
 }
+
 if {![info exists format]} {
     set format "normal"
 }
@@ -65,6 +66,7 @@ if {[exists_and_not_null organization_id]} {
 	set actions [list "[_ invoices.iv_invoice_2]" [export_vars -base "${base_url}invoice-list" {organization_id}] "[_ invoices.iv_invoice_2]" "[_ invoices.iv_price_list]" [export_vars -base "${base_url}price-list" {{list_id $price_list_id}}] "[_ invoices.iv_display_price_list]"]
 	if {[exists_and_not_null pm_base_url]} {
 	    lappend actions "[_ project-manager.Projects]" $pm_base_url "[_ project-manager.Projects]"
+	    lappend actions "[_ invoices.Add_offer_project]" "[export_vars -base "${pm_base_url}/add-edit" -url {{customer_id $organization_id} status_id}]" "[_ invoices.Add_offer_project]"
 	}
     }
 } else {

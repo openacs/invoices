@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="invoices" package_version="0.01d10" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="invoices" package_version="0.01d15" locale="en_US" charset="ISO-8859-1">
 
   <msg key="Accepted_date">Accepted on</msg>
   <msg key="admin">Admin</msg>
@@ -169,7 +169,7 @@
   <msg key="iv_offer_Description_help">Description of the cost sheet</msg>
   <msg key="iv_offer_Edit">Edit Cost Sheet</msg>
   <msg key="iv_offer_edit_error">You are not allowed to edit an accepted or invoiced cost sheet</msg>
-  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Offer&lt;/h3&gt;%offer_text%&lt;p&gt;To accept this offer, click &lt;a href="%accept_link%"&gt;here&lt;/a&gt;.&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Offer&lt;/h3&gt;%offer_text%&lt;p&gt;To accept this offer, click &lt;a href=&quot;%accept_link%&quot;&gt;here&lt;/a&gt;.&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_email_subject">Offer # %offer_nr%</msg>
   <msg key="iv_offer_finish_date">Finish on</msg>
   <msg key="iv_offer_finish_date_help">Deadline until which the project has to be delivered to the client</msg>

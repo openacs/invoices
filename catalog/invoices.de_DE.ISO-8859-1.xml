@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="invoices" package_version="0.01d10" locale="de_DE" charset="ISO-8859-1">
+<message_catalog package_key="invoices" package_version="0.01d15" locale="de_DE" charset="ISO-8859-1">
 
   <msg key="Accepted_date">Akzeptiert am</msg>
   <msg key="admin">Admin</msg>
   <msg key="admin_categories">Kategorien verwalten</msg>
+  <msg key="aggregate_iv_from">Rechnungen seit diesem Zeitpunkt und davor aggregieren</msg>
   <msg key="Amount">Betrag</msg>
   <msg key="Amount_paid">bezahlt</msg>
   <msg key="Amount_sum">Betrag</msg>
@@ -26,9 +27,11 @@
   <msg key="Cost_number">Kostennummer</msg>
   <msg key="Costs">Kosten</msg>
   <msg key="count">Zählung</msg>
+  <msg key="CSV">CSV</msg>
   <msg key="Currency">Währung</msg>
   <msg key="Currency_paid">bezahlte Währung</msg>
   <msg key="Customer">Kunde</msg>
+  <msg key="Date_comment">Datumskommentar</msg>
   <msg key="day">Tag</msg>
   <msg key="Delete">Löschen</msg>
   <msg key="Due_date">Fälligkeit</msg>
@@ -147,6 +150,7 @@
   <msg key="iv_offer_accepted_date">Akzeptiert am</msg>
   <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Auftragsbestätigung&lt;/h3&gt;%offer_text%&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_accepted_email_subject">Auftragsbestätigung # %offer_nr%</msg>
+  <msg key="iv_offer_accepted_thanks">Vielen Dank für die Annahme unseres Angebots. Wir werden Sie so schnell wie möglich diesbezüglich kontaktieren.</msg>
   <msg key="iv_offer_Add">Kostenaufstellung für &quot;%organization_name%&quot;</msg>
   <msg key="iv_offer_Add2">Neue Projektaufstellung hinzufügen</msg>
   <msg key="iv_offer_amount_diff">Rabatt</msg>
@@ -166,9 +170,9 @@
   <msg key="iv_offer_Description_help">Beschreibung der Kostenaufstellung</msg>
   <msg key="iv_offer_Edit">Projektaufstellung ändern</msg>
   <msg key="iv_offer_edit_error">Sie dürfen keine akzeptierte oder berechnete Kostenaufstellung ändern.</msg>
-  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Angebot&lt;/h3&gt;%offer_text%&lt;p&gt;Um dieses Angebot anzunehmen, klicken Sie bitte &lt;a href="%accept_link%"&gt;hier&lt;/a&gt;.&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Angebot&lt;/h3&gt;%offer_text%&lt;p&gt;Um dieses Angebot anzunehmen, klicken Sie bitte &lt;a href=&quot;%accept_link%&quot;&gt;hier&lt;/a&gt;.&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_email_subject">Angebot # %offer_nr%</msg>
-  <msg key="iv_offer_finish_date">Timing Datum</msg>
+  <msg key="iv_offer_finish_date">Lieferdatum</msg>
   <msg key="iv_offer_finish_date_help">Abgabetermin zu dem das Projekt an den Kunden ausgeliefert werden muss</msg>
   <msg key="iv_offer_finish_time">Timing Uhrzeit</msg>
   <msg key="iv_offer_finish_time_help">Uhrzeit des Abgabetermins für die Auslieferung des Projekts</msg>
@@ -194,6 +198,7 @@
   <msg key="iv_offer_item_New">Neue Kostenposition</msg>
   <msg key="iv_offer_item_New2">Neue Kostenposition erstellen</msg>
   <msg key="iv_offer_item_nr">Positionsnummer</msg>
+  <msg key="iv_offer_item_nr_help">Position des Angebotposten</msg>
   <msg key="iv_offer_item_page_count">Seitenzahl</msg>
   <msg key="iv_offer_item_page_count_help">Anzahl an Seiten, die für diese Rechnungsposition relevant sind</msg>
   <msg key="iv_offer_item_pages">Seiten</msg>
@@ -209,7 +214,7 @@
   <msg key="iv_offer_item_View">Kostenposition ansehen</msg>
   <msg key="iv_offer_list">Projektaufstellungen</msg>
   <msg key="iv_offer_New">Neue Projektaufstellung</msg>
-  <msg key="iv_offer_New2">Neue Projektaufstellung hinzufügen</msg>
+  <msg key="iv_offer_New2">&lt;font color=&quot;red&quot;&gt;&lt;b&gt;Neue Projektaufstellung hinzufügen&lt;/b&gt;&lt;/font&gt;</msg>
   <msg key="iv_offer_offer_nr">Angebotsnummer</msg>
   <msg key="iv_offer_offer_nr_help">Nummer der Kostenaufstellung</msg>
   <msg key="iv_offer_organization">Kunde</msg>
@@ -300,6 +305,7 @@
   <msg key="Recipient">Empfänger</msg>
   <msg key="Sort_order">Nummer</msg>
   <msg key="Status">Status</msg>
+  <msg key="Table">Tabelle</msg>
   <msg key="Total_amount">Gesamtsumme</msg>
   <msg key="units">h</msg>
   <msg key="Unmounted">Unmounted</msg>

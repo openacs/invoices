@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <queryset>
 
-<fullquery name="iv::invoice::set_status.set_status">
+<fullquery name="iv::invoice::set_status.update_status">
       <querytext>
 
 	update iv_invoices
 	set status = :status
-	where offer_id = (select latest_revision
+	where invoice_id = (select latest_revision
                           from cr_items
                           where item_id = :invoice_id)
 

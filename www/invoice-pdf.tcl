@@ -21,11 +21,11 @@ if {![empty_string_p $project_id]} {
 }
 
 set root_folder_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type content_folder] 0]
-set invoice_folder_id [lindex [application_data_link::get_linked -from_object_id $root_folder_id -to_object_type content_item] 0]
-
+set invoice_folder_id [fs::get_folder -name "invoices" -parent_id $root_folder_id]
 db_transaction {
     # move file to invoice_folder
-    content::item::move -item_id $file_id -target_folder_id $invoice_folder_id
+    set file_item_id [content::revision::item_id -revision_id $file_id]
+    content::item::move -item_id $file_item_id -target_folder_id $invoice_folder_id
     application_data_link::new -this_object_id $invoice_id -target_object_id $file_id
     iv::invoice::set_status -invoice_id $invoice_id -status "billed"
 }

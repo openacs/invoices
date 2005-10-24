@@ -5,6 +5,7 @@ ad_page_contract {
     @creation-date 2005-06-21
 } {
     offer_id:integer
+    {return_url ""}
 } -properties {
     context:onevalue
     page_title:onevalue
@@ -50,9 +51,15 @@ set project_id [lindex [application_data_link::get_linked -from_object_id $offer
 if {![empty_string_p $project_id]} {
     acs_object::get -object_id $project_id -array project
     set pm_url [lindex [site_node::get_url_from_object_id -object_id $project(package_id)] 0]
-    set return_url [export_vars -base "${pm_url}one" {{project_item_id $project_id}}]
+
+    # We might have a return_url passed in.
+    if {[empty_string_p $return_url]} {
+	set return_url [export_vars -base "${pm_url}one" {{project_item_id $project_id}}]
+    }
 } else {
-    set return_url [export_vars -base offer-list {organization_id}]
+    if {[empty_string_p $return_url]} {
+	set return_url [export_vars -base offer-list {organization_id}]
+    }
 }
 
 if {[empty_string_p [cc_email_from_party $contact_id]]} {

@@ -65,12 +65,12 @@ set due_date [clock format [clock scan "3 days" -base [clock scan [dt_systime]]]
 # Make sure to set the task only once
 set task_generated_p [db_string task_generated "select count(*) from t_tasks where object_id=:offer_id and status_id <> 2"]
 
-if {!$task_generated_p && [apm_package_installed_p "tasks]} {
+if {!$task_generated_p && [apm_package_installed_p "tasks"]} {
 
     # Create a task for the saved offer
     set task_id [tasks::task::new \
 		     -title "Nachfassen Angebot" \
-		     -description "Angebot Nr. <a href=\"[export_vars -base "[ad_url][ad_conn package_url]offer-ae -url {offer_id {mode display}}\">$offer_id" \
+		     -description "Angebot Nr. <a href=\"[export_vars -base "[ad_url][ad_conn package_url]offer-ae" -url {offer_id {mode display}}]\">$offer_id" \
 		     -mime_type "text/plain" \
 		     -party_id $contact_id \
 		     -due_date ${due_date} \

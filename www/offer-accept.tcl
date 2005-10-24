@@ -5,6 +5,7 @@ ad_page_contract {
     @creation-date 2005-06-21
 } {
     offer_id
+    {return_url ""}
 } -properties {
     context:onevalue
     page_title:onevalue
@@ -15,7 +16,7 @@ set page_title "[_ invoices.iv_offer_accept]"
 set context [list [list "offer-list" "[_ invoices.iv_offer_2]"] $page_title]
 
 set confirm_options [list [list "[_ invoices.continue_with_accept]" t] [list "[_ invoices.cancel_and_return]" f]]
-set return_url [export_vars -base offer-accept-2 {offer_id}]
+set accept_2_url [export_vars -base offer-accept-2 {offer_id return_url}]
 
 ad_form -name accept_confirm -action offer-accept -form {
     {offer_id:key}
@@ -31,7 +32,7 @@ ad_form -name accept_confirm -action offer-accept -form {
     }
 } -after_submit {
     if {$confirmation} {
-	ad_returnredirect $return_url
+	ad_returnredirect $accept_2_url
 	ad_script_abort
     } else {
 	ad_returnredirect [export_vars -base offer-ae {offer_id {mode display}}]

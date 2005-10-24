@@ -24,7 +24,7 @@ ad_page_contract {
     {send_accepted:optional}
     {to_project:optional}
     {project_id:optional}
-    {return_url:optional ""}
+    {return_url ""}
 } -properties {
     context:onevalue
     page_title:onevalue
@@ -75,15 +75,15 @@ if {$_offer_id} {
 }
 
 if {[info exists accept]} {
-    ad_returnredirect [export_vars -base offer-accept {organization_id offer_id}]
+    ad_returnredirect [export_vars -base offer-accept {organization_id offer_id return_url}]
     ad_script_abort
 }
 if {[info exists send]} {
-    ad_returnredirect [export_vars -base offer-send {organization_id offer_id}]
+    ad_returnredirect [export_vars -base offer-send {organization_id offer_id return_url}]
     ad_script_abort
 }
 if {[info exists send_accepted]} {
-    ad_returnredirect [export_vars -base offer-accept-2 {offer_id}]
+    ad_returnredirect [export_vars -base offer-accept-2 {offer_id return_url}]
     ad_script_abort
 }
 if {[info exists to_project]} {

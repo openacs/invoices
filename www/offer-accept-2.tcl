@@ -6,6 +6,7 @@ ad_page_contract {
 } {
     offer_id:integer
     {file_ids ""}
+    {return_url ""}
 } -properties {
     context:onevalue
     page_title:onevalue
@@ -41,8 +42,11 @@ if {[empty_string_p [cc_email_from_party $contact_id]]} {
 }
 
 set cancel_url [export_vars -base offer-list {organization_id}]
-set invoice_url [site_node::get_package_url -package_key invoices]
-set return_url [export_vars -base "${invoice_url}offer-ae" {offer_id {mode display}}]
+
+if {[empty_string_p $return_url]} {
+    set invoice_url [site_node::get_package_url -package_key invoices]
+    set return_url [export_vars -base "${invoice_url}offer-ae" {offer_id {mode display}}]
+}
 set extra_data [list offer_id $offer_id]
 
 ad_return_template

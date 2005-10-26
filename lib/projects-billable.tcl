@@ -53,8 +53,6 @@ set pm_base_url [apm_package_url_from_id [dotlrn_community::get_package_id_from_
 
 set p_closed_id [pm::project::default_status_closed]
 set t_closed_id [pm::task::default_status_closed]
-set date_format [lc_get formbuilder_date_format]
-set timestamp_format "$date_format [lc_get formbuilder_time_format]"
 set currency [iv::price_list::get_currency -organization_id $organization_id]
 set contacts_url [apm_package_url_from_key contacts]
 

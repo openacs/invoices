@@ -16,6 +16,17 @@ ad_page_contract {
     page_title:onevalue
 }
 
+####### FIXME ########
+# First try to find the organization_id
+if {[empty_string_p $organization_id]} {
+    set organisations [db_list organizations "select distinct customer_id from pm_projects where project_id in ([join $project_id ","])"]
+    if {[llength $organisations] == 1} {
+	set organization_id [lindex $organisations 0]
+    } else {
+	ad_return_error "More than one customer" "You have selected more than one customer. We are unable to produce one invoice for multiple customers"
+    }
+}
+
 set package_id [ad_conn package_id]
 set user_id [auth::require_login]
 set date_format "YYYY-MM-DD"

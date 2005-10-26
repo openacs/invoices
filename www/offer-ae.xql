@@ -1,6 +1,17 @@
 <?xml version="1.0"?>
 <queryset>
 
+<fullquery name="get_currency_and_credit_percent">
+      <querytext>
+      
+	select l.currency, l.credit_percent as _credit_percent
+	from iv_price_lists l, cr_items li
+	where l.list_id = li.latest_revision
+	and li.item_id = :list_id
+	
+      </querytext>
+</fullquery>
+
 <fullquery name="get_organization_and_currencies">
       <querytext>
 

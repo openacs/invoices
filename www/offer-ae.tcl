@@ -54,7 +54,13 @@ if {(![info exists offer_id] || $__new_p) && [exists_and_not_null project_id]} {
 if {![info exists offer_id] || $__new_p} {
     set page_title "[_ invoices.iv_offer_Add2]"
     set _offer_id 0
-    set currency [iv::price_list::get_currency -organization_id $organization_id]
+    set list_id [iv::price_list::get_list_id -organization_id $organization_id]
+    if {[empty_string_p $list_id]} {
+	set currency [parameter::get -parameter "DefaultCurrency" -default "EUR" -package_id $package_id]
+	set _credit_percent 0
+    } else {
+	db_1row get_currency_and_credit_percent {}
+    }
 } else {
     db_1row get_organization_and_currencies {}
     set cur_vat_percent [format "%.1f" $cur_vat_percent]
@@ -190,7 +196,7 @@ if {!$has_submit} {
     # we are adding/editing data
     ad_form -extend -name iv_offer_form -form {
 	{vat_percent:float {label "[_ invoices.iv_offer_vat_percent]"} {html {size 5 maxlength 10}} {help_text "[_ invoices.iv_offer_vat_percent_help]"} {after_html {%}}}
-	{hidden_sum:text(hidden) {value 0}
+	{hidden_sum:text(hidden) {value 0}}
     }
 
     if {![empty_string_p $_credit_percent] && $_credit_percent > 0} {
@@ -200,8 +206,8 @@ if {!$has_submit} {
 	}
     } else {
 	ad_form -extend -name iv_offer_form -form {
-	    {credit_percent:text(hidden) {value 0}
-	    {credit_sum:text(hidden) {value 0}
+	    {credit_percent:text(hidden) {value 0}}
+	    {credit_sum:text(hidden) {value 0}}
 	}
     }
 

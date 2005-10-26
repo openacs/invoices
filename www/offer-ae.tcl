@@ -30,6 +30,11 @@ ad_page_contract {
     page_title:onevalue
 }
 
+# todo:
+# credit offers cannot be edited or deleted
+# amount_sum >= total_amount
+# offer cannot be edited or deleted if project is closed
+
 set user_id [auth::require_login]
 set date_format "YYYY-MM-DD"
 set has_submit 0
@@ -105,7 +110,10 @@ set currency_options [db_list_of_lists currencies {}]
 
 set list_id [iv::price_list::get_list_id -organization_id $organization_id]
 db_multirow pricelist all_prices {}
-
+if {$_offer_id && !$has_submit} {
+    # new offer
+    db_1row credit_percent {}
+}
 
 ad_form -name iv_offer_form -action offer-ae -mode $mode -has_submit $has_submit -has_edit $has_edit -export {organization_id return_url} -form {
     {offer_id:key}
@@ -182,6 +190,22 @@ if {!$has_submit} {
     # we are adding/editing data
     ad_form -extend -name iv_offer_form -form {
 	{vat_percent:float {label "[_ invoices.iv_offer_vat_percent]"} {html {size 5 maxlength 10}} {help_text "[_ invoices.iv_offer_vat_percent_help]"} {after_html {%}}}
+	{hidden_sum:text(hidden) {value 0}
+    }
+
+    if {![empty_string_p $_credit_percent] && $_credit_percent > 0} {
+	ad_form -extend -name iv_offer_form -form {
+	    {credit_percent:float {label "[_ invoices.iv_offer_credit_percent]"} {html {size 5 maxlength 10 onChange calculateTotalAmount()}} {help_text "[_ invoices.iv_offer_credit_percent_help]"} {after_html {%}}}
+	    {credit_sum:float,optional {label "[_ invoices.iv_offer_credit_sum]"} {html {size 10 maxlength 10 disabled t}} {help_text "[_ invoices.iv_offer_credit_sum_help]"} {after_html $currency}}
+	}
+    } else {
+	ad_form -extend -name iv_offer_form -form {
+	    {credit_percent:text(hidden) {value 0}
+	    {credit_sum:text(hidden) {value 0}
+	}
+    }
+
+    ad_form -extend -name iv_offer_form -form {
 	{amount_sum:float,optional {label "[_ invoices.iv_offer_amount_sum]"} {html {size 10 maxlength 10 disabled t}} {help_text "[_ invoices.iv_offer_amount_sum_help]"} {after_html $currency}}
 	{amount_total:float,optional {label "[_ invoices.iv_offer_amount_total]"} {html {size 10 maxlength 10}} {help_text "[_ invoices.iv_offer_amount_total_help]"} {after_html $currency}}
     }
@@ -547,7 +571,8 @@ ad_form -extend -name iv_offer_form -new_request {
 				  -date_comment $date_comment \
 				  -payment_days $payment_days \
 				  -vat_percent $vat_percent \
-				  -vat $vat]
+				  -vat $vat \
+				  -credit_percent $credit_percent]
 
 	if {[exists_and_not_null category_ids]} {
 	    category::map_object -object_id $new_offer_rev_id $category_ids
@@ -592,7 +617,8 @@ ad_form -extend -name iv_offer_form -new_request {
 				  -date_comment $date_comment \
 				  -payment_days $payment_days \
 				  -vat_percent $vat_percent \
-				  -vat $vat]
+				  -vat $vat \
+				  -credit_percent $credit_percent]
 
 	if {[exists_and_not_null category_ids]} {
 	    category::map_object -object_id $new_offer_rev_id $category_ids
@@ -624,8 +650,8 @@ ad_form -extend -name iv_offer_form -new_request {
 		set new_item_rev_id [iv::offer_item::new \
 					 -offer_id $new_offer_rev_id \
 					 -title $item(title) \
-					 -description $item(description)  \
-					 -comment $item(comment)  \
+					 -description $item(description) \
+					 -comment $item(comment) \
 					 -item_nr $item(nr) \
 					 -item_units $item(units) \
 					 -price_per_unit $item(price) \

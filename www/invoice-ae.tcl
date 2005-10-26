@@ -174,6 +174,14 @@ if {!$_invoice_id} {
 	    set offer(rebate) [format "%.1f" $offer(rebate)]
 	    set offer(category) [lang::util::localize [category::get_name $offer(category_id)]]
 
+	    if {[empty_string_p $offer(credit_percent)]} {
+		set offer(credit_percent) 0.
+	    }
+	    set offer(credit) [format "%.1f" [expr $offer(item_units) * (($offer(credit_percent) + 100.) / 100.)]]
+	    set offer(credit) [format "%.2f" [expr $offer(credit) * $offer(price_per_unit)]]
+	    set offer(credit) [format "%.2f" [expr (1. - ($offer(rebate) / 100.)) * $offer(credit)]]
+	    set offer(credit) [format "%.2f" [expr $offer(credit) - $offer(amount)]]
+	
 	    set offer_name "$offer(category): $offer(item_units) x $offer(price_per_unit) $currency = $offer(amount_sum) $currency"
 	    if {$offer(rebate) > 0} {
 		append offer_name " - $offer(rebate)% [_ invoices.iv_offer_item_rebate] = $offer(amount) $currency"
@@ -200,6 +208,14 @@ if {!$_invoice_id} {
 	set offer(amount) [format "%.2f" [expr (1. - ($offer(rebate) / 100.)) * $offer(amount_sum)]]
 	set offer(rebate) [format "%.1f" $offer(rebate)]
 	set offer(category) [lang::util::localize [category::get_name $offer(category_id)]]
+
+	if {[empty_string_p $offer(credit_percent)]} {
+	    set offer(credit_percent) 0.
+	}
+	set offer(credit) [format "%.1f" [expr $offer(item_units) * (($offer(credit_percent) + 100.) / 100.)]]
+	set offer(credit) [format "%.2f" [expr $offer(credit) * $offer(price_per_unit)]]
+	set offer(credit) [format "%.2f" [expr (1. - ($offer(rebate) / 100.)) * $offer(credit)]]
+	set offer(credit) [format "%.2f" [expr $offer(credit) - $offer(amount)]]
 	
 	set offer_name "$offer(category): $offer(item_units) x $offer(price_per_unit) $currency = $offer(amount_sum) $currency"
 	if {$offer(rebate) > 0} {
@@ -260,9 +276,11 @@ ad_form -extend -name iv_invoice_form -new_request {
     set category_ids [category::ad_form::get_categories -container_object_id $container_objects(invoice_id)]
 
     set total_amount 0.
+    set total_credit 0.
     foreach offer_item_id [array names offer_item_ids] {
 	array set offer $offers($offer_item_id)
 	set total_amount [expr $total_amount + $offer(amount)]
+	set total_credit [expr $total_credit + $offer(credit)]
     }
     set total_amount [format "%.2f" $total_amount]
     set amount_sum $total_amount
@@ -310,6 +328,25 @@ ad_form -extend -name iv_invoice_form -new_request {
 				     -sort_order $counter \
 				     -vat $offer(vat) ]
 	}
+
+	# add credit offer entry
+	if {$total_credit > 0.} {
+	    set vat_credit [format "%.2f" [expr $total_credit * $vat_percent / 100.]]
+	    db_1row get_credit_offer {}
+
+	    # add new offer item
+	    set offer_item_rev_id [iv::offer_item::new \
+				       -offer_id $credit_offer_rev_id \
+				       -title $title \
+				       -description $description \
+				       -comment "" \
+				       -item_nr $invoice_id \
+				       -item_units 1 \
+				       -price_per_unit $total_credit \
+				       -rebate 0 \
+				       -sort_order $invoice_id \
+				       -vat $vat_credit]
+	}
     }
 } -edit_data {
     db_transaction {
@@ -351,6 +388,26 @@ ad_form -extend -name iv_invoice_form -new_request {
 				     -amount_total $offer(amount) \
 				     -sort_order $counter \
 				     -vat $offer(vat) ]
+	}
+
+	# edit credit offer entry
+	if {$total_credit > 0.} {
+	    set vat_credit [format "%.2f" [expr $total_credit * $vat_percent / 100.]]
+	    db_1row get_credit_offer_item {}
+
+	    # edit offer item
+	    set offer_item_rev_id [iv::offer_item::edit \
+				       -offer_item_id $credit_offer_item_id \
+				       -offer_id $credit_offer_rev_id \
+				       -title $title \
+				       -description $description \
+				       -comment "" \
+				       -item_nr $invoice_id \
+				       -item_units 1 \
+				       -price_per_unit $total_credit \
+				       -rebate 0 \
+				       -sort_order $invoice_id \
+				       -vat $vat_credit]
 	}
     }
 } -after_submit {

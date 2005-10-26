@@ -221,41 +221,53 @@ ad_proc -public -callback acs_mail_lite::email_form_elements -impl invoices {
     -varname:required
 } {
 } {
-    upvar elements $varname template_list template_list template_type template_type template_object template_object
+    upvar $varname elements template_type template_type template_object template_object template_locale template_locale template_package_id template_package_id template_list template_list next_section next_section
 
-    if {[exists_and_not_null template_list]} {
-	append elements {
-	    {template:text(select)
-		{label "[_ invoices.email_template]"}
-		{options $template_list}
-		{section "[_ contacts.Message]"}
-	    }
-	    {template_type:text(hidden)
-		{value $template_type}
-	    }
-	    {template_object:text(hidden)
-		{value $template_object}
-	    }
+    if {[exists_and_not_null template_type]} {
+
+	set template_list [list]
+	db_foreach get_messages {
+	    select CASE WHEN owner_id = :template_package_id THEN 'public' ELSE contact__name(owner_id) END as public_display,
+	           title, item_id
+	    from contact_messages
+	    where (owner_id in ( select party_id from parties )
+	           or owner_id = :template_package_id)
+	    and message_type = :template_type
+	    order by CASE WHEN owner_id = :template_package_id THEN '000000000' ELSE upper(contact__name(owner_id)) END, message_type, upper(title)
+	} {
+	    lappend template_list [list "$title ($public_display)" $item_id]
 	}
+
+	append elements {
+	    {template_id:text(select) {label "[_ invoices.email_pdf_template]"} {options $template_list} {section "[_ contacts.Message]"}}
+	    {template_type:text(hidden) {value $template_type}}
+	    {template_object:text(hidden) {value $template_object}}
+	    {template_locale:text(hidden) {value $template_locale}}
+	    {template_package_id:text(hidden) {value $template_package_id}}
+	}
+	set next_section ""
     }
 }
 
 ad_proc -public -callback acs_mail_lite::files -impl invoices {
     -varname:required
-    -recipient_id
+    -recipient_ids:required
 } {
 } {
-    upvar file_ids $varname template template template_type template_type template_object template_object
+    upvar $varname file_ids template_id template_id template_type template_type template_object template_object
+    set recipient_id [lindex $recipient_ids 0]
 
     if {[exists_and_not_null template_type] && $template_type == "invoice"} {
 
-	switch $template_type {
-	    invoice        { set pdf_title "Invoice" }
-	    invoice_cancel { set pdf_title "Cancellation" }
-	    invoice_credit { set pdf_title "Credit" }
-	    offer          { set pdf_title "Offer" }
-	    offer_accpeted { set pdf_title "Accepted_Offer" }
+	if {![db_0or1row get_pretty_type {
+	    select pretty_name
+	    from contact_message_types
+	    where message_type = :template_type
+	}]} {
+	    return
 	}
+
+	set pdf_title [string map {{ } _} [lang::util::localize $pretty_type $locale]]
 
 	if {$template_type == "invoice" || $template_type == "invoice_cancel" || $template_type == "invoice_credit"} {
 	    set invoice_id $template_object
@@ -284,5 +296,41 @@ ad_proc -public -callback acs_mail_lite::files -impl invoices {
 		lappend file_ids [cr_import_content -title "${pdf_title}_${offer_id}.pdf" -description "PDF version of <a href=[export_vars -base "/invoices/offer-ae" -url {{mode display} offer_id}]>this offer</a>" $offer_id $pdf_file $file_size application/pdf "[clock seconds]-[expr round([ns_rand]*100000)]"]
 	    }
         }
+    }
+}
+
+ad_proc -public -callback contact::organization_new_group -impl invoices {
+    {-organization_id:required}
+    {-group_id:required}
+} {
+    Callback to create an empty project linked to a new empty credit offer for the customer.
+} {
+    set list_of_create_groups [list "Customers"]
+    set group_ids [list]
+    foreach group_name $list_of_create_groups {
+	lappend group_ids [group::get_id -group_name $group_name]
+    }
+
+    set already_offer_p [db_0or1row check_for_offer {
+	select of.offer_id as credit_offer_rev_id
+	from iv_offers of, cr_items oi, acs_rels r,
+	     pm_projects p, cr_items pi
+	where r.object_id_one = pi.item_id
+	and r.object_id_two = oi.item_id
+	and r.rel_type = 'application_data_link'
+	and oi.latest_revision = of.offer_id
+	and of.status = 'credit'
+	and pi.latest_revision = p.project_id
+	and p.status_id = 2
+	and p.customer_id = :organization_id
+    }]
+
+    if {[lsearch $group_ids $group_id] >-1 && $!already_offer_p} {
+	# Create the new project and credit offer
+	foreach package_id [apm_package_id_from_key invoices] {
+	    iv::offer::new_credit -organization_id $organization_id -package_id $package_id
+	    # add folders invoices, offers, accepted
+	    # callback: test if folder exists
+	}
     }
 }

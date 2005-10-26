@@ -66,7 +66,7 @@
 	       t.offer_nr, t.amount_total, t.vat, t.vat_percent, t.comment,
 	       to_char(t.finish_date, 'YYYY-MM-DD HH24:MI:SS') as finish_ansi,
 	       to_char(t.finish_date, 'YYYY-MM-DD HH24:MI:SS') as finish_date,
-	       o.creation_user, p.first_names, p.last_name,
+	       o.creation_user, p.first_names, p.last_name, t.credit_percent,
 	       to_char(o.creation_date, 'YYYY-MM-DD HH24:MI:SS') as creation_date,
 	       to_char(t.accepted_date, 'YYYY-MM-DD HH24:MI:SS') as accepted_date,
 	       t.amount_sum, t.payment_days, t.date_comment, t.currency,

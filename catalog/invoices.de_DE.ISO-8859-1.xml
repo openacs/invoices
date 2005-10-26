@@ -28,6 +28,10 @@
   <msg key="Cost_number">Kostennummer</msg>
   <msg key="Costs">Kosten</msg>
   <msg key="count">Zählung</msg>
+  <msg key="credit_offer_desc">Projektgutschriften</msg>
+  <msg key="credit_offer_title">Gutschriften</msg>
+  <msg key="credit_project_desc">Leeres Projekt zum Sammeln von Projektgutschriften</msg>
+  <msg key="credit_project_title">Gutschriften</msg>
   <msg key="CSV">CSV</msg>
   <msg key="Currency">Währung</msg>
   <msg key="Currency_paid">bezahlte Währung</msg>
@@ -37,9 +41,13 @@
   <msg key="Delete">Löschen</msg>
   <msg key="Due_date">Fälligkeit</msg>
   <msg key="Edit">Ändern</msg>
+  <msg key="email_pdf_template">Vorlage</msg>
   <msg key="File_count">Fileanzahl</msg>
   <msg key="Finish_date">Timing</msg>
   <msg key="Fixed_cost">Fixkisten?</msg>
+  <msg key="folder_iv_accepted">Auftragsbestätigungen</msg>
+  <msg key="folder_iv_invoice">Rechnungen</msg>
+  <msg key="folder_iv_offer">Angebote</msg>
   <msg key="Invoice">Rechnung</msg>
   <msg key="Invoice_Item">Rechnungsposition</msg>
   <msg key="Invoice_item_number">Positionsnummer</msg>
@@ -163,6 +171,8 @@
   <msg key="iv_offer_count_total">Anzahl Positionen</msg>
   <msg key="iv_offer_creation_date">erstellt am</msg>
   <msg key="iv_offer_creation_user">erstellt von</msg>
+  <msg key="iv_offer_credit_percent">Aufschlag</msg>
+  <msg key="iv_offer_credit_sum">Gutschriftbetrag</msg>
   <msg key="iv_offer_currency">Währung</msg>
   <msg key="iv_offer_date_comment">Teillieferung</msg>
   <msg key="iv_offer_date_comment_help">Interne Notizen, welche den Abgabetermin, welcher dem Kunden kommuniziert wurde, erläutern.</msg>
@@ -261,6 +271,7 @@
   <msg key="iv_price_list_1">Preisliste</msg>
   <msg key="iv_price_list_2">Preislisten</msg>
   <msg key="iv_price_list_Add">Preisliste hinzufügen</msg>
+  <msg key="iv_price_list_credit_percent">Aufschlag</msg>
   <msg key="iv_price_list_currency">Währung</msg>
   <msg key="iv_price_list_Delete">Preisliste löschen</msg>
   <msg key="iv_price_list_Description">Beschreibung</msg>
@@ -307,6 +318,11 @@
   <msg key="Sort_order">Nummer</msg>
   <msg key="Status">Status</msg>
   <msg key="Table">Tabelle</msg>
+  <msg key="template_invoice">Rechnung</msg>
+  <msg key="template_invoice_cancel">Stornorechnung</msg>
+  <msg key="template_invoice_credit">Gutschrift</msg>
+  <msg key="template_offer">Angebot</msg>
+  <msg key="template_offer_accepted">Auftragsbestätigung</msg>
   <msg key="Total_amount">Gesamtsumme</msg>
   <msg key="units">h</msg>
   <msg key="Unmounted">Unmounted</msg>

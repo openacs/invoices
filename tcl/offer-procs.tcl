@@ -347,3 +347,96 @@ ad_proc -public iv::offer::billed_p_not_cached {
 	return 0
     }
 }
+
+ad_proc -public iv::offer::new_credit {
+    -organization_id:required
+    {-package_id ""}
+} {
+    @creation-date 2005-10-10
+
+    Creates an empty and closed project and link a new offer with status credit
+    for the given organization
+} {
+    if {[empty_string_p $package_id]} {
+	set package_id [ad_conn package_id]
+    }
+    set user_id [ad_conn user_id]
+    set creation_ip [ad_conn peeraddr]
+    set dotlrn_club_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type "dotlrn_club"] 0]
+    set pm_package_id [dotlrn_community::get_package_id_from_package_key -package_key "project-manager" -community_id $dotlrn_club_id]
+    set contacts_package_id [lindex [application_link::get_linked -from_package_id $package_id -to_package_key contacts] 0]
+
+    db_transaction {
+	set project_rev_id [pm::project::new \
+				-project_name "#invoices.credit_project_title#" \
+				-description "#invoices.credit_project_desc#" \
+				-mime_type "text/plain" \
+				-status_id 2 \
+				-organization_id $organization_id \
+				-creation_user $user_id \
+				-creation_ip $creation_ip \
+				-package_id $pm_package_id]
+
+	set project_id [pm::project::get_project_item_id -project_id $project_rev_id]
+
+	# grant employees read access to project
+	set employees_group_id [group::get_id -group_name "Employees"]
+	if { ![empty_string_p $employees_group_id] } {
+	    permission::grant -object_id $project_id -party_id $employees_group_id -privilege read
+	}
+
+	set currency [iv::price_list::get_currency -organization_id $organization_id]
+	set vat_percent "16.0"
+	array set org_data [contacts::get_values \
+				-group_name "Customers" \
+				-object_type "organization" \
+				-party_id $organization_id \
+				-contacts_package_id $contacts_package_id]
+	if {[info exists org_data(vat_percent)]} {
+	    set vat_percent [format "%.1f" $org_data(vat_percent)]
+	}
+
+	set new_offer_rev_id [iv::offer::new \
+				  -title "#invoices.credit_offer_title#" \
+				  -description "#invoices.credit_offer_desc#" \
+				  -offer_nr [db_nextval iv_offer_seq] \
+				  -organization_id $organization_id \
+				  -amount_total 0 \
+				  -amount_sum 0 \
+				  -currency $currency \
+				  -payment_days 0 \
+				  -vat_percent $vat_percent \
+				  -vat 0 \
+				  -credit_percent 0 \
+				  -package_id $package_id]
+
+	iv::offer::set_status -offer_id $offer_id -status credit
+	set offer_id [pm::project::get_project_item_id -project_id $new_offer_rev_id]
+	application_data_link::new -this_object_id $offer_id -target_object_id $project_id
+    }
+}
+
+ad_proc -public iv::offer::pdf_folders {
+    -organization_id:required
+    {-package_id ""}
+} {
+    @creation-date 2005-10-10
+
+    Creates folders for offers, accepted offers, invoices (including credit and cancellations)
+} {
+    if {[empty_string_p $package_id]} {
+	set package_id [ad_conn package_id]
+    }
+
+    set root_folder_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type content_folder] 0]
+
+    db_transaction {
+	foreach foldername [list iv_offer iv_accepted iv_invoice] {
+	    set new_folder_id [fs::new_folder \
+				   -name $foldername \
+				   -pretty_name "#invoices.folder_$foldername#" \
+				   -parent_id $root_folder_id \
+				   -no_callback]
+	}
+    }
+}

@@ -50,13 +50,35 @@ function calculateItemAmount(i) {
 function calculateTotalAmount() {
     var form = document.forms.iv_offer_form;
     var total = 0.;
+    var credit_percent = form.credit_percent.value;
+    var credit = 0.;
 
     for (i=1; i<2+@start@; i++) {
+      units = form["item_units."+i].value
+      price = form["item_price."+i].value
       item_amount = form["amount_sum."+i].value
       item_rebate = form["item_rebate."+i].value
 
-      total = total + Math.round( (1*item_amount) * (100-item_rebate) ) /100;
+      item_total = Math.round( (1*item_amount) * (100-item_rebate) ) /100;
+
+      new_units = Math.round( (1*units) * (100+credit_percent) / 10 ) / 10;
+      new_amount = Math.round( 100* (1*new_units) * (1*price) ) /100;
+      new_total = Math.round( (1*new_amount) * (100-item_rebate) ) /100;
+
+      credit = credit + new_total - item_total;
+      total = total + item_total;
     }
+
+    form.credit_sum.value = formatCurrency(credit);
+    form.hidden_sum.value = formatCurrency(total);
+
+    calculateFinalAmount();
+}
+
+function calculateFinalAmount() {
+    var form = document.forms.iv_offer_form;
+
+    total = form.credit_sum.value + form.hidden_sum.value;
 
     form.amount_sum.value = formatCurrency(total);
     form.amount_total.value = formatCurrency(total);

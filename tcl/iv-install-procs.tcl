@@ -228,6 +228,24 @@ ad_proc -public iv::install::after_upgrade {
 		content::type::attribute::new -content_type {iv_offer} -attribute_name {status} -datatype {string} -pretty_name {[_ invoices.Status]} -column_spec {varchar(10)}
 		content::type::attribute::new -content_type {iv_invoice} -attribute_name {status} -datatype {string} -pretty_name {[_ invoices.Status]} -column_spec {varchar(10)}
 	    }
+	    0.01d14 0.01d15 {
+		db_transaction {
+		    set organization_ids [db_list {
+			select g.party_id
+			from groups g, organizations o
+			where g.group_name = 'Customers'
+			and o.organization_id = g.party_id
+		    }]
+
+		    set package_ids [apm_package_id_from_key invoices]
+		    foreach organization_id $organization_ids {
+			foreach package_id $package_ids {
+			    iv::offer::new_credit -organization_id $organization_id -package_id $package_id
+			    iv::offer::pdf_folders -organization_id $organization_id -package_id $package_id
+			}
+		    }
+		}
+	    }
 	}
 }
 

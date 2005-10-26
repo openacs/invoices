@@ -48,5 +48,6 @@ if {[empty_string_p $return_url]} {
     set return_url [export_vars -base "${invoice_url}offer-ae" {offer_id {mode display}}]
 }
 set extra_data [list offer_id $offer_id]
+set contacts_package_id [apm_package_id_from_key contacts]
 
 ad_return_template

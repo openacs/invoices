@@ -27,6 +27,10 @@
   <msg key="Cost_number">Cost number</msg>
   <msg key="Costs">Costs</msg>
   <msg key="count">Count</msg>
+  <msg key="credit_offer_desc">Credit awarded by projects</msg>
+  <msg key="credit_offer_title">Credit</msg>
+  <msg key="credit_project_desc">Empty project to collect credit from other projects</msg>
+  <msg key="credit_project_title">Credit</msg>
   <msg key="CSV">CSV</msg>
   <msg key="Currency">Currency</msg>
   <msg key="Currency_paid">Currency paid</msg>
@@ -35,9 +39,13 @@
   <msg key="Delete">Delete</msg>
   <msg key="Due_date">Due date</msg>
   <msg key="Edit">Edit</msg>
+  <msg key="email_pdf_template">Template</msg>
   <msg key="File_count">Number of files</msg>
   <msg key="Finish_date">Finish date</msg>
   <msg key="Fixed_cost">Fixed cost?</msg>
+  <msg key="folder_iv_accepted">Accepted Offers</msg>
+  <msg key="folder_iv_invoice">Invoices</msg>
+  <msg key="folder_iv_offer">Offers</msg>
   <msg key="Invoice">Invoice</msg>
   <msg key="Invoice_Item">Invoice Item</msg>
   <msg key="Invoice_item_number">Invoice item number</msg>
@@ -161,6 +169,8 @@
   <msg key="iv_offer_count_total">Total items</msg>
   <msg key="iv_offer_creation_date">Created on</msg>
   <msg key="iv_offer_creation_user">Created by</msg>
+  <msg key="iv_offer_credit_percent">Credit percent</msg>
+  <msg key="iv_offer_credit_sum">Credit sum</msg>
   <msg key="iv_offer_currency">Currency</msg>
   <msg key="iv_offer_date_comment">Date Comment:</msg>
   <msg key="iv_offer_date_comment_help">Internal Notes explaining the deadline communicated to the client</msg>
@@ -259,6 +269,7 @@
   <msg key="iv_price_list_1">Price List</msg>
   <msg key="iv_price_list_2">Price Lists</msg>
   <msg key="iv_price_list_Add">Add Price List</msg>
+  <msg key="iv_price_list_credit_percent">Credit percent</msg>
   <msg key="iv_price_list_currency">Currency</msg>
   <msg key="iv_price_list_Delete">Delete Price List</msg>
   <msg key="iv_price_list_Description">Description</msg>
@@ -305,6 +316,11 @@
   <msg key="Sort_order">Sort order</msg>
   <msg key="Status">Status</msg>
   <msg key="Table">Table</msg>
+  <msg key="template_invoice">Invoice</msg>
+  <msg key="template_invoice_cancel">Invoice cancellation</msg>
+  <msg key="template_invoice_credit">Credit</msg>
+  <msg key="template_offer">Offer</msg>
+  <msg key="template_offer_accepted">Accepted Offer</msg>
   <msg key="Total_amount">Total amount</msg>
   <msg key="units">h</msg>
   <msg key="Unmounted">Unmounted</msg>

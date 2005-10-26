@@ -6,7 +6,8 @@
 
 	select t.organization_id, t.currency, t.accepted_date,
 	       t.vat_percent as cur_vat_percent, t.offer_id as offer_rev_id,
-	       (t.amount_total - t.amount_sum) as sum_total_diff
+	       (t.amount_total - t.amount_sum) as sum_total_diff,
+               t.credit_percent as _credit_percent
 	from iv_offers t, cr_items i
 	where i.latest_revision = t.offer_id
 	and i.item_id = :offer_id
@@ -52,6 +53,16 @@
     from iv_prices p, cr_items i
     where p.list_id = :list_id
     and p.price_id = i.latest_revision
+
+      </querytext>
+</fullquery>
+
+<fullquery name="credit_percent">
+      <querytext>
+
+    select credit_percent as _credit_percent
+    from iv_price_lists
+    where list_id = :list_id
 
       </querytext>
 </fullquery>

@@ -76,11 +76,11 @@
       <querytext>
 
     select cr.title, cr.description, ofi.offer_item_id, ofi.item_units, ofi.offer_id,
-           ofi.price_per_unit, ofi.item_nr, pi.item_id as project_id,
+           ofi.price_per_unit, ofi.item_nr, pi.item_id as project_id, of.credit_percent,
            pr.title as project_title, ofi.vat, ofi.rebate, m.category_id
     from iv_offer_items ofi, cr_items oi, cr_revisions cr,
          cr_items pi, cr_revisions pr, acs_objects o, acs_rels r,
-         category_object_map m
+         category_object_map m, iv_offers of
     where o.object_id = ofi.offer_id
     and o.package_id = :package_id
     and oi.latest_revision = ofi.offer_id
@@ -91,6 +91,7 @@
     and pi.item_id in ([join $project_id ,])
     and cr.revision_id = ofi.offer_item_id
     and m.object_id = ofi.offer_item_id
+    and of.offer_id = ofi.offer_id
     and not exists (select 1
 		    from iv_invoice_items ii, iv_invoices i
 		    where ii.offer_item_id = ofi.offer_item_id
@@ -107,9 +108,10 @@
 	select ir.title, ir.description, ir.item_id as iv_item_id,
                i.item_units, i.price_per_unit, i.item_nr, ofi.offer_id,
                pi.item_id as project_id, pr.title as project_title,
-               i.vat as old_vat, i.rebate, m.category_id, i.offer_item_id
+               i.vat as old_vat, i.rebate, m.category_id, i.offer_item_id,
+               of.credit_percent
 	from cr_items oi, iv_offer_items ofi, iv_invoice_items i,
-	     cr_revisions ir, cr_items pi, cr_revisions pr,
+	     cr_revisions ir, cr_items pi, cr_revisions pr, iv_offers of,
 	     cr_items vi, cr_items ii, acs_rels r, category_object_map m
 	where oi.latest_revision = ofi.offer_id
 	and i.offer_item_id = ofi.offer_item_id
@@ -122,6 +124,7 @@
         and r.rel_type = 'application_data_link'
 	and pr.revision_id = pi.latest_revision
         and m.object_id = ofi.offer_item_id
+        and of.offer_id = ofi.offer_id
 	order by pi.item_id, i.item_nr
 
       </querytext>
@@ -186,6 +189,50 @@
 				from iv_invoice_items ii
 				where ii.offer_item_id = ofi.offer_item_id)
 		group by o.offer_id
+
+      </querytext>
+</fullquery>
+
+<fullquery name="get_credit_offer">
+      <querytext>
+
+		select of.offer_id as credit_offer_rev_id
+		from iv_offers of, cr_items oi, acs_rels r,
+		     acs_objects o, pm_projects p, cr_items pi
+		where r.object_id_one = pi.item_id
+		and r.object_id_two = oi.item_id
+		and r.rel_type = 'application_data_link'
+		and oi.latest_revision = of.offer_id
+		and of.status = 'credit'
+		and o.object_id = of.offer_id
+		and o.package_id = :package_id
+		and pi.latest_revision = p.project_id
+		and p.status_id = 2
+		and p.customer_id = :organization_id
+
+      </querytext>
+</fullquery>
+
+<fullquery name="get_credit_offer_item">
+      <querytext>
+
+		select ofi.offer_id as credit_offer_rev_id,
+                       oi.item_id as credit_offer_item_id
+		from iv_offers of, cr_items i, acs_objects o, acs_rels r,
+                     iv_offer_items ofi, cr_items oi, pm_projects p, cr_items pi
+		where r.object_id_one = pi.item_id
+		and r.object_id_two = i.item_id
+		and r.rel_type = 'application_data_link'
+		and o.object_id = of.offer_id
+		and o.package_id = :package_id
+		and of.offer_id = ofi.offer_id
+		and of.status = 'credit'
+		and i.latest_revision = of.offer_id
+		and oi.latest_revision = ofi.offer_item_id
+		and ofi.item_nr = :invoice_id
+		and pi.latest_revision = p.project_id
+		and p.status_id = 2
+		and p.customer_id = :organization_id
 
       </querytext>
 </fullquery>

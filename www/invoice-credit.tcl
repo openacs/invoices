@@ -58,14 +58,15 @@ ad_form -extend -name iv_invoice_credit_form -new_request {
     set invoice_nr [db_nextval iv_invoice_seq]
     set total_amount ""
     set vat_percent "16.0"
-    # set contacts_package_id [lindex [application_link::get_linked -from_package_id $package_id -to_package_key contacts] 0]
-    # array set org_data [contacts::get_values \
-#			    -group_name "#acs-translation.Customers#" \
-#			    -object_type "organization" \
-#			    -party_id $organization_id \
-#			    -contacts_package_id $contacts_package_id]
-    # set vat_percent [format "%.1f" $org_data(vat_percent)]
-    set vat_percent [format "%.1f" $vat_percent]
+    set contacts_package_id [lindex [application_link::get_linked -from_package_id $package_id -to_package_key contacts] 0]
+    array set org_data [contacts::get_values \
+			    -group_name "Customers" \
+			    -object_type "organization" \
+			    -party_id $organization_id \
+			    -contacts_package_id $contacts_package_id]
+    if {[info exists org_data(vat_percent)]} {
+	set vat_percent [format "%.1f" $org_data(vat_percent)]
+    }
 } -on_submit {
     set category_ids [category::ad_form::get_categories -container_object_id $container_objects(invoice_id)]
 } -new_data {

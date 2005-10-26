@@ -169,4 +169,5 @@ template::list::create \
 db_multirow -extend {project_link} projects projects_to_bill {} {
     set project_link [export_vars -base "${pm_base_url}one" {{project_item_id $project_id}}]
     set amount_open [format "%.2f" $amount_open]
+    set creation_date [lc_time_fmt $creation_date "%q %X"]
 }

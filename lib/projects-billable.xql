@@ -5,7 +5,7 @@
       <querytext>
 
     select r.item_id as project_id, r.title, r.description, sub.amount_open,
-           to_char(sub.creation_date, :timestamp_format) as creation_date,  total.count_total, billed.count_billed, name
+           sub.creation_date,  total.count_total, billed.count_billed, name
     from (
     select oi.item_id as offer_id, pr.revision_id, o.creation_date,
 	   sum(ofi.item_units * ofi.price_per_unit * (1-(ofi.rebate/100))) as amount_open,

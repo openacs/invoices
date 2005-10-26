@@ -410,8 +410,8 @@ ad_proc -public iv::offer::new_credit {
 				  -credit_percent 0 \
 				  -package_id $package_id]
 
-	iv::offer::set_status -offer_id $offer_id -status credit
 	set offer_id [pm::project::get_project_item_id -project_id $new_offer_rev_id]
+	iv::offer::set_status -offer_id $offer_id -status credit
 	application_data_link::new -this_object_id $offer_id -target_object_id $project_id
     }
 }
@@ -430,13 +430,15 @@ ad_proc -public iv::offer::pdf_folders {
 
     set root_folder_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type content_folder] 0]
 
-    db_transaction {
-	foreach foldername [list iv_offer iv_accepted iv_invoice] {
-	    set new_folder_id [fs::new_folder \
-				   -name $foldername \
-				   -pretty_name "#invoices.folder_$foldername#" \
-				   -parent_id $root_folder_id \
-				   -no_callback]
+    if {![empty_string_p $root_folder_id]} {
+	db_transaction {
+	    foreach foldername [list iv_offer iv_accepted iv_invoice] {
+		set new_folder_id [fs::new_folder \
+				       -name "${foldername}_$root_folder_id" \
+				       -pretty_name "#invoices.folder_$foldername#" \
+				       -parent_id $root_folder_id \
+				       -no_callback]
+	    }
 	}
     }
 }

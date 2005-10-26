@@ -230,11 +230,12 @@ ad_proc -public iv::install::after_upgrade {
 	    }
 	    0.01d14 0.01d15 {
 		db_transaction {
-		    set organization_ids [db_list {
-			select g.party_id
-			from groups g, organizations o
+		    set organization_ids [db_list all_organizations {
+			select m.member_id
+			from groups g, organizations o, group_member_map m
 			where g.group_name = 'Customers'
-			and o.organization_id = g.party_id
+			and g.group_id = m.group_id
+			and o.organization_id = m.member_id
 		    }]
 
 		    set package_ids [apm_package_id_from_key invoices]

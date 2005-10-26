@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <queryset>
 
-<fullquery name="iv::offer::set_status.set_status">
+<fullquery name="iv::offer::set_status.update_status">
       <querytext>
 
 	update iv_offers

@@ -47,6 +47,7 @@ function calculateItemAmount(i) {
     calculateTotalAmount();
 }
 
+<if @_credit_percent@ gt 0>
 function calculateTotalAmount() {
     var form = document.forms.iv_offer_form;
     var total = 0.;
@@ -70,19 +71,30 @@ function calculateTotalAmount() {
     }
 
     form.credit_sum.value = formatCurrency(credit);
-    form.hidden_sum.value = formatCurrency(total);
-
-    calculateFinalAmount();
+    form.amount_sum.value = formatCurrency(total);
+    form.amount_total.value = formatCurrency(total);
 }
-
-function calculateFinalAmount() {
+</if><else>
+function calculateTotalAmount() {
     var form = document.forms.iv_offer_form;
+    var total = 0.;
 
-    total = form.credit_sum.value + form.hidden_sum.value;
+    for (i=1; i<2+@start@; i++) {
+      units = form["item_units."+i].value
+      price = form["item_price."+i].value
+      item_amount = form["amount_sum."+i].value
+      item_rebate = form["item_rebate."+i].value
+
+      item_total = Math.round( (1*item_amount) * (100-item_rebate) ) /100;
+
+      total = total + item_total;
+    }
 
     form.amount_sum.value = formatCurrency(total);
     form.amount_total.value = formatCurrency(total);
 }
+</else>
+
 </script>
 </if>
 

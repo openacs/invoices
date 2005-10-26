@@ -2,6 +2,7 @@
 <message_catalog package_key="invoices" package_version="0.01d15" locale="en_US" charset="ISO-8859-1">
 
   <msg key="Accepted_date">Accepted on</msg>
+  <msg key="Add_offer_project">Add offer project</msg>
   <msg key="admin">Admin</msg>
   <msg key="admin_categories">Categories Administration</msg>
   <msg key="aggregate_iv_from">Aggregate invocies from this time of years and beyond.</msg>

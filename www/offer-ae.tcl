@@ -196,7 +196,6 @@ if {!$has_submit} {
     # we are adding/editing data
     ad_form -extend -name iv_offer_form -form {
 	{vat_percent:float {label "[_ invoices.iv_offer_vat_percent]"} {html {size 5 maxlength 10}} {help_text "[_ invoices.iv_offer_vat_percent_help]"} {after_html {%}}}
-	{hidden_sum:text(hidden) {value 0}}
     }
 
     if {![empty_string_p $_credit_percent] && $_credit_percent > 0} {

@@ -54,7 +54,10 @@ set pm_base_url [apm_package_url_from_id [dotlrn_community::get_package_id_from_
 set p_closed_id [pm::project::default_status_closed]
 set t_closed_id [pm::task::default_status_closed]
 set currency [iv::price_list::get_currency -organization_id $organization_id]
-set contacts_url [apm_package_url_from_key contacts]
+set contacts_p [apm_package_installed_p contacts]
+if { $contacts_p } {
+    set contacts_url [apm_package_url_from_key contacts]
+}
 
 if {$no_actions_p} {
     set actions ""
@@ -82,6 +85,10 @@ template::list::create \
 	    label {[_ invoices.iv_invoice_project_title]}
 	    display_template {<a href="@projects.project_link@">@projects.title@</a>}
         }
+	recipient {
+	    label "[_ invoices.iv_invoice_recipient]"
+	    display_template {@projects.recipient;noquote@ }
+	}
         description {
 	    label {[_ invoices.iv_invoice_project_descr]}
         }
@@ -164,8 +171,15 @@ template::list::create \
     }
 
 
-db_multirow -extend {project_link} projects projects_to_bill {} {
+
+db_multirow -extend {project_link recipient} projects projects_to_bill {} {
     set project_link [export_vars -base "${pm_base_url}one" {{project_item_id $project_id}}]
     set amount_open [format "%.2f" $amount_open]
     set creation_date [lc_time_fmt $creation_date "%q %X"]
+
+    if { $contacts_p } {
+	set recipient "<a href=\"[contact::url -party_id $recipient_id]\">[contact::name -party_id $recipient_id]</a>"
+    } else {
+	set recipient [person::name -person_id $recipient_id]
+    }
 }

@@ -9,7 +9,7 @@
 	   t.paid_currency, p.first_names, p.last_name, o.creation_user,
 	   to_char(o.creation_date, :timestamp_format) as creation_date,
 	   to_char(t.due_date, :date_format) as due_date, t.parent_invoice_id,
-           t.invoice_id as invoice_rev_id, t.cancelled_p, t.status
+           t.invoice_id as invoice_rev_id, t.cancelled_p, t.status, t.recipient_id
     from cr_folders cf, cr_items ci, cr_revisions cr, iv_invoices t,
          acs_objects o, persons p
     where cr.revision_id = ci.latest_revision

@@ -70,6 +70,10 @@ template::list::create \
 	    label {[_ invoices.iv_invoice_paid_amount]}
 	    display_template {<if @iv_invoice.paid_currency@ not nil>@iv_invoice.paid_amount@ @iv_invoice.paid_currency@</if>}
         }
+	recipient {
+	    label "[_ invoices.iv_invoice_recipient]"
+	    display_template "@iv_invoice.recipient;noquote@"
+	}
 	creation_user {
 	    label {[_ invoices.iv_invoice_creation_user]}
 	    display_template {<a href="@iv_invoice.creator_link@">@iv_invoice.first_names@ @iv_invoice.last_name@</if>}
@@ -157,7 +161,9 @@ template::list::create \
 	}
     }
 
-db_multirow -extend {creator_link edit_link cancel_link delete_link checkbox} iv_invoice iv_invoice {} {
+set contacts_p [apm_package_installed_p contacts]
+
+db_multirow -extend {creator_link edit_link cancel_link delete_link checkbox recipient} iv_invoice iv_invoice {} {
     # Ugly hack. We should find out which contact package is linked
     set creator_link "/contacts/$creation_user"
     set edit_link [export_vars -base "${base_url}invoice-ae" {invoice_id}]
@@ -174,5 +180,10 @@ db_multirow -extend {creator_link edit_link cancel_link delete_link checkbox} iv
 	set checkbox "<input type=checkbox name=invoice_id value=\"$invoice_id\">"
     } else {
 	set checkbox ""
+    }
+    if { $contacts_p } {
+	set recipient "<a href=\"[contact::url -party_id $recipient_id]\">[contact::name -party_id $recipient_id]</a>"
+    } else {
+	set recipient [person::name -person_id $recipient_id]
     }
 }

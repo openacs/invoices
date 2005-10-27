@@ -5,7 +5,7 @@
       <querytext>
 
     select r.item_id as project_id, r.title, r.description, sub.amount_open,
-           sub.creation_date,  total.count_total, billed.count_billed, name
+           sub.creation_date,  total.count_total, billed.count_billed, name, billed.recipient_id
     from (
     select oi.item_id as offer_id, pr.revision_id, o.creation_date,
 	   sum(ofi.item_units * ofi.price_per_unit * (1-(ofi.rebate/100))) as amount_open,
@@ -36,7 +36,7 @@
     where ofi.offer_id = oi.latest_revision
     group by oi.item_id
     ) total, (
-    select count(i.invoice_id) as count_billed, oi.item_id
+    select count(i.invoice_id) as count_billed, oi.item_id, i.recipient_id
     from cr_items oi, iv_offer_items ofi
     left outer join iv_invoice_items ii
     on (ii.offer_item_id = ofi.offer_item_id)
@@ -44,7 +44,7 @@
     on (ii.invoice_id = i.invoice_id
         and i.cancelled_p = 'f')
     where ofi.offer_id = oi.latest_revision
-    group by oi.item_id
+    group by oi.item_id, i.recipient_id
     ) billed, cr_revisions r
     where r.revision_id = sub.revision_id
     and total.item_id = sub.offer_id

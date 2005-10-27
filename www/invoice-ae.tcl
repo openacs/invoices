@@ -305,6 +305,7 @@ ad_form -extend -name iv_invoice_form -new_request {
 				    -vat_percent $vat_percent \
 				    -vat $vat]
 
+	set invoice_id [content::revision::item_id -revision_id $new_invoice_rev_id]
 	if {[exists_and_not_null category_ids]} {
 	    category::map_object -object_id $new_invoice_rev_id $category_ids
 	}

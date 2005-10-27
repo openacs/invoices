@@ -82,6 +82,30 @@ ad_form -extend -name iv_invoice_cancel_form -new_request {
 				    -vat_percent $vat_percent \
 				    -vat $vat]
 
+	# add credit offer entry
+	set parent_item_id [content::revision::item_id -revision_id $parent_id]
+	db_1row get_credit_offer {}
+
+	if {[db_0or1row get_old_credit {} && $old_credit > 0.} {
+	    # cancelled invoice has credit
+	    set invoice_id [content::revision::item_id -revision_id $new_invoice_rev_id]
+	    set total_credit "-$old_credit"
+	    set vat_credit [format "%.2f" [expr $total_credit * $vat_percent / 100.]]
+
+	    # add new offer item
+	    set offer_item_rev_id [iv::offer_item::new \
+				       -offer_id $credit_offer_rev_id \
+				       -title $title \
+				       -description $description \
+				       -comment "" \
+				       -item_nr $invoice_id \
+				       -item_units 1 \
+				       -price_per_unit $total_credit \
+				       -rebate 0 \
+				       -sort_order $invoice_id \
+				       -vat $vat_credit]
+	}
+
 	if {[exists_and_not_null category_ids]} {
 	    category::map_object -object_id $new_invoice_rev_id $category_ids
 	}

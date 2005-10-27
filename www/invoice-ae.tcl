@@ -437,7 +437,7 @@ ad_form -extend -name iv_invoice_form -new_request {
 	}
     }
 
-    ad_returnredirect [export_vars -base invoice-list {organization_id}]
+    ad_returnredirect "/contacts/$organization_id/"
     ad_script_abort
 }
 

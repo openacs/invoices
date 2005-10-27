@@ -59,11 +59,13 @@ function calculateTotalAmount() {
       price = form["item_price."+i].value
       item_amount = form["amount_sum."+i].value
       item_rebate = form["item_rebate."+i].value
+      item_total = 0.
+      new_total = 0.
 
       item_total = Math.round( (1*item_amount) * (100-item_rebate) ) /100;
 
-      new_units = Math.round( (1*units) * (100+credit_percent) / 10 ) / 10;
-      new_amount = Math.round( 100* (1*new_units) * (1*price) ) /100;
+      new_units = formatCurrency( Math.round( (1.*units) * (100. + (1.*credit_percent)) / 10. ) / 10. );
+      new_amount = formatCurrency( Math.round( 100* (1*new_units) * (1.*price) ) /100. );
       new_total = Math.round( (1*new_amount) * (100-item_rebate) ) /100;
 
       credit = credit + new_total - item_total;

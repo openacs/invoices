@@ -68,16 +68,6 @@
       </querytext>
 </fullquery>
 
-<fullquery name="credit_percent">
-      <querytext>
-
-    select credit_percent as _credit_percent
-    from iv_price_lists
-    where list_id = :list_id
-
-      </querytext>
-</fullquery>
-
 <fullquery name="get_project">
       <querytext>
 

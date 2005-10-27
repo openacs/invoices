@@ -116,10 +116,6 @@ set currency_options [db_list_of_lists currencies {}]
 
 set list_id [iv::price_list::get_list_id -organization_id $organization_id]
 db_multirow pricelist all_prices {}
-if {$_offer_id && !$has_submit} {
-    # new offer
-    db_1row credit_percent {}
-}
 
 ad_form -name iv_offer_form -action offer-ae -mode $mode -has_submit $has_submit -has_edit $has_edit -export {organization_id return_url} -form {
     {offer_id:key}
@@ -199,8 +195,9 @@ if {!$has_submit} {
     }
 
     if {![empty_string_p $_credit_percent] && $_credit_percent > 0} {
+	set _credit_percent [format "%.1f" $_credit_percent]
 	ad_form -extend -name iv_offer_form -form {
-	    {credit_percent:float {label "[_ invoices.iv_offer_credit_percent]"} {html {size 5 maxlength 10 onChange calculateTotalAmount()}} {help_text "[_ invoices.iv_offer_credit_percent_help]"} {after_html {%}}}
+	    {credit_percent:float {label "[_ invoices.iv_offer_credit_percent]"} {html {size 5 maxlength 10 onChange calculateTotalAmount()}} {help_text "[_ invoices.iv_offer_credit_percent_help]"} {value $_credit_percent} {after_html {%}}}
 	    {credit_sum:float,optional {label "[_ invoices.iv_offer_credit_sum]"} {html {size 10 maxlength 10 disabled t}} {help_text "[_ invoices.iv_offer_credit_sum_help]"} {after_html $currency}}
 	}
     } else {
@@ -221,6 +218,7 @@ if {$_offer_id} {
     # edit or display existing offer
     set i 0
     set amount_sum 0.
+    set total_credit 0.
 
     db_foreach offer_items {} -column_array item {
 	incr i
@@ -229,6 +227,12 @@ if {$_offer_id} {
 	set item(amount_total) [format "%.2f" [expr (1. - ($item(rebate) / 100.)) * $item(amount_sum)]]
 	set item(rebate) [format "%.1f" $item(rebate)]
 	set item(category) [lang::util::localize [category::get_name $item(category_id)]]
+
+	# calculate credit from this item
+	set item_credit [format "%.1f" [expr $item(item_units) * (1+ ($_credit_percent / 100.))]]
+	set item_credit [format "%.2f" [expr $item_credit * $item(price_per_unit)]]
+	set item_credit [format "%.2f" [expr (1. - ($item(rebate) / 100.)) * $item_credit]]
+	set total_credit [expr $total_credit + $item_credit - $item(amount_total)]
 
 	set item_name "$item(category): $item(item_units) x $item(price_per_unit) $currency = $item(amount_sum) $currency"
 	if {$item(rebate) > 0} {
@@ -486,7 +490,6 @@ ad_form -extend -name iv_offer_form -new_request {
     set offer_nr [db_nextval iv_offer_seq]
     set amount_sum "0.00"
     set amount_total "0.00"
-    set credit_percent [format "%.1f" $_credit_percent]
     set credit_sum "0.00"
 
     # get this from organization_id
@@ -512,8 +515,8 @@ ad_form -extend -name iv_offer_form -new_request {
     if {$amount_total == 0} {
 	set amount_total $amount_sum
     }
-
     set amount_total [format "%.2f" $amount_total]
+    set credit_sum $total_credit
 
     if {$has_submit} {
 	set amount_sum [format "%.2f" $amount_sum_]

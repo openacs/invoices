@@ -306,7 +306,7 @@ if {$_offer_id} {
 			   [list help_text "[_ invoices.iv_offer_item_file_count_help]"] \
 			   [list section "[_ invoices.iv_offer_item_1] $i"] ] ]
 	    ad_form -extend -name iv_offer_form -form \
-		[list [list "item_category.${i}:text(category),optional" \
+		[list [list "item_category.${i}:text(category)" \
 			   [list label "[_ invoices.iv_offer_item_category]"] \
 			   [list value [list $item(offer_item_id) $container_objects(offer_item_id)]] \
 			   [list help_text "[_ invoices.iv_offer_item_category_help]"] \
@@ -402,7 +402,7 @@ if {!$has_submit} {
 		       [list help_text "[_ invoices.iv_offer_item_file_count_help]"] \
 		       [list section "[_ invoices.iv_offer_item_1] $i"] ] ]
 	ad_form -extend -name iv_offer_form -form \
-	    [list [list "item_category.${i}:text(category),optional" \
+	    [list [list "item_category.${i}:text(category)" \
 		       [list label "[_ invoices.iv_offer_item_category]"] \
 		       [list html [list onChange setItemPrice(${i})]] \
 		       [list value [list 0 $container_objects(offer_item_id)]] \

@@ -55,6 +55,7 @@
   <msg key="Invoice_reference">Invoice reference</msg>
   <msg key="Invoices">Invoices</msg>
   <msg key="invoices">Invoices</msg>
+  <msg key="Invoices_items">Invoices Items</msg>
   <msg key="iv_cost_1">Cost</msg>
   <msg key="iv_cost_2">Costs</msg>
   <msg key="iv_cost_Add">Add Cost</msg>
@@ -297,6 +298,7 @@
   <msg key="Offer_number">Offer number</msg>
   <msg key="Offers">Cost Sheets</msg>
   <msg key="offers">Cost Sheets</msg>
+  <msg key="Offers_items">Offers Items</msg>
   <msg key="Page_count">Number of pages</msg>
   <msg key="Parent_invoice_item">Parent invoice item</msg>
   <msg key="Parent_offer_item">Parent cost item</msg>

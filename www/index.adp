@@ -11,4 +11,6 @@
 <li><a href="price-list-list">#invoices.Price_Lists#</a></li>
 <li><a href="offer-list">#invoices.Offers#</a></li>
 <li><a href="invoice-list">#invoices.Invoices#</a></li>
+<li><a href="invoice-items">#invoices.Invoices_items#</a></li>
+<li><a href="offer-items">#invoices.Offers_items#</a></li>
 </ul>

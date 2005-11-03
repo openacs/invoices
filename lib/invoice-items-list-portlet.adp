@@ -1,5 +1,5 @@
 <master src="@portlet_layout@">
-<property name="portlet_title">#invoices.iv_invoice_2#</property>
+<property name="portlet_title">@portlet_title;noquote@</property>
 
 <table width="100%">
 <tr>
@@ -8,6 +8,16 @@
       <tr>
         <td>
 	<include src="/packages/invoices/lib/invoice-items-list"
+		page="@page@"
+		elements="@elements@"
+		iv_items_orderby="@iv_items_orderby@"
+		filters_p="@filters_p@"
+		category_id="@category_id@"
+		filter_package_id="@filter_package_id@"
+		customer_id="@customer_id@"
+		date_range="@date_range@"
+		project_status_id="@project_status_id@"
+		groupby="@groupby@"
 	/>
         </td>
       </tr>

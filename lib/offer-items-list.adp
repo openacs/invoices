@@ -6,7 +6,7 @@
 	<table>
 	<tr>
 	   <td valign="middle">
-              <b>Date Range:</b> 
+              <b>#invoices.Date_Range#</b> 
            </td> 
            <td>
                <input type="text" id="sel1" name="date_range" size="10"> 

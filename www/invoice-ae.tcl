@@ -87,8 +87,8 @@ if {[exists_and_not_null parent_invoice_id]} {
     set recipient_options [db_list_of_lists credit_recipients {}]
 } else {
     # normal invoice: get recipients from projects
-    # set recipient_options [db_list_of_lists recipients {}]
-    set recipient_options [wieners::get_recipients -customer_id $organization_id]
+    set recipient_options [db_list_of_lists recipients {}]
+    #set recipient_options [wieners::get_recipients -customer_id $organization_id]
 }
 
 

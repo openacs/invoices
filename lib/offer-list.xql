@@ -21,7 +21,8 @@
 	   to_char(t.accepted_date, :timestamp_format) as accepted_date,
 	   to_char(t.finish_date, :timestamp_format) as finish_date,
            pi.item_id as project_id, pr.title as project_title, t.status,
-           pp.contact_id, p2.first_names as contact_first_names,
+           pp.contact_id, 
+	   p2.first_names as contact_first_names,
            p2.last_name as contact_last_name
     from cr_folders cf, cr_revisions cr, iv_offers t,
          acs_objects o, persons p, cr_items ci, acs_rels r,

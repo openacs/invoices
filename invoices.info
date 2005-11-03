@@ -7,15 +7,15 @@
     <initial-install-p>f</initial-install-p>
     <singleton-p>t</singleton-p>
     
-    <version name="0.01d16" url="http://openacs.org/repository/download/apm/invoices-0.01d16.apm">
+    <version name="0.01d17" url="http://openacs.org/repository/download/apm/invoices-0.01d17.apm">
         <owner url="mailto:timo@timohentschel.de">Timo Hentschel</owner>
         <summary>Invoices package that will collect costs to invoice items in invoices and store data about received payment.</summary>
-        <release-date>2005-11-02</release-date>
+        <release-date>2005-11-03</release-date>
         <vendor url="http://www.cognovis.de">Cognovis</vendor>
         <description format="text/plain">Collect costs to invoice items and invoices, store payment information.</description>
         <maturity>0</maturity>
 
-        <provides url="invoices" version="0.01d16"/>
+        <provides url="invoices" version="0.01d17"/>
         <requires url="acs-content-repository" version="5.1.4d3"/>
         <requires url="acs-kernel" version="5.0d13"/>
         <requires url="acs-templating" version="5.1.5d1"/>

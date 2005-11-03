@@ -18,7 +18,7 @@ foreach optional_param $optional_param_list {
 }
 
 if { [exists_and_not_null date_range] } {
-    set date_range [lc_time_fmt $date_range %y-%m-%d]
+    catch { set date_range [lc_time_fmt $date_range %y-%m-%d] } errMsg
 }
 
 if {![info exist filters_p] } { 
@@ -83,7 +83,7 @@ if { $categories_p } {
 	lappend multirow_extend category_$cat_id
 	if { [exists_and_not_null category_id] } {
 	    set label "<a href=\"offer-items?category_id=$cat_id\">$cat_name</a>"
-	    append label "&nbsp;&nbsp;<small>(<a href=\"offer-items\">clear</a>)</small>"
+	    append label "&nbsp;&nbsp;<small>(<a href=\"offer-items\">[_ invoices.clear]</a>)</small>"
 	} else {
 	    set label "<a href=\"offer-items?category_id=$cat_id\">$cat_name</a>"
 	}
@@ -93,20 +93,20 @@ if { $categories_p } {
     }
 }
 
-lappend elements item_title [list label "Offer Item Title"] \
-    final_amount [list label "Final Ammount"] \
-    offer_title [list label "Offer Title" \
+lappend elements item_title [list label "[_ invoices.Offer_Item_Title]"] \
+    final_amount [list label "[_ invoices.Final_Amount]"] \
+    offer_title [list label "[_ invoices.Offer_Title]" \
 		     display_template {
 			 <a href=\"offer-ae?mode=display&offer_id=@offer_items.item_id@\">@offer_items.offer_title@</a>
 		     } ] \
-    rebate [list label "Rebate" \
+    rebate [list label "[_ invoices.Rebate]" \
 		display_template {
 		    @offer_items.rebate@ %
 		}
 	       ] \
-    item_id [list label "Item Id"] \
-    offer_item_id [list label "Offer Item Id"] \
-    creation_date [list label "Creation Date"] \
+    item_id [list label "[_ invoices.Item_Id]"] \
+    offer_item_id [list label "[_ invoices.Offer_Item_Id]"] \
+    creation_date [list label "[_ invoices.Creation_Date]"] \
     month [list label ""]
 
 
@@ -135,9 +135,9 @@ if { [exists_and_not_null project_status_id] } {
 
 
 set groupby_values {
-    { "Customer" { { groupby organization_id } { orderby organization_id,desc } } }
-    { "Category" { { groupby category_id } { orderby cateogory_id,desc } } }    
-    { "Month" { { groupby month } { orderby time_stamp,desc } }  }
+    { "#invoices.Customer#" { { groupby organization_id } { orderby organization_id,desc } } }
+    { "#invoices.Category#" { { groupby category_id } { orderby cateogory_id,desc } } }    
+    { "#invoices.Month#" { { groupby month } { orderby time_stamp,desc } }  }
 }
 
 
@@ -151,12 +151,12 @@ template::list::create \
     -orderby_name offer_items_orderby \
     -orderby {
 	item_title {
-	    label {Offer Item Title}
+	    label { [_ invoices.Offer_Item_Title] }
 	    orderby_desc { lower(oi.title) desc }
 	    orderby_asc { lower(oi.title) asc }
 	}
 	offer_title {
-	    label "Offer Title"
+	    label "[_ invoices.Offer_Title]"
 	    orderby_desc { lower(o.title) desc }
 	    orderby_asc { lower(o.title) asc }
 	}
@@ -167,7 +167,7 @@ template::list::create \
     -page_query_name "offer_items_paginated" \
     -pass_properties return_url \
     -groupby {
-	label "Group By"
+	label "[_ invoices.Group_by]:"
 	type multivar
 	values $groupby_values
     } \
@@ -186,7 +186,7 @@ lappend multirow_extend final_amount
 db_multirow -extend $multirow_extend offer_items offer_items { } {
     set final_amount [expr [expr $price_per_unit * $item_units] - [expr $rebate * $price_per_unit * $item_units]]
     if { $categories_p } {
-	set category_$category_id "Mapped"
+	set category_$category_id "[_ invoices.Mapped]"
     }
     set project_item_id [lindex [application_data_link::get_linked -from_object_id $item_id -to_object_type content_item] 0]
     if { $project_status_p } {

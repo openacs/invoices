@@ -21,7 +21,8 @@ foreach optional_unset $optional_unset_list {
 	}
     }
 }
-# set status_id 2
+
+#set status_id 2
 # db_1row get_offer_status_id {}
 if {![info exists status_id]} {
     db_1row get_offer_status_id {}

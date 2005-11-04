@@ -189,6 +189,9 @@ db_multirow -extend $multirow_extend iv_items iv_items { } {
     if { $categories_p && [exists_and_not_null category_id]} {
 	set category_$category_id "[_ invoices.Mapped]"
     }
+    
+    set item_id [db_string get_offer_item_id { }]
+    
     set project_item_id [lindex [application_data_link::get_linked -from_object_id $item_id -to_object_type content_item] 0]
     if { $project_status_p } {
 	if { [exists_and_not_null project_item_id] } {

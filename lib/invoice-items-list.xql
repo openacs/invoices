@@ -65,5 +65,18 @@
     </querytext>
 </fullquery>
 
+<fullquery name="get_offer_item_id">
+    <querytext>
+	select 
+		o.item_id
+	from 
+		iv_offersx o,
+		iv_offer_items oi
+	where
+		oi.offer_item_id = :offer_item_id
+		and oi.offer_id = o.offer_id
+    </querytext>
+</fullquery>
+
 </queryset>
     

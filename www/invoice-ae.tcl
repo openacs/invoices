@@ -14,11 +14,17 @@ ad_page_contract {
 } -properties {
     context:onevalue
     page_title:onevalue
+} -validate {
+    org_proj_provided -requires {organization_id:integer} {
+	if { [llength $project_id] == 0 } {
+	    ad_complain "<b>[_ invoices.You_must_suplly_project_id]</b>"
+	}
+    }
 }
 
 ####### FIXME ########
 # First try to find the organization_id
-if {[empty_string_p $organization_id]} {
+if {[empty_string_p $organization_id] } {
     set organisations [db_list organizations "select distinct customer_id from pm_projects where project_id in ([join $project_id ","])"]
     if {[llength $organisations] == 1} {
 	set organization_id [lindex $organisations 0]

@@ -11,7 +11,8 @@ ad_page_contract {
     {category_id ""}
     {filter_package_id ""}
     {customer_id ""}
-    {date_range ""}
+    {date_range_start ""}
+    {date_range_end   ""}
     {project_status_id ""}
     {groupby ""}
 }

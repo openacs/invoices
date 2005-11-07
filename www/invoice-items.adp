@@ -11,7 +11,8 @@
 	category_id="@category_id@"
 	filter_package_id="@filter_package_id@"
 	customer_id="@customer_id@"
-	date_range="@date_range@"
+	date_range_start="@date_range_start@"
+	date_range_end="@date_range_end@"
 	project_status_id="@project_status_id@"
 	groupby="@groupby@"
 />

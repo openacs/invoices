@@ -3,16 +3,24 @@
 <tr>
     <td>
     <form>
-	<table>
+	<table border="0">
 	<tr>
-	   <td valign="middle">
-              <b>#invoices.Date_Range#</b> 
-           </td> 
-           <td>
-               <input type="text" id="sel1" name="date_range" size="10"> 
-               <a href="" onclick="return showCalendar('sel1', 'yyyy-mm-dd')">
+           <td valign="top">
+		<b>#invoices.Between#:</b>
+	   </td>
+	   <td>
+               <input type="text" id="sel1" name="date_range_start" size="10" value="@date_range_start@"> 
+               <a href="" onclick="return showCalendar('sel1', 'yy-mm-dd')">
+	       <img src="resources/calendar.gif" border="0"></a><br>
+	       <small>[ yyyy-mm-dd ]</small>	
+	   </td>
+	   <td valign="top">
+		&nbsp;<b>#invoices.and#</b>&nbsp;
+           </td>
+	   <td>
+               <input type="text" id="sel2" name="date_range_end" size="10" value="@date_range_end@"> 
+               <a href="" onclick="return showCalendar('sel2', 'yy-mm-dd')">
 	       <img src="resources/calendar.gif" border="0"></a>
-	       &nbsp;
                <input type="submit" value="ok"><br>
 	       <small>[ yyyy-mm-dd ]</small>
 	   </td>
@@ -30,3 +38,5 @@
 </if>
 
 <listtemplate name="offer_items"></listtemplate>
+
+@aggregate_amount;noquote@ 

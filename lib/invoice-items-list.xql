@@ -7,25 +7,31 @@
 		ii.iv_item_id,
 		ii.title as item_title,
 		iv.title as invoice_title,
-		ii.price_per_unit,
 		ii.rebate,
-		ii.item_units,
-		com.category_id,
+		ii.amount_total as final_amount,
+		com.category_id as cat_id,
 		iv.organization_id,
 		to_char(ii.creation_date,'yy-mm-dd') as creation_date,
 		to_char(ii.creation_date,'mm') as month,
 		ii.offer_item_id,
+		iv.organization_id,
+		org.name as org_name,
+		ob.title as cat_name,
 		i.item_id
 	from
 		iv_invoice_itemsx ii,
 		iv_invoicesx iv,
 		category_object_map com,
-		cr_items i
+		cr_items i,
+		organizations org,
+		acs_objects ob
 	where
 		iv.item_id = i.item_id
 		and ii.invoice_id = i.latest_revision
 		and iv.invoice_id = ii.invoice_id
 		and com.object_id = ii.offer_item_id
+		and org.organization_id = iv.organization_id
+		and ob.object_id = com.category_id
 		$category_filter_clause
 		and [template::list::page_where_clause -name "iv_items"]	
 		[template::list::filter_where_clauses -and -name "iv_items"]
@@ -36,32 +42,58 @@
 <fullquery name="iv_items_paginated">
     <querytext>
 	select
-		iv_item_id,
-		title as item_title,
-		price_per_unit,
-		rebate,
-		item_units
+		ii.iv_item_id
 	from
-		iv_invoice_itemsx
+		iv_invoice_itemsx ii,
+		iv_invoicesx iv,
+		category_object_map com,
+		cr_items i,
+		organizations org,
+		acs_objects ob
+	where
+		iv.item_id = i.item_id
+		and ii.invoice_id = i.latest_revision
+		and iv.invoice_id = ii.invoice_id
+		and com.object_id = ii.offer_item_id
+		and org.organization_id = iv.organization_id
+		and ob.object_id = com.category_id
+		$category_filter_clause
+		[template::list::filter_where_clauses -and -name "iv_items"]
+		[template::list::orderby_clause -orderby -name "iv_items"]
+    </querytext>
+</fullquery>
+
+<fullquery name="get_category_trees">
+    <querytext>
+        select
+                distinct
+                o.title,
+                c.tree_id
+        from
+                category_object_map com,
+                iv_offer_items io,
+                acs_objects o,
+                categories c
+        where
+                com.object_id = io.offer_item_id
+                and com.category_id = c.category_id
+                and c.tree_id = o.object_id
+        order by
+                o.title asc
     </querytext>
 </fullquery>
 
 <fullquery name="get_categories">
     <querytext>
-	select
-    		distinct
-   		o.title,
-    		com.category_id
-    	from
-    		category_object_map com,
-    		iv_invoice_items ii,
-    		acs_objects o
-    	where 
-    		com.object_id = ii.offer_item_id
-    		and com.category_id = o.object_id
-		$category_filter_clause
-	order by 
-		o.title asc
+        select
+                o.title,
+                c.category_id
+        from
+                categories c,
+                acs_objects o
+        where
+                o.object_id = c.category_id
+                and c.tree_id in ([template::util::tcl_to_sql_list $tree_ids])
     </querytext>
 </fullquery>
 
@@ -77,6 +109,25 @@
 		and oi.offer_id = o.offer_id
     </querytext>
 </fullquery>
+
+<fullquery name="get_amount">
+    <querytext>
+	select 
+		sum(ii.amount_total)
+	from
+		iv_invoicesx iv,
+		iv_invoice_itemsx ii,
+		cr_items i,
+		category_object_map com
+	where
+		iv.item_id = i.item_id
+		and ii.invoice_id = i.latest_revision
+		and iv.invoice_id = ii.invoice_id
+		and ii.offer_item_id = com.object_id
+		and com.category_id = :c_id
+    </querytext>
+</fullquery>
+
 
 </queryset>
     

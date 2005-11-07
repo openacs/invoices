@@ -320,3 +320,154 @@ ad_proc -public iv::invoice::text {
 
     return $mail_text
 }
+
+
+ad_proc -public iv::invoice::year_month_day_filter {
+    {-year ""}
+    {-month ""}
+    {-day ""}
+    {-last_years "5"}
+    {-extra_vars ""}
+    -base:required
+} {
+    Returns and html filter to use in any adp page for sort data according to date. Return
+    the variables year, month, day and any extra variable you recieved in extra_vars to the base
+    page (url).
+    
+    @author Miguel Marin (miguelmarin@viaro.net)
+    @author Viaro Networks www.viaro.net
+
+    @param year       The year to show.
+    @param month      The month to show (depending on the month and year number of days shown are 31,30,29 and 28).
+    @param day        The day to show.
+    @param last_years How many past years will be shown from the actual year.
+    @param extra_vars A list of extra vars to include in the links. They have to be of the form 
+                      [list [list var_name value] [list var_name value] ...].
+    @param base       The page to redirect in the links.
+				    
+} {
+    set actual_year [string range [dt_sysdate] 0 3]
+    set html "<center><table><tr><td>"
+    
+    for { set i $last_years } { $i > 0 } { set i [expr $i - 1] } {
+	set myear [expr $actual_year - $i]
+	set send_vars [list [list year $myear] month day last_years]
+	foreach var $extra_vars {
+	    lappend send_vars $var
+	}
+	set url [export_vars -base $base $send_vars]
+	if { [string equal $year $myear] } {
+	    append html "<b><a href=\"$url\">$myear</a></b>"
+	} else {
+	    append html "<a href=\"$url\">$myear</a>"
+	}
+	append html "&nbsp;&nbsp;&nbsp;"
+    }
+    
+    # We always look for 5 years from actual year
+    for { set i $actual_year } { $i < [expr $actual_year + 6] } { incr i} {
+	set send_vars [list [list year $i] month day last_years]
+	foreach var $extra_vars {
+	    lappend send_vars $var
+	}
+	set url [export_vars -base $base $send_vars]
+	if { [string equal $year $i] } {
+	    append html "<b><a href=\"$url\">$i</a></b>"
+	} else {
+	    append html "<a href=\"$url\">$i</a>"
+	}
+	append html "&nbsp;&nbsp;&nbsp;"
+    }
+    
+    if { [exists_and_not_null year] } {
+	set send_vars [list month day last_years]
+	foreach var $extra_vars {
+	    lappend send_vars $var
+	}
+	set url [export_vars -base $base $send_vars]
+	append html "<small>(<a href=\"$url\">Clear</a>)</small>"
+    }
+
+    append html "</td></tr><tr><td>"
+    
+    for { set i 1 } { $i < 13 } { incr i } {
+	set short_month [template::util::date::monthName $i short]
+	# Dates format has a 0 before the number for months that
+	# are lower than 10
+	if { $i < 10 } {
+	    set m "0$i"
+	} else {
+	    set m $i
+	}
+	set send_vars [list year [list month $m] day last_years]
+	foreach var $extra_vars {
+	    lappend send_vars $var
+	}
+	set url [export_vars -base $base $send_vars]
+	if { [string equal $month $m] } {
+	    append html "<b><a href=\"$url\">$short_month</a></b>"
+	} else {
+	    append html "<a href=\"$url\">$short_month</a>" 
+	}
+	append html "&nbsp;&nbsp;&nbsp;"
+    }
+
+    if { [exists_and_not_null month] } {
+	set send_vars [list year day last_years]
+	foreach var $extra_vars {
+	    lappend send_vars $var
+	}
+	set url [export_vars -base $base $send_vars]
+	append html "<small>(<a href=\"$url\">Clear</a>)</small>"
+    }
+
+    append html "</td></tr><tr><td>"
+
+    # We figure out how many days we are going to show according to the month
+    set month_days 31
+    if { [exists_and_not_null month] } {
+	if { [string equal $month "04"] || [string equal $month "06"] || [string equal $month "09"] ||
+	     [string equal $month "11"] } {
+	    set month_days 30
+	} elseif {[string equal $month "02"] } {
+	    if { [exists_and_not_null year] && [string equal [expr $year % 4] "0"] } {
+		set month_days 29
+	    } else {
+		set month_days 28
+	    }
+	}
+    }
+    
+    for { set i 1 } { $i <= $month_days } { incr i } {
+	# Dates format has a 0 before the number for days that
+	# are lower than 10
+	if { $i < 10 } {
+	    set d "0$i"
+	} else {
+	    set d $i
+	}
+	set send_vars [list year month [list day $d] last_years]
+	foreach var $extra_vars {
+	    lappend send_vars $var
+	}
+	set url [export_vars -base $base $send_vars]
+	if { [string equal $day $d] } {
+	    append html "<b><a href=\"$url\">$d</a></b>"
+	} else {
+	    append html "<a href=\"$url\">$d</a>"
+	}
+	append html "&nbsp;&nbsp;&nbsp;"
+    }
+    
+    if { [exists_and_not_null day] } {
+	set send_vars [list year month last_years]
+	foreach var $extra_vars {
+	    lappend send_vars $var
+	}
+	set url [export_vars -base $base $send_vars]
+	append html "<small>(<a href=\"$url\">Clear</a>)</small>"
+    }
+    
+    append html "</td></tr></table></center>"
+    return $html
+}

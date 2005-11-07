@@ -1,6 +1,6 @@
-set optional_param_list [list elements category_filter_clause]
+set optional_param_list [list elements category_filter_clause date_range_start date_range_end]
 set optional_unset_list [list iv_items_orderby category_id \
-			     customer_id filter_package_id date_range \
+			     customer_id filter_package_id \
 			     project_status_id groupby]
 
 foreach optional_unset $optional_unset_list {
@@ -17,8 +17,23 @@ foreach optional_param $optional_param_list {
     }
 }
 
-if { [exists_and_not_null date_range] } {
-    catch { set date_range [lc_time_fmt $date_range %y-%m-%d] } errMsg
+set date_range_clause ""
+
+if { [exists_and_not_null date_range_start] } {
+    set date_range 1
+    catch { set date_range_start [lc_time_fmt $date_range_start %y-%m-%d] } errMsg
+    append date_range_clause "to_char(oi.creation_date,'yy-mm-dd') >= :date_range_start"
+}
+
+if { [exists_and_not_null date_range_end] } {
+    set date_range 1
+    catch { set date_range_end [lc_time_fmt $date_range_end %y-%m-%d] } errMsg
+
+    if { [exists_and_not_null date_range_start] } {
+	append date_range_clause " and to_char(oi.creation_date,'yy-mm-dd') <= :date_range_end"
+    } else {
+	append date_range_clause "to_char(oi.creation_date,'yy-mm-dd') <= :date_range_end"
+    }
 }
 
 if {![info exist filters_p] } { 
@@ -45,10 +60,6 @@ if { ![exists_and_not_null return_url] } {
     set return_url [ad_return_url]
 }
 
-if { [exists_and_not_null category_id] } {
-    set category_filter_clause "and com.category_id = $category_id"
-}
-
 set categories_p 0
 
 # Elements to construnct row_lists
@@ -69,36 +80,64 @@ if { [exists_and_not_null elements] } {
 
 # Create the elements for the list template
 set elements [list]
+set categories_filter [list]
 
-# We are going to create the elements for each mapped categories
+# We are going to create the elements for each mapped category tree
 if { $categories_p } {
-    set categories [db_list_of_lists get_categories { }]
+    set categories_trees [db_list_of_lists get_category_trees { }]
     
     set mapped_objects [list]
     set multirow_extend [list]
+    set tree_ids [list]
     
-    foreach category $categories {
-	set cat_name [lindex $category 0]
-	set cat_id   [lindex $category 1]
-	
-	lappend multirow_extend category_$cat_id
-	if { [exists_and_not_null category_id] } {
-	    set label "<a href=\"invoice-items?category_id=$cat_id\">$cat_name</a>"
-	    append label "&nbsp;&nbsp;<small>(<a href=\"invoice-items\">[_ invoices.clear]</a>)</small>"
-	} else {
-	    set label "<a href=\"invoice-items?category_id=$cat_id\">$cat_name</a>"
-	}
-	lappend elements category_$cat_id [list label $label]
-	lappend row_list category_$cat_id 
+    foreach tree $categories_trees {
+	set tree_name [lindex $tree 0]
+	set tree_id   [lindex $tree 1]
+
+        lappend tree_ids $tree_id
+        lappend multirow_extend tree_$tree_id
+
+	set label "$tree_name"
+
+	lappend elements tree_$tree_id [list label $label]
+	lappend row_list tree_$tree_id 
 	lappend row_list [list]
     }
+    set categories [db_list_of_lists get_categories " "]
+    foreach cat $categories {
+        lappend categories_filter [list [lang::util::localize [lindex $cat 0]] [lindex $cat 1]]
+    }
 }
+
+set aggregate_amount ""
+if { [exists_and_not_null groupby] } {
+    append aggregate_amount "<ul><table border=0><tr><td><b>Aggregate Amount:</b></td><td>&nbsp;</td></tr>"
+    foreach cat $categories_filter {
+	set c_name [lindex $cat 0]
+	set c_id   [lindex $cat 1]
+	if { [exists_and_not_null category_id] } {
+	    if { [string equal $c_id $category_id] } {
+		append aggregate_amount "<tr><td><li>$c_name:</td>"
+		set amount [db_string get_amount { }]
+		append aggregate_amount "<td align=right>$amount</td>"
+		append aggregate_amount "</tr>"
+	    }
+	} else {
+	    append aggregate_amount "<tr><td><li>$c_name:</td>"
+	    set amount [db_string get_amount { }]
+	    append aggregate_amount "<td align=right>$amount</td>"
+	    append aggregate_amount "</tr>"
+	}
+    }
+append aggregate_amount "</ul>"
+}
+
 
 lappend elements item_title [list label "[_ invoices.Invoice_Item_title]"] \
     final_amount [list label "[_ invoices.Final_Amount]"] \
     invoice_title [list label "[_ invoices.Invoice_Title]" \
 		     display_template {
-			 <a href=\"invoice-ae?mode=display&invoice_id=@iv_items.item_id@&organization_id=@iv_items.organization_id@\">@iv_items.invoice_title@</a>
+			 <a href=\"invoice-ae?mode=display&invoice_id=@iv_items.item_id@&organization_id=@iv_items.organization_id@&project_id=@iv_items.project_item_id@\">@iv_items.invoice_title@</a>
 		     } ] \
     rebate [list label "[_ invoices.Rebate]" \
 		display_template {
@@ -111,7 +150,12 @@ lappend elements item_title [list label "[_ invoices.Invoice_Item_title]"] \
     month [list label ""]
 
 
-set filters [list category_id { } \
+set filters [list \
+		 category_id { 
+                     label "[_ invoices.Category]"
+                     values $categories_filter
+                     where_clause { com.category_id = :category_id }
+		 } \
 		 filter_package_id { 
 		     where_clause { ii.object_package_id = :filter_package_id } 
 		 } \
@@ -119,8 +163,11 @@ set filters [list category_id { } \
 		     where_clause { iv.organization_id = :customer_id} 	    
 		 } \
 		 date_range { 
-		     where_clause { to_char(ii.creation_date,'yy-mm-dd') > :date_range }
-		 }]
+		     where_clause "$date_range_clause" 
+		 } \
+		 date_range_start { } \
+		 date_range_end { } \
+		]
 
 if { [apm_package_installed_p "project-manager"] } {
     lappend filters project_status_id {
@@ -136,9 +183,9 @@ if { [exists_and_not_null project_status_id] } {
 
 
 set groupby_values {
-    { "#invoices.Customer#" { { groupby organization_id } { orderby organization_id,desc } } }
-    { "#invoices.Category#" { { groupby category_id } { orderby  category_id,desc } } }    
-    { "#invoices.Month#" { { groupby month } { orderby time_stamp,desc } }  }
+    { "#invoices.Customer#" { { groupby org_name } { iv_items_orderby org_name,asc } } }
+    { "#invoices.Category#" { { groupby cat_name } { iv_items_orderby cat_name,asc } } }    
+    { "#invoices.Month#" { { groupby month } { iv_items_orderby month,asc } }  }
 }
 
 
@@ -161,6 +208,18 @@ template::list::create \
 	    orderby_desc { lower(iv.title) desc }
 	    orderby_asc { lower(iv.title) asc }
 	}
+	org_name {
+	    label { [_ invoices.Customer] }
+	    orderby_asc { org.name asc }
+	}
+	cat_name {
+	    label { [_ invoices.Category] }
+	    orderby_asc { ob.title asc }
+	}
+	month {
+	    label { [_ invoices.Month] }
+	    orderby_asc { to_char(ii.creation_date,'mm') asc }
+	}
     } \
     -html {width 100%} \
     -page_size $page_size \
@@ -182,12 +241,12 @@ template::list::create \
     }
 
 # Elements to extend the multirow
-lappend multirow_extend final_amount
+lappend multirow_extend project_item_id
 
 db_multirow -extend $multirow_extend iv_items iv_items { } {
-    set final_amount [expr [expr $price_per_unit * $item_units] - [expr $rebate * $price_per_unit * $item_units]]
-    if { $categories_p && [exists_and_not_null category_id]} {
-	set category_$category_id "[_ invoices.Mapped]"
+    if { $categories_p && [exists_and_not_null cat_id]} {
+	set tree_id [category::get_tree $cat_id]
+	set tree_$tree_id "$cat_name"
     }
     
     set off_item_id [db_string get_offer_item_id { }]

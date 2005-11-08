@@ -22,10 +22,6 @@ foreach optional_unset $optional_unset_list {
     }
 }
 
-foreach element $elements {
-    append row_list "$element {}\n"
-}
-
 if {[empty_string_p $no_actions_p]} {
     set no_actions_p 0
 }
@@ -59,12 +55,17 @@ if { $contacts_p } {
     set contacts_url [apm_package_url_from_key contacts]
 }
 
+foreach element $elements {
+    append row_list "$element {}\n"
+}
+
 if {$no_actions_p} {
     set actions ""
     set bulk_id_list ""
 } else {
     set actions [list "[_ invoices.iv_invoice_New]" "${base_url}invoice-ae" "[_ invoices.iv_invoice_New2]" ]
     set bulk_id_list [list organization_id]
+    set row_list "checkbox {}\n $row_list"
 }
 
 template::list::create \

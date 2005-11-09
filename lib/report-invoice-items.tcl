@@ -49,13 +49,43 @@ if { [exists_and_not_null day] } {
     append extra_query " and to_char(ii.creation_date, 'DD') = :day"
 }
 
+
+set category_where_clause ""
+if { [exists_and_not_null category_f] } {
+    set category_where_clause "com.category_id in ([template::util::tcl_to_sql_list $category_f])"
+}
+
+set categories_trees [db_list_of_lists get_category_trees { }]
+
+set categories_filter [list]
+set tree_ids [list]
+
+foreach tree $categories_trees {
+    set tree_name [lindex $tree 0]
+    set tree_id   [lindex $tree 1]
+    lappend tree_ids $tree_id
+
+    set categories [db_list_of_lists get_categories " "]
+    
+    foreach cat $categories {
+	lappend categories_filter [list [lang::util::localize [lindex $cat 0]] [lindex $cat 1]]
+    }
+}
+
 template::list::create \
     -name reports \
     -multirow reports \
     -filters {
+	category_f {
+	    label "Categories"
+	    type multival
+	    values $categories_filter
+	    where_clause $category_where_clause
+	}
 	year {}
 	month {}
 	day {}
+	show_p {}
     } -elements {
 	title {
 	    label "[_ invoices.iv_invoice_item_Title]:"
@@ -89,7 +119,7 @@ template::list::create \
 
 
 
-template::multirow create reports iv_items title creation_date amount_total
+template::multirow create reports iv_items title creation_date amount_total offer_item_id category_id
 
 set iv_items [db_list_of_lists get_iv_items { }]
 
@@ -100,9 +130,13 @@ if { [exists_and_not_null year] && [exists_and_not_null month] && [exists_and_no
         set title         [lindex $item 1]
         set creation_date [lindex $item 2]
 	set iv_item_total [lindex $item 3]
+	set offer_item_id [lindex $item 4]
+	set category_id   [lindex $item 5]
+	
 	set final_amount  [db_string get_final_amount {} -default 0]
 
-	template::multirow append reports $iv_item_id $title $creation_date $iv_item_total
+	template::multirow append reports $iv_item_id $title $creation_date $iv_item_total $offer_item_id $category_id
+
     }
 } else {
     # We accumulate the amount_total and the number of iv_invoice_items

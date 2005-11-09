@@ -85,7 +85,6 @@ template::list::create \
 	year {}
 	month {}
 	day {}
-	show_p {}
     } -elements {
 	title {
 	    label "[_ invoices.iv_invoice_item_Title]:"

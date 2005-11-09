@@ -8,7 +8,7 @@ ad_page_contract {
 } {
     {page "1"}
     {offer_items_orderby ""}
-    {category_id ""}
+    {category_id:multiple ""}
     {filter_package_id ""}
     {customer_id ""}
     {date_range_start ""}

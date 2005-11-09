@@ -130,11 +130,13 @@ if { [exists_and_not_null groupby] } {
 	}
 
         if { [exists_and_not_null category_id] } {
-            if { [string equal $c_id $category_id] } {
-                append aggregate_amount "<tr><td><li>$c_name:</td>"
-                append aggregate_amount "<td align=right>$total_amount</td>"
-                append aggregate_amount "</tr>"
-            }
+	    foreach cat_id $category_id {
+		if { [string equal $c_id $cat_id] } {
+		    append aggregate_amount "<tr><td><li>$c_name:</td>"
+		    append aggregate_amount "<td align=right>$total_amount</td>"
+		    append aggregate_amount "</tr>"
+		}
+	    }
         } else {
             append aggregate_amount "<tr><td><li>$c_name:</td>"
             append aggregate_amount "<td align=right>$total_amount</td>"
@@ -160,11 +162,17 @@ lappend elements item_title [list label "[_ invoices.Offer_Item_Title]"] \
     creation_date [list label "[_ invoices.Creation_Date]"] \
     month [list label ""]
 
+set cat_where_clause ""
+if { [exists_and_not_null category_id] } {
+    set cat_where_clause "com.category_id in ([template::util::tcl_to_sql_list $category_id])"
+}
+
 set filters [list \
 		 category_id { 
 		     label "[_ invoices.Category]"
 		     values $categories_filter
-		     where_clause { com.category_id = :category_id }
+		     type multival
+		     where_clause { $cat_where_clause }
 		 } \
 		 filter_package_id { 
 		     where_clause { oi.object_package_id = :filter_package_id } 

@@ -24,7 +24,7 @@ ad_page_contract {
 
 ####### FIXME ########
 # First try to find the organization_id
-if {[empty_string_p $organization_id] } {
+if {[empty_string_p $organization_id] && [exists_and_not_null project_id]} {
     set organisations [db_list organizations "select distinct customer_id from pm_projects where project_id in ([join $project_id ","])"]
     if {[llength $organisations] == 1} {
 	set organization_id [lindex $organisations 0]

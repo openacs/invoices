@@ -1,6 +1,6 @@
-set required_param_list [list organization_id]
-set optional_param_list [list orderby elements base_url package_id no_actions_p]
-set optional_unset_list [list]
+set required_param_list [list]
+set optional_param_list [list elements base_url package_id no_actions_p]
+set optional_unset_list [list organization_id orderby]
 
 foreach required_param $required_param_list {
     if {![info exists $required_param]} {
@@ -13,6 +13,7 @@ foreach optional_param $optional_param_list {
 	set $optional_param {}
     }
 }
+
 
 foreach optional_unset $optional_unset_list {
     if {[info exists $optional_unset]} {
@@ -29,9 +30,7 @@ if {[empty_string_p $no_actions_p]} {
 if {![exists_and_not_null format]} {
     set format "normal"
 }
-if {![exists_and_not_null orderby]} {
-    set orderby ""
-}
+
 if {![exists_and_not_null page_size]} {
     set page_size "25"
 }
@@ -44,12 +43,18 @@ if {[empty_string_p $base_url]} {
     set base_url [apm_package_url_from_id $package_id]
 }
 
-set dotlrn_club_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type "dotlrn_club"] 0]
-set pm_base_url [apm_package_url_from_id [dotlrn_community::get_package_id_from_package_key -package_key "project-manager" -community_id $dotlrn_club_id]]
+set row_list ""
+
+set org_p 1
+if { ![exists_and_not_null organization_id] } {
+    set org_p 0
+    append row_list "name {}\n"
+    set groupby "name"
+}
+
 
 set p_closed_id [pm::project::default_status_closed]
 set t_closed_id [pm::task::default_status_closed]
-set currency [iv::price_list::get_currency -organization_id $organization_id]
 set contacts_p [apm_package_installed_p contacts]
 if { $contacts_p } {
     set contacts_url [apm_package_url_from_key contacts]
@@ -73,7 +78,6 @@ template::list::create \
     -key project_id \
     -no_data "[_ invoices.None]" \
     -selected_format $format \
-    -pass_properties {currency} \
     -elements {
 	project_id {
 	    label {[_ invoices.iv_invoice_project_id]}
@@ -95,7 +99,7 @@ template::list::create \
         }
         amount_open {
 	    label {[_ invoices.iv_invoice_amount_open]}
-	    display_template {@projects.amount_open@ @currency@}
+	    display_template {@projects.amount_open@ @projects.currency@}
         }
 	count_total {
 	    label {[_ invoices.iv_invoice_count_total]}
@@ -109,7 +113,11 @@ template::list::create \
     } -bulk_actions $actions \
     -bulk_action_export_vars $bulk_id_list \
     -sub_class narrow \
-    -orderby {
+    -groupby {
+	label "[_ invoices.Group_by]:"
+	type multivar
+	values { {[_ invoices.Customer] { {groupby name } {orderby project_id,asc }}}}
+    } -orderby {
 	default_value project_id
 	project_id {
 	    label {[_ invoices.iv_invoice_project_id]}
@@ -172,10 +180,12 @@ template::list::create \
     }
 
 
+set tot_amount_open 0
 
-db_multirow -extend {project_link recipient} projects projects_to_bill {} {
-    set project_link [export_vars -base "${pm_base_url}one" {{project_item_id $project_id}}]
+db_multirow -extend {project_link recipient currency} projects projects_to_bill {} {
     set amount_open [format "%.2f" $amount_open]
+    set tot_amount_open [expr $tot_amount_open + $amount_open]
+    set currency [iv::price_list::get_currency -organization_id $org_id]
     set creation_date [lc_time_fmt $creation_date "%q %X"]
 
     if { $contacts_p } {
@@ -183,4 +193,16 @@ db_multirow -extend {project_link recipient} projects projects_to_bill {} {
     } else {
 	set recipient [person::name -person_id $recipient_id]
     }
+
+    set dotlrn_club_id [lindex \
+			    [application_data_link::get_linked \
+				 -from_object_id $org_id \
+				 -to_object_type "dotlrn_club"] 0]
+    
+    set pm_base_url [apm_package_url_from_id \
+			 [dotlrn_community::get_package_id_from_package_key \
+			      -package_key "project-manager" \
+			      -community_id $dotlrn_club_id]]
+
+    set project_link [export_vars -base "${pm_base_url}one" {{project_item_id $project_id}}]
 }

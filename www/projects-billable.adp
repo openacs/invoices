@@ -10,7 +10,7 @@
 		package_id="@iv_package_id@" 
 		base_url="@iv_base_url@"
 		format=""
-		orderby="" 
+		orderby="@orderby@" 
 	        page_size=""/>
     </td>
 </tr>

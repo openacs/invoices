@@ -25,12 +25,6 @@ set date_filter [iv::invoice::year_month_day_filter \
 		     -last_years $last_years \
 		     -extra_vars ""]
 
-set category_where_clause ""
-#if { [exists_and_not_null category_f] } {
-#    set category_f [split $category_f ","]
-#    append category_where_clause "category in ([template::util::tcl_to_sql_list $category_f])"
-#}
-
 set return_url [ad_return_url]
 set extra_query ""
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="invoices" package_version="0.01d17" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="invoices" package_version="0.01d19" locale="en_US" charset="ISO-8859-1">
 
   <msg key="Accepted_date">Accepted on</msg>
   <msg key="Add_offer_project">Add offer project</msg>
@@ -21,6 +21,7 @@
   <msg key="Cancel">Cancel</msg>
   <msg key="cancel_and_return">Cancel and Return</msg>
   <msg key="Cancelled">Cancelled?</msg>
+  <msg key="Categories">Categories</msg>
   <msg key="Category">Category</msg>
   <msg key="clear">clear</msg>
   <msg key="Client_Account_Man">Client Account Manager</msg>
@@ -311,6 +312,7 @@
   <msg key="Offer_item_number">Offer item number</msg>
   <msg key="Offer_Item_Title">Offer Item Title</msg>
   <msg key="Offer_Items">Offer Items</msg>
+  <msg key="Offer_Items_Reports">Offer Items Reports</msg>
   <msg key="Offer_number">Offer number</msg>
   <msg key="Offer_Title">Offer Title</msg>
   <msg key="Offers">Cost Sheets</msg>
@@ -343,6 +345,7 @@
   <msg key="template_offer_accepted">Accepted Offer</msg>
   <msg key="Total">Total</msg>
   <msg key="Total_amount">Total amount</msg>
+  <msg key="Total_offers">Total Offers</msg>
   <msg key="units">h</msg>
   <msg key="Unmounted">Unmounted</msg>
   <msg key="VAT">%VAT</msg>

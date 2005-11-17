@@ -84,7 +84,7 @@ template::list::create \
 	}
         name {
 	    label {[_ invoices.Customer]}
-	    display_template {<a href="@projects.project_link@">@projects.name@</a>}
+	    display_template {@projects.name;noquote@}
         }
         title {
 	    label {[_ invoices.iv_invoice_project_title]}
@@ -131,7 +131,7 @@ template::list::create \
 	    default_direction asc
 	}
 	description {
-	    label {[_ invoices.iv_invoice_project_descr]}
+	    label {[_ invoices.iv_invoice_project_descr}]
 	    orderby_desc {lower(r.description) desc, r.item_id}
 	    orderby_asc {lower(r.description) asc, r.item_id}
 	    default_direction asc
@@ -190,10 +190,11 @@ db_multirow -extend {project_link recipient currency} projects projects_to_bill 
 
     if { $contacts_p } {
 	set recipient "<a href=\"[contact::url -party_id $recipient_id]\">[contact::name -party_id $recipient_id]</a>"
+	set name "<a href=\"[contact::url -party_id $org_id]\">[contact::name -party_id $org_id]</a>"
     } else {
 	set recipient [person::name -person_id $recipient_id]
+	set name $name
     }
-
     set dotlrn_club_id [lindex \
 			    [application_data_link::get_linked \
 				 -from_object_id $org_id \

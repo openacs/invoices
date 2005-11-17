@@ -14,22 +14,56 @@ ad_page_contract {
 } -properties {
     context:onevalue
     page_title:onevalue
-} -validate {
-    org_proj_provided -requires {organization_id:integer} {
-	if { [llength $project_id] == 0 } {
-	    ad_complain "<b>[_ invoices.You_must_suplly_project_id]</b>"
-	}
-    }
 }
 
-####### FIXME ########
-# First try to find the organization_id
-if {[empty_string_p $organization_id] && [exists_and_not_null project_id]} {
-    set organisations [db_list organizations "select distinct customer_id from pm_projects where project_id in ([join $project_id ","])"]
-    if {[llength $organisations] == 1} {
-	set organization_id [lindex $organisations 0]
+if { ![exists_and_not_null invoice_id] } {
+    # We are creating a new invoice so we are going 
+    # to make some validations.
+
+    set more_error_p 0
+    set projects_error_p 0
+
+    if { [exists_and_not_null organization_id] } {
+	# We already have the organization_id so we need to check
+	# if there are project_id's and if the customer (organization_id)
+	# of the projects is the same that the one we recieved.
+
+	if { ![string equal [llength $project_id] 0] } {
+	    set organizations [db_list get_organizations ""]
+	    if {[llength $organizations] == 1} {
+		if { ![string equal $organization_id [lindex $organizations 0]] } {
+		    # The provided organization_id and the one get from the projects are
+		    # not the same
+		    set more_error_p 1
+		}
+	    } else {
+		# We have more than one organization from the projects
+		set more_error_p 1
+	    }
+	} else {
+	    # No projects where supllied
+	    set projects_error_p 1
+	}
     } else {
-	ad_return_error "More than one customer" "You have selected more than one customer. We are unable to produce one invoice for multiple customers"
+	if { [llength $project_id] == 0 } {
+	    # No projects where supllied
+	    set projects_error_p 1
+	} else {
+	    set organizations [db_list get_organizations ""]
+	    if { ![llength $organizations] == 1} {
+		# More than one organization form the projects
+		set more_error_p 1
+	    } else {
+		set organization_id [lindex $organizations 0]
+	    }
+	}
+    }
+    
+    if { $more_error_p } {
+	ad_return_error "[_ invoices.More_than_one_customer]" "[_ invoices.You_have_selected_more]"
+    }
+    if { $projects_error_p } {
+	ad_return_error "[_ invoices.No_project_id]" "[_ invoices.You_must_suplly_project_id].<br>&nbsp;"
     }
 }
 

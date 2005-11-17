@@ -239,12 +239,22 @@
 
 <fullquery name="set_status">
       <querytext>
-
 		update iv_offers
 		set status = :status
 		where offer_id = :offer_id
-
       </querytext>
+</fullquery>
+
+<fullquery name="get_organizations">
+    <querytext>
+	select 
+		distinct 
+		customer_id 
+	from 
+		pm_projectsx 
+	where 
+		item_id in ([join $project_id ","])
+    </querytext>
 </fullquery>
 
 </queryset>

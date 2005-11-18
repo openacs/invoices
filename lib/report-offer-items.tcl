@@ -91,6 +91,7 @@ template::list::create \
 	year {}
 	month {}
 	day {}
+	show_p {}
     } -elements {
 	title {
 	    label "[_ invoices.iv_offer_item_Title]:"
@@ -141,15 +142,16 @@ set offer_items [db_list_of_lists get_iv_items { }]
 
 if { [exists_and_not_null year] && [exists_and_not_null month] && [exists_and_not_null day] || $show_p} {
     # We get only the projects that match the exact date
+    set final_amount "0.00"
     foreach item $offer_items {
         set iv_offer_item_id [lindex $item 0]
         set title            [lindex $item 1]
         set creation_date    [lindex $item 2]
-	set offer_item_id    [lindex $item 4]
-	set category_id      [lindex $item 5]
-	set iu               [lindex $item 6]
-	set ppu              [lindex $item 7]
-	set r                [lindex $item 8]
+	set offer_item_id    [lindex $item 3]
+	set category_id      [lindex $item 4]
+	set iu               [lindex $item 5]
+	set ppu              [lindex $item 6]
+	set r                [lindex $item 7]
 
 	set amount [expr $ppu * $iu]
 	if { [string equal $r "0.00"] || [empty_string_p $r] } {
@@ -157,7 +159,7 @@ if { [exists_and_not_null year] && [exists_and_not_null month] && [exists_and_no
 	} else {
 	    set amount [format %.2f [expr $amount - [expr [expr $r / 100] * $amount]]]
 	}
-	
+	set final_amount [format %.2f [expr $final_amount + $amount]]
 	template::multirow append reports $iv_offer_item_id $title $creation_date $amount $offer_item_id $category_id 0
 
     }
@@ -169,6 +171,8 @@ if { [exists_and_not_null year] && [exists_and_not_null month] && [exists_and_no
     set offer_items_count [llength $offer_items]
     set final_amount_list [db_list_of_lists get_final_amount {}]
     set total_amount "0.00"
+    set final_amount ""
+
     foreach off_item $final_amount_list {
 	set ppu [lindex $off_item 0]
 	set iu  [lindex $off_item 1]
@@ -181,7 +185,7 @@ if { [exists_and_not_null year] && [exists_and_not_null month] && [exists_and_no
 	    set amount [format %.2f [expr $amount - [expr [expr $r / 100] * $amount]]]
 	}
 
-	set total_amount [expr $total_amount + $amount]
+	set total_amount [format %.2f [expr $total_amount + $amount]]
     }
 
     if { $offer_items_count > 0 } {

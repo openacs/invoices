@@ -321,8 +321,8 @@ begin;
 end;
 
 
-insert into contact_message_types (message_type,pretty_name) values ('offer','#invoices.template_offer#');
-insert into contact_message_types (message_type,pretty_name) values ('offer_accepted','#invoices.template_offer_accepted#');
-insert into contact_message_types (message_type,pretty_name) values ('invoice','#invoices.template_invoice#');
-insert into contact_message_types (message_type,pretty_name) values ('invoice_cancel','#invoices.template_invoice_cancel#');
-insert into contact_message_types (message_type,pretty_name) values ('invoice_credit','#invoices.template_invoice_credit#');
+-- insert into contact_message_types (message_type,pretty_name) values ('offer','#invoices.template_offer#');
+-- insert into contact_message_types (message_type,pretty_name) values ('offer_accepted','#invoices.template_offer_accepted#');
+-- insert into contact_message_types (message_type,pretty_name) values ('invoice','#invoices.template_invoice#');
+-- insert into contact_message_types (message_type,pretty_name) values ('invoice_cancel','#invoices.template_invoice_cancel#');
+-- insert into contact_message_types (message_type,pretty_name) values ('invoice_credit','#invoices.template_invoice_credit#');

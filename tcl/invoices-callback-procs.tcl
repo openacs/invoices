@@ -325,7 +325,7 @@ ad_proc -public -callback contact::organization_new_group -impl invoices {
 	and p.customer_id = :organization_id
     }]
 
-    if {[lsearch $group_ids $group_id] >-1 && $!already_offer_p} {
+    if {[lsearch $group_ids $group_id] >-1 && !$already_offer_p} {
 	# Create the new project and credit offer
 	foreach package_id [apm_package_id_from_key invoices] {
 	    iv::offer::new_credit -organization_id $organization_id -package_id $package_id

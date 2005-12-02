@@ -131,7 +131,7 @@ template::list::create \
 	    default_direction asc
 	}
 	description {
-	    label {[_ invoices.iv_invoice_project_descr}]
+	    label {[_ invoices.iv_invoice_project_descr]}
 	    orderby_desc {lower(r.description) desc, r.item_id}
 	    orderby_asc {lower(r.description) asc, r.item_id}
 	    default_direction asc

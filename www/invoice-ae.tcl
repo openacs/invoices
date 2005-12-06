@@ -108,6 +108,15 @@ if {[info exists send]} {
 }
 
 set organization_name [organizations::name -organization_id $organization_id]
+
+# If the contacts package is installed we can get the incoice specialities.
+if {[apm_package_installed_p "contacts"]} {
+    set revision_id [contact::live_revision -party_id $organization_id]
+    set invoice_specialities [ams::value -attribute_name "invoice_specialities" -object_id $revision_id] 
+} else {
+    set invoice_specialities ""
+}
+
 set context [list [list "invoice-list" "[_ invoices.iv_invoice_2]"] [list [export_vars -base invoice-add {organization_id}] "[_ invoices.iv_invoice_Add]"] $page_title]
 array set container_objects [iv::util::get_default_objects -package_id $package_id]
 set timestamp_format "$date_format [lc_get formbuilder_time_format]"
@@ -128,13 +137,14 @@ if {[exists_and_not_null parent_invoice_id]} {
 } else {
     # normal invoice: get recipients from projects
     set recipient_options [db_list_of_lists recipients {}]
-    #set recipient_options [wieners::get_recipients -customer_id $organization_id]
+    # set recipient_options [wieners::get_recipients -customer_id $organization_id]
 }
 
 
 ad_form -name iv_invoice_form -action invoice-ae -mode $mode -has_submit $has_submit -has_edit $has_edit -export {organization_id project_id} -form {
     {invoice_id:key}
     {organization_name:text(inform) {label "[_ invoices.iv_invoice_organization]"} {value $organization_name} {help_text "[_ invoices.iv_invoice_organization_help]"}}
+    {invoice_specialities:text(inform) {label "[_ invoices.iv_invoice_specialities]"} {value $invoice_specialities} {help_text "[_ invoices.iv_invoice_specialities_help]"}}
     {recipient_id:integer(select),optional {label "[_ invoices.iv_invoice_recipient]"} {options $recipient_options} {help_text "[_ invoices.iv_invoice_recipient_help]"}}
     {title:text {label "[_ invoices.iv_invoice_Title]"} {html {size 80 maxlength 1000}} {help_text "[_ invoices.iv_invoice_Title_help]"}}
     {description:text(textarea),optional {label "[_ invoices.iv_invoice_Description]"} {html {rows 5 cols 80}} {help_text "[_ invoices.iv_invoice_Description_help]"}}
@@ -294,7 +304,7 @@ if {$mode == "display" && $status == "new"} {
 
 
 ad_form -extend -name iv_invoice_form -new_request {
-    set description [join [db_list project_titles {}] ",\n"]
+    set description [lang::util::localize [join [db_list project_titles {}] ",\n"]]
     set due_date [db_string today {}]
     set title "[_ invoices.iv_invoice_1] $organization_name $due_date"
     set invoice_nr [db_nextval iv_invoice_seq]

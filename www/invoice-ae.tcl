@@ -88,6 +88,10 @@ if {![info exists invoice_id] || $__new_p} {
     if {$cancelled_p == "t"} {
 	set has_edit 1
     }
+    if {$mode == "display" && $status != "new"} {
+	# don't allow edit if offer is sent
+	set has_edit 1
+    }
     if {$mode == "edit" && ![info exists send]} {
 	if {![empty_string_p $paid_currency] || $cancelled_p == "t" || $status != "new"} {
 	    # do not allow to edit a paid invoice
@@ -136,8 +140,8 @@ if {[exists_and_not_null parent_invoice_id]} {
     set recipient_options [db_list_of_lists credit_recipients {}]
 } else {
     # normal invoice: get recipients from projects
-    set recipient_options [db_list_of_lists recipients {}]
-    # set recipient_options [wieners::get_recipients -customer_id $organization_id]
+    # set recipient_options [db_list_of_lists recipients {}]
+    set recipient_options [wieners::get_recipients -customer_id $organization_id]
 }
 
 
@@ -231,8 +235,12 @@ if {!$_invoice_id} {
 	    set offer(credit) [format "%.2f" [expr $offer(credit) * $offer(price_per_unit)]]
 	    set offer(credit) [format "%.2f" [expr (1. - ($offer(rebate) / 100.)) * $offer(credit)]]
 	    set offer(credit) [format "%.2f" [expr $offer(credit) - $offer(amount)]]
-	
-	    set offer_name "$offer(category): $offer(item_units) x $offer(price_per_unit) $currency = $offer(amount_sum) $currency"
+
+	    set offer_name ""
+	    if {![empty_string_p $offer(category)]} {
+		set offer_name "$offer(category): "
+	    }
+	    append offer_name "$offer(item_units) x $offer(price_per_unit) $currency = $offer(amount_sum) $currency"
 	    if {$offer(rebate) > 0} {
 		append offer_name " - $offer(rebate)% [_ invoices.iv_offer_item_rebate] = $offer(amount) $currency"
 	    }
@@ -267,7 +275,11 @@ if {!$_invoice_id} {
 	set offer(credit) [format "%.2f" [expr (1. - ($offer(rebate) / 100.)) * $offer(credit)]]
 	set offer(credit) [format "%.2f" [expr $offer(credit) - $offer(amount)]]
 	
-	set offer_name "$offer(category): $offer(item_units) x $offer(price_per_unit) $currency = $offer(amount_sum) $currency"
+	set offer_name ""
+	if {![empty_string_p $offer(category)]} {
+	    set offer_name "$offer(category): "
+	}
+	append offer_name "$offer(item_units) x $offer(price_per_unit) $currency = $offer(amount_sum) $currency"
 	if {$offer(rebate) > 0} {
 	    append offer_name " - $offer(rebate)% [_ invoices.iv_offer_item_rebate] = $offer(amount) $currency"
 	}
@@ -296,7 +308,7 @@ if {!$_invoice_id} {
     }
 }
 
-if {$mode == "display" && $status == "new"} {
+if {$mode == "display"} {
     ad_form -extend -name iv_invoice_form -form {
 	{send:text(submit) {label "[_ invoices.iv_invoice_send]"} {value t}}
     }

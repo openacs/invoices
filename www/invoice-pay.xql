@@ -23,6 +23,7 @@
     where invoice_id = (select latest_revision
                         from cr_items
                         where item_id = :inv_id)
+	and status = 'billed'
 
       </querytext>
 </fullquery>

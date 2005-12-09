@@ -17,23 +17,31 @@ if {![info exists base_url]} {
 }
 
 
-foreach optional_param {organization_id row_list} {
+foreach optional_param {row_list} {
     if {![info exists $optional_param]} {
 	set $optional_param {}
     }
 }
 
-set dotlrn_club_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type "dotlrn_club"] 0]
-set pm_base_url [apm_package_url_from_id [dotlrn_community::get_package_id_from_package_key -package_key "project-manager" -community_id $dotlrn_club_id]]
+foreach optional_unset {organization_id} {
+    if {[info exists $optional_unset]} {
+	if {[empty_string_p [set $optional_unset]]} {
+	    unset $optional_unset
+	}
+    }
+}
 
 set user_id [ad_conn user_id]
 set date_format [lc_get formbuilder_date_format]
 set timestamp_format "$date_format [lc_get formbuilder_time_format]"
 set bulk_actions [list "[_ invoices.iv_invoice_pay]" "${base_url}invoice-pay" "[_ invoices.iv_invoice_pay]"]
 set invoice_cancel_p [permission::permission_p -party_id $user_id -object_id $package_id -privilege invoice_cancel]
+set return_url [ad_return_url]
 
 set actions [list]
-if { ![empty_string_p $organization_id] } {
+if { [info exists organization_id] } {
+    set dotlrn_club_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type "dotlrn_club"] 0]
+    set pm_base_url [apm_package_url_from_id [dotlrn_community::get_package_id_from_package_key -package_key "project-manager" -community_id $dotlrn_club_id]]
     if {$invoice_cancel_p} {
 	set actions [list "[_ invoices.iv_invoice_New]" [export_vars -base invoice-add {organization_id}] "[_ invoices.iv_invoice_New2]" "[_ invoices.iv_invoice_credit_New]" [export_vars -base invoice-credit {organization_id}] "[_ invoices.iv_invoice_credit_New2]" "[_ invoices.iv_offer_2]" [export_vars -base offer-list {organization_id}] "[_ invoices.iv_offer_2]" "[_ invoices.projects]" $pm_base_url "[_ invoices.projects]" "[_ invoices.iv_reports]" [export_vars -base invoice-reports {organization_id}]]
     } else {
@@ -45,13 +53,8 @@ template::list::create \
     -name iv_invoice \
     -key invoice_id \
     -no_data "[_ invoices.None]" \
-    -has_checkboxes \
     -selected_format $format \
     -elements {
-	checkbox {
-	    label {}
-	    display_template {@iv_invoice.checkbox;noquote@}
-	}
 	invoice_nr {
 	    label {[_ invoices.iv_invoice_invoice_nr]}
 	}
@@ -64,7 +67,7 @@ template::list::create \
         }
         total_amount {
 	    label {[_ invoices.iv_invoice_total_amount]}
-	    display_template {@iv_invoice.total_amount@ @iv_invoice.currency@}
+	    display_template {<if @iv_invoice.status@ eq "paid"><font color="green"></if><elseif @iv_invoice.status@ eq "billed"><font color="red"></elseif><else><font></else>@iv_invoice.total_amount@ @iv_invoice.currency@</font>}
         }
         paid_amount {
 	    label {[_ invoices.iv_invoice_paid_amount]}
@@ -89,10 +92,11 @@ template::list::create \
 	    display_template {[_ invoices.iv_invoice_status_@iv_invoice.status@]}
 	}
         action {
-	    display_template {<if @iv_invoice.status@ eq new><a href="@iv_invoice.edit_link@">#invoices.Edit#</a>&nbsp;<if @organization_id@ not nil and @invoice_cancel_p@ true><a href="@iv_invoice.cancel_link@">#invoices.Cancel#</a></if></if><if @iv_invoice.status@ ne billed and @iv_invoice.status@ ne paid>&nbsp;<a href="@iv_invoice.delete_link@">#invoices.Delete#</a></if>}
+	    display_template {<if @iv_invoice.status@ eq new><a href="@iv_invoice.edit_link@">#invoices.Edit#</a>&nbsp;<if @iv_invoice.organization_id@ not nil and @invoice_cancel_p@ true><a href="@iv_invoice.cancel_link@">#invoices.Cancel#</a></if></if><if @iv_invoice.status@ ne billed and @iv_invoice.status@ ne paid>&nbsp;<a href="@iv_invoice.delete_link@">#invoices.Delete#</a></if>}
 	}
-    } -actions $actions -sub_class narrow \
-    -bulk_actions $bulk_actions \
+	} -actions $actions -sub_class narrow \
+	    -bulk_actions $bulk_actions \
+	    -bulk_action_export_vars {return_url} \
     -orderby {
 	default_value invoice_nr
 	invoice_nr {
@@ -163,7 +167,7 @@ template::list::create \
 
 set contacts_p [apm_package_installed_p contacts]
 
-db_multirow -extend {creator_link edit_link cancel_link delete_link checkbox recipient} iv_invoice iv_invoice {} {
+db_multirow -extend {creator_link edit_link cancel_link delete_link recipient organization_id} iv_invoice iv_invoice {} {
     # Ugly hack. We should find out which contact package is linked
     set creator_link "/contacts/$creation_user"
     set edit_link [export_vars -base "${base_url}invoice-ae" {invoice_id}]
@@ -176,11 +180,7 @@ db_multirow -extend {creator_link edit_link cancel_link delete_link checkbox rec
     if {![empty_string_p $paid_amount]} {
 	set paid_amount [format "%.2f" $paid_amount]
     }
-    if {$status == "billed"} {
-	set checkbox "<input type=checkbox name=invoice_id value=\"$invoice_id\">"
-    } else {
-	set checkbox ""
-    }
+    #new,cancelled,billed,paid
     if { $contacts_p } {
 	set recipient "<a href=\"[contact::url -party_id $recipient_id]\">[contact::name -party_id $recipient_id]</a>"
     } else {

@@ -78,9 +78,9 @@
     select cr.title, cr.description, ofi.offer_item_id, ofi.item_units, ofi.offer_id,
            ofi.price_per_unit, ofi.item_nr, pi.item_id as project_id, of.credit_percent,
            pr.title as project_title, ofi.vat, ofi.rebate, m.category_id
-    from iv_offer_items ofi, cr_items oi, cr_revisions cr,
-         cr_items pi, cr_revisions pr, acs_objects o, acs_rels r,
-         category_object_map m, iv_offers of
+    from cr_items oi, cr_revisions cr, cr_items pi, cr_revisions pr,
+         acs_objects o, acs_rels r, iv_offers of, iv_offer_items ofi
+    left outer join category_object_map m on (m.object_id = ofi.offer_item_id)
     where o.object_id = ofi.offer_id
     and o.package_id = :package_id
     and oi.latest_revision = ofi.offer_id
@@ -90,7 +90,6 @@
     and pr.revision_id = pi.latest_revision
     and pi.item_id in ([join $project_id ,])
     and cr.revision_id = ofi.offer_item_id
-    and m.object_id = ofi.offer_item_id
     and of.offer_id = ofi.offer_id
     and not exists (select 1
 		    from iv_invoice_items ii, iv_invoices i
@@ -110,9 +109,10 @@
                pi.item_id as project_id, pr.title as project_title,
                i.vat as old_vat, i.rebate, m.category_id, i.offer_item_id,
                of.credit_percent
-	from cr_items oi, iv_offer_items ofi, iv_invoice_items i,
-	     cr_revisions ir, cr_items pi, cr_revisions pr, iv_offers of,
-	     cr_items vi, cr_items ii, acs_rels r, category_object_map m
+	from cr_items oi, iv_invoice_items i, cr_revisions ir, cr_items pi,
+	     cr_revisions pr, iv_offers of, cr_items vi, cr_items ii, acs_rels r,
+	     iv_offer_items ofi
+	left outer join category_object_map m on (m.object_id = ofi.offer_item_id)
 	where oi.latest_revision = ofi.offer_id
 	and i.offer_item_id = ofi.offer_item_id
 	and i.iv_item_id = ir.revision_id
@@ -123,7 +123,6 @@
         and r.object_id_two = oi.item_id
         and r.rel_type = 'application_data_link'
 	and pr.revision_id = pi.latest_revision
-        and m.object_id = ofi.offer_item_id
         and of.offer_id = ofi.offer_id
 	order by pi.item_id, i.item_nr
 

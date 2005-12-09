@@ -7,7 +7,7 @@ ad_page_contract {
     {format:optional "normal"}
     {orderby:optional ""}
     {page_size:optional 25}
-    {organization_id:optional "1302"}
+    {organization_id ""}
 } -properties {
     context:onevalue
     page_title:onevalue

@@ -6,6 +6,7 @@ ad_page_contract {
 } {
     amounts:float,array,optional
     {list_id:notnull}
+    {organization_id ""}
     {__new_p 0}
     {mode edit}
 } -properties {
@@ -94,9 +95,10 @@ ad_form -extend -name iv_prices_form -edit_request {
 					  -amount $amounts($category_id) ]
 	    }
 	}
+	
     }
 } -after_submit {
-    ad_returnredirect [export_vars -base price-list {list_id}]
+    ad_returnredirect [export_vars -base price-list {list_id organization_id}]
     ad_script_abort
 }
 

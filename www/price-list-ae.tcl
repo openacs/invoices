@@ -7,6 +7,7 @@ ad_page_contract {
     list_id:integer,optional
     {__new_p 0}
     {mode edit}
+    {organization_id ""}
 } -properties {
     context:onevalue
     page_title:onevalue
@@ -34,7 +35,7 @@ set package_id [ad_conn package_id]
 array set container_objects [iv::util::get_default_objects -package_id $package_id]
 
 set language [lang::conn::language]
-set organization_options [db_list_of_lists organization_list {}]
+
 set currency_options [db_list_of_lists currencies {}]
 
 ad_form -name iv_price_list_form -action price-list-ae -mode $mode -has_submit $has_submit -form {
@@ -50,14 +51,25 @@ if {![empty_string_p [category_tree::get_mapped_trees $container_objects(list_id
     category::ad_form::add_widgets -container_object_id $container_objects(list_id) -categorized_object_id $_list_id -form_name iv_price_list_form
 }
 
+if {[string eq "" $organization_id]} {
+    set organization_options [db_list_of_lists organization_list {}]
+    ad_form -extend -name iv_price_list_form -form {
+	{organization_id:text(multiselect),optional,multiple {label "[_ invoices.iv_price_list_organization]"} {options $organization_options} {help_text "[_ invoices.iv_price_list_organization_help]"} {values {$organization_values}}}
+    }
+} else {
+    set organization_name [contact::name -party_id $organization_id]
+    ad_form -extend -name iv_price_list_form -form {
+	{organization_name:text(inform) {label "[_ invoices.iv_price_list_organization]"} {value $organization_name } {help_text "[_ invoices.iv_price_list_organization_help]"} }
+	{organization_id:text(hidden)}
+    }
+}
+
 ad_form -extend -name iv_price_list_form -form {
-    {organization_id:text(multiselect),optional,multiple {label "[_ invoices.iv_price_list_organization]"} {options $organization_options} {help_text "[_ invoices.iv_price_list_organization_help]"} {values {$organization_values}}}
     {currency:text(select) {label "[_ invoices.iv_price_list_currency]"} {options $currency_options} {help_text "[_ invoices.iv_price_list_currency_help]"}}
     {credit_percent:float {label "[_ invoices.iv_price_list_credit_percent]"} {html {size 5 maxlength 10}} {help_text "[_ invoices.iv_price_list_credit_percent_help]"} {after_html {%}}}
 } -new_request {
     set title ""
     set description ""
-    set organization_id ""
     set currency [parameter::get -parameter "DefaultCurrency" -default "EUR"]
     set credit_percent 0
 } -edit_request {
@@ -96,6 +108,7 @@ ad_form -extend -name iv_price_list_form -form {
 
 	application_data_link::delete_links -object_id $new_list_id
 	foreach o_id $organization_id {
+	    set package_id [ad_conn package_id]
 	    application_data_link::new -this_object_id $new_list_id -target_object_id $o_id
 	}
     }

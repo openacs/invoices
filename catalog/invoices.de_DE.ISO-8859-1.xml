@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <message_catalog package_key="invoices" package_version="0.01d19" locale="de_DE" charset="ISO-8859-1">
 
+  <msg key="accepted">Auftragsbestätigungen</msg>
   <msg key="Accepted_date">Akzeptiert am</msg>
   <msg key="Add_offer_project">Ein Angebotsprojekt anlegen</msg>
   <msg key="admin">Admin</msg>
@@ -32,7 +33,6 @@
   <msg key="Currency">Währung</msg>
   <msg key="Currency_paid">bezahlte Währung</msg>
   <msg key="Customer">Kunde</msg>
-  <msg key="Date_comment">Datumskommentar</msg>
   <msg key="day">Tag</msg>
   <msg key="Delete">Löschen</msg>
   <msg key="Due_date">Fälligkeit</msg>
@@ -161,6 +161,7 @@
   <msg key="iv_offer_amount_total">Gesamtsumme</msg>
   <msg key="iv_offer_amount_total_help">Gesmatsumme der Rechnung. Diese kann von der Summe der einzelnen angebotenen Positionen abweichen.</msg>
   <msg key="iv_offer_comment">&lt;b&gt;Interner Kommentar&lt;/b&gt;</msg>
+  <msg key="iv_offer_comment_help">Interner Kommentar der nicht dem Kunden gezeigt wird.</msg>
   <msg key="iv_offer_count_total">Anzahl Positionen</msg>
   <msg key="iv_offer_creation_date">erstellt am</msg>
   <msg key="iv_offer_creation_user">erstellt von</msg>
@@ -185,7 +186,7 @@
   <msg key="iv_offer_item_amount_help">Errechneter Gesamtbetrag (multiplizierte Einheiten und Preise pro Einheit)</msg>
   <msg key="iv_offer_item_category">Typ</msg>
   <msg key="iv_offer_item_category_help">Art der erbrachten Arbeit</msg>
-  <msg key="iv_offer_item_comment">Kommentar</msg>
+  <msg key="iv_offer_item_comment">&lt;b&gt;Interner Kommentar&lt;/b&gt;</msg>
   <msg key="iv_offer_item_comment_help">Interner Kommentar für die Position des Angebots/der Rechnung</msg>
   <msg key="iv_offer_item_Delete">Kostenposition löschen</msg>
   <msg key="iv_offer_item_Description">Beschreibung</msg>

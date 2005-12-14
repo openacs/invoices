@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <message_catalog package_key="invoices" package_version="0.01d19" locale="en_US" charset="ISO-8859-1">
 
+  <msg key="accepted">Accepted Offers</msg>
   <msg key="Accepted_date">Accepted on</msg>
   <msg key="Add_offer_project">Add offer project</msg>
   <msg key="admin">Admin</msg>
@@ -114,12 +115,15 @@
   <msg key="iv_invoice_currency">Currency</msg>
   <msg key="iv_invoice_Delete">Delete Invoice</msg>
   <msg key="iv_invoice_Description">Description</msg>
+  <msg key="iv_invoice_Description_help">Description on the invoice</msg>
   <msg key="iv_invoice_due_date">Invoice date</msg>
+  <msg key="iv_invoice_due_date_help">Daten when the invoice is due.</msg>
   <msg key="iv_invoice_Edit">Edit Invoice</msg>
   <msg key="iv_invoice_edit_error">You are not allowed to edit a paid or cancelled invoice</msg>
   <msg key="iv_invoice_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Invoice&lt;/h3&gt;%invoice_text%&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_invoice_email_subject">Invoice # %invoice_nr%</msg>
   <msg key="iv_invoice_invoice_nr">Invoice number</msg>
+  <msg key="iv_invoice_invoice_nr_help">Number of the Invoice. Needs to be unique for accounting purposes.</msg>
   <msg key="iv_invoice_item_1">Invoice Item</msg>
   <msg key="iv_invoice_item_2">Invoice Items</msg>
   <msg key="iv_invoice_item_Add">Add Invoice Item</msg>
@@ -141,11 +145,13 @@
   <msg key="iv_invoice_New">New Invoice</msg>
   <msg key="iv_invoice_New2">Create New Invoice</msg>
   <msg key="iv_invoice_organization">Customer</msg>
+  <msg key="iv_invoice_organization_help">Client for whom to create the invoice</msg>
   <msg key="iv_invoice_paid_amount">Amount paid</msg>
   <msg key="iv_invoice_paid_currency">Currency paid</msg>
   <msg key="iv_invoice_parent_id">Invoice reference</msg>
   <msg key="iv_invoice_pay">Pay invoices</msg>
   <msg key="iv_invoice_payment_days">Payment after .. days</msg>
+  <msg key="iv_invoice_payment_days_help">Days until the recipient until should have paid.</msg>
   <msg key="iv_invoice_project_descr">Description</msg>
   <msg key="iv_invoice_project_id">Project ID</msg>
   <msg key="iv_invoice_project_title">Title</msg>
@@ -153,17 +159,22 @@
   <msg key="iv_invoice_rebate">Rebate</msg>
   <msg key="iv_invoice_rebate_help">Maximum rebate %open_rebate% %currency%</msg>
   <msg key="iv_invoice_recipient">Invoice Recipient</msg>
+  <msg key="iv_invoice_recipient_help">Invoice recipient of this invoice</msg>
   <msg key="iv_invoice_save">Save</msg>
   <msg key="iv_invoice_send">Send</msg>
+  <msg key="iv_invoice_specialities">Invoice Specialities</msg>
+  <msg key="iv_invoice_specialities_help">Invoice specialities to take into account</msg>
   <msg key="iv_invoice_status">Status</msg>
   <msg key="iv_invoice_status_billed">Billed</msg>
   <msg key="iv_invoice_status_cancelled">Cancelled</msg>
   <msg key="iv_invoice_status_new">Unbilled</msg>
   <msg key="iv_invoice_status_paid">Paid</msg>
   <msg key="iv_invoice_Title">Title</msg>
+  <msg key="iv_invoice_Title_help">Title for the invoice</msg>
   <msg key="iv_invoice_total_amount">Total amount</msg>
   <msg key="iv_invoice_vat">VAT</msg>
   <msg key="iv_invoice_vat_percent">%VAT</msg>
+  <msg key="iv_invoice_vat_percent_help">Percentage of VAT added in the invoice</msg>
   <msg key="iv_invoice_View">View Invoice</msg>
   <msg key="iv_of_month_year">Invoices of %long_month% %year%:</msg>
   <msg key="iv_of_year">Invoices of year %year%:</msg>
@@ -182,6 +193,7 @@
   <msg key="iv_offer_amount_total">Total amount</msg>
   <msg key="iv_offer_amount_total_help">Total sum for the invoice. This might differ from the aggregation of the offer items.</msg>
   <msg key="iv_offer_comment">Comment</msg>
+  <msg key="iv_offer_comment_help">Internal comment not shown to the customer</msg>
   <msg key="iv_offer_count_total">Total items</msg>
   <msg key="iv_offer_creation_date">Created on</msg>
   <msg key="iv_offer_creation_user">Created by</msg>

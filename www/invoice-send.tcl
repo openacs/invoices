@@ -24,16 +24,19 @@ if {$total_amount > 0} {
     # set invoice_text "{[_ invoices.iv_invoice_email]}"
     set subject [lang::util::localize "#invoices.iv_invoice_email_subject#" $locale]
     set template "InvoiceTemplate"
+    set file_title "Invoice_${invoice_nr}.pdf"
 } elseif {[empty_string_p $parent_invoice_id]} {
     # send credit
     # set invoice_text "{[_ invoices.iv_invoice_credit_email]}"
     set subject [lang::util::localize "#invoices.iv_invoice_credit_email_subject#" $locale]
     set template "CreditTemplate"
+    set file_title "Credit_${invoice_nr}.pdf"
 } else {
     # send cancellation
     # set invoice_text "{[_ invoices.iv_invoice_cancel_email]}"
     set subject [lang::util::localize "#invoices.iv_invoice_cancel_email_subject#" $locale]
     set template "CancelTemplate"
+    set file_title "Cancellation_${invoice_nr}.pdf"
 }
 
 set invoice_text [iv::invoice::parse_data -invoice_id $invoice_id -recipient_id $recipient_id -template $template -locale $locale]
@@ -51,7 +54,7 @@ if {[empty_string_p $file_ids]} {
     set pdf_file [text_templates::create_pdf_from_html -html_content "$invoice_text"]
     if {![empty_string_p $pdf_file]} {
 	set file_size [file size $pdf_file]
-	set file_ids [cr_import_content -title "Invoice_${invoice_id}.pdf" -description "PDF version of <a href=[export_vars -base "/invoices/invoice-ae" -url {{mode display} invoice_id}]>this offer</a>" $invoice_id $pdf_file $file_size application/pdf "[clock seconds]-[expr round([ns_rand]*100000)]"]
+	set file_ids [cr_import_content -title $file_title -description "PDF version of <a href=[export_vars -base "/invoices/invoice-ae" -url {{mode display} invoice_id}]>this invoice</a>" $invoice_id $pdf_file $file_size application/pdf "[clock seconds]-[expr round([ns_rand]*100000)]"]
         set return_url [export_vars -base invoice-pdf {invoice_id {file_id $file_ids}}]
     }
 } else {

@@ -49,6 +49,9 @@ if { [info exists organization_id] } {
     }
 }
 
+# If the sum was paid, the total_amount should appear green.
+# If it was billed, yet not paid, the total amount is red. Otherwise don't bother
+
 template::list::create \
     -name iv_invoice \
     -key invoice_id \
@@ -169,7 +172,7 @@ set contacts_p [apm_package_installed_p contacts]
 
 db_multirow -extend {creator_link edit_link cancel_link delete_link recipient organization_id} iv_invoice iv_invoice {} {
     # Ugly hack. We should find out which contact package is linked
-    set creator_link "/contacts/$creation_user"
+
     set edit_link [export_vars -base "${base_url}invoice-ae" {invoice_id}]
     set cancel_link [export_vars -base "${base_url}invoice-cancellation" {organization_id {parent_id $invoice_rev_id}}]
     set delete_link [export_vars -base "${base_url}invoice-delete" {invoice_id}]
@@ -180,9 +183,10 @@ db_multirow -extend {creator_link edit_link cancel_link delete_link recipient or
     if {![empty_string_p $paid_amount]} {
 	set paid_amount [format "%.2f" $paid_amount]
     }
-    #new,cancelled,billed,paid
+
     if { $contacts_p } {
 	set recipient "<a href=\"[contact::url -party_id $recipient_id]\">[contact::name -party_id $recipient_id]</a>"
+	set creator_link "[contact::url -party_id $creation_user]"
     } else {
 	set recipient [person::name -person_id $recipient_id]
     }

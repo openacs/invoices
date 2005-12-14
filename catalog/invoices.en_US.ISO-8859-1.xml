@@ -153,6 +153,7 @@
   <msg key="iv_invoice_rebate">Rebate</msg>
   <msg key="iv_invoice_rebate_help">Maximum rebate %open_rebate% %currency%</msg>
   <msg key="iv_invoice_recipient">Invoice Recipient</msg>
+  <msg key="iv_invoice_save">Save</msg>
   <msg key="iv_invoice_send">Send</msg>
   <msg key="iv_invoice_status">Status</msg>
   <msg key="iv_invoice_status_billed">Billed</msg>
@@ -170,9 +171,9 @@
   <msg key="iv_offer_2">Cost Sheets</msg>
   <msg key="iv_offer_accept">Accept Offer</msg>
   <msg key="iv_offer_accepted_date">Accepted on</msg>
-  <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Accepted Offer&lt;/h3&gt;%offer_text%&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Accepted Offer&lt;/h3&gt;%recipient_salutation% %recipient_name%,&lt;p&gt;thank you for your order. We will contact you as soon as possible.&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_accepted_email_subject">Offer acceptance # %offer_nr%</msg>
-  <msg key="iv_offer_accepted_thanks">Thank you for accepted our offer. We will contact you as soon as possible.</msg>
+  <msg key="iv_offer_accepted_thanks">Thank you for accepting our offer. We will contact you as soon as possible.</msg>
   <msg key="iv_offer_Add">Cost Sheet for &quot;%organization_name%&quot;</msg>
   <msg key="iv_offer_Add2">Add Cost Sheet</msg>
   <msg key="iv_offer_amount_diff">Rebate</msg>

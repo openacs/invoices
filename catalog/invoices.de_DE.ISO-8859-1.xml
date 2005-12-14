@@ -132,6 +132,7 @@
   <msg key="iv_invoice_rebate">Rabatt</msg>
   <msg key="iv_invoice_rebate_help">Maximaler Rabatt %open_rebate% %currency%</msg>
   <msg key="iv_invoice_recipient">Rechnungsempfänger</msg>
+  <msg key="iv_invoice_save">Ablegen</msg>
   <msg key="iv_invoice_send">Verschicken</msg>
   <msg key="iv_invoice_status">Status</msg>
   <msg key="iv_invoice_status_billed">berechnet</msg>
@@ -149,7 +150,7 @@
   <msg key="iv_offer_2">Projektaufstellungen</msg>
   <msg key="iv_offer_accept">Angebot akzeptieren</msg>
   <msg key="iv_offer_accepted_date">Akzeptiert am</msg>
-  <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Auftragsbestätigung&lt;/h3&gt;%offer_text%&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Auftragsbestätigung&lt;/h3&gt;%recipient_salutation% %recipient_name%,&lt;p&gt;Vielen Dank für Ihren Auftrag. Wir werden Sie so schnell wie möglich diesbezüglich kontaktieren.&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_accepted_email_subject">Auftragsbestätigung # %offer_nr%</msg>
   <msg key="iv_offer_accepted_thanks">Vielen Dank für die Annahme unseres Angebots. Wir werden Sie so schnell wie möglich diesbezüglich kontaktieren.</msg>
   <msg key="iv_offer_Add">Kostenaufstellung für &quot;%organization_name%&quot;</msg>

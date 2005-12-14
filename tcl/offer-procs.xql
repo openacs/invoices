@@ -73,7 +73,7 @@
                t.organization_id, pr.title as project_title, ci.item_id as offer_id,
                pp.project_code, pi.item_id as project_id
 	from iv_offers t, cr_revisions cr, cr_items ci, acs_objects o,
-	     persons p, acs_rels r, cr_items pi, cr_revisions pr, pm_projects pp
+	     persons p, acs_data_links r, cr_items pi, cr_revisions pr, pm_projects pp
 	where cr.revision_id = t.offer_id
 	and ci.latest_revision = cr.revision_id
 	and ci.item_id = :offer_id
@@ -81,7 +81,6 @@
 	and p.person_id = o.creation_user
         and r.object_id_two = ci.item_id
         and r.object_id_one = pi.item_id
-        and r.rel_type = 'application_data_link'
         and pi.latest_revision = pr.revision_id
         and pr.revision_id = pp.project_id
 

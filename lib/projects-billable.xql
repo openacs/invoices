@@ -27,7 +27,7 @@
 			cr_revisions pr, 
 			pm_projects p,
          		acs_objects o, 
-			acs_rels r, 
+			acs_data_links r, 
 			iv_offer_items ofi,
          		acs_objects oo, 
 			cr_items oi, 
@@ -38,7 +38,6 @@
     			and o.object_id = p.project_id
 			and r.object_id_one = pi.item_id
     			and r.object_id_two = oi.item_id
-    			and r.rel_type = 'application_data_link'
 	 	  	and p.status_id = :p_closed_id
     			and ofi.offer_id = oi.latest_revision
     			and oo.object_id = oi.item_id

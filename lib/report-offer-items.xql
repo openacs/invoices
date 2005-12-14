@@ -17,7 +17,7 @@
 		iv_offer_itemsx oi,
 		iv_offersx iv,
 		category_object_map com,
-		acs_rels rel,
+		acs_data_links rel,
 		pm_projectsx p,
 		cr_items i,
 		cr_items i2
@@ -27,7 +27,6 @@
 		and oi.offer_id = i.latest_revision
 		and oi.offer_item_id = com.object_id
 		and rel.object_id_one = iv.item_id
-		and rel.rel_type = 'application_data_link'
 		and rel.object_id_two = p.item_id
 		and p.item_id = i2.item_id
 		and i2.latest_revision = p.project_id
@@ -47,7 +46,7 @@
 		iv_offersx iv,
 		category_object_map com,
 		cr_items i,
-		acs_rels rel,
+		acs_data_links rel,
 		pm_projectsx p,
 		cr_items i2
 	where
@@ -56,7 +55,6 @@
 		and oi.offer_id = i.latest_revision
 		and oi.offer_item_id = com.object_id
 		and rel.object_id_one = iv.item_id
-		and rel.rel_type = 'application_data_link'
 		and rel.object_id_two = p.item_id
 		and p.item_id = i2.item_id
 		and i2.latest_revision = p.project_id
@@ -109,7 +107,7 @@
 		iv_offersx iv,
 		category_object_map com,
 		cr_items i,
-		acs_rels rel,
+		acs_data_links rel,
 		pm_projectsx p,
 		cr_items i2
 	where
@@ -118,7 +116,6 @@
 		and oi.offer_id = i.latest_revision
 		and oi.offer_item_id = com.object_id
 		and rel.object_id_one = iv.item_id
-		and rel.rel_type = 'application_data_link'
 		and rel.object_id_two = p.item_id
 		and p.item_id = i2.item_id
 		and i2.latest_revision = p.project_id

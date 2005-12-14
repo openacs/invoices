@@ -41,16 +41,14 @@
       <querytext>
 
     select r.title, r.item_id
-    from cr_revisions r, cr_items i, pm_projects p, acs_rels ar
+    from cr_revisions r, cr_items i, pm_projects p, acs_data_links ar
     where ar.object_id_one = :organization_id
     and ar.object_id_two = r.revision_id
-    and ar.rel_type = 'application_data_link'
     and i.latest_revision = r.revision_id
     and p.project_id = r.revision_id
     and i.item_id not in (select ar2.object_id_one
-                          from acs_rels ar2, cr_items oi, iv_offers o
+                          from acs_data_links ar2, cr_items oi, iv_offers o
                           where ar2.object_id_two = oi.item_id
-                          and ar2.rel_type = 'application_data_link'
                           and oi.latest_revision = o.offer_id)
     order by r.title desc
 

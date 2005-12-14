@@ -43,7 +43,7 @@
            pi.item_id as project_id
     from iv_offer_items ofi, cr_items ci, cr_revisions cr,
          category_object_map m, iv_invoice_items ii, cr_revisions oor,
-         acs_rels r, cr_items pi, cr_revisions pr, pm_projects p
+         acs_data_links r, cr_items pi, cr_revisions pr, pm_projects p
     where ci.latest_revision = ii.invoice_id
     and cr.revision_id = ii.iv_item_id
     and ci.item_id = :invoice_id
@@ -52,7 +52,6 @@
     and oor.revision_id = ofi.offer_id
     and r.object_id_two = oor.item_id
     and r.object_id_one = pi.item_id
-    and r.rel_type = 'application_data_link'
     and pi.latest_revision = pr.revision_id
     and pr.revision_id = p.project_id
     order by ii.sort_order
@@ -89,7 +88,7 @@
            ofi.page_count, pr.title as project_title, p.project_code,
            pi.item_id as project_id, o.credit_percent
     from cr_items ci, cr_revisions cr, iv_invoice_items ii, cr_revisions oor,
-         acs_rels r, cr_items pi, cr_revisions pr, pm_projects p, iv_offers o,
+         acs_data r, cr_items pi, cr_revisions pr, pm_projects p, iv_offers o,
          iv_offer_items ofi
     left outer join category_object_map m on (m.object_id = ofi.offer_item_id)
     where ci.latest_revision = ii.invoice_id
@@ -99,7 +98,6 @@
     and oor.revision_id = ofi.offer_id
     and r.object_id_two = oor.item_id
     and r.object_id_one = pi.item_id
-    and r.rel_type = 'application_data_link'
     and pi.latest_revision = pr.revision_id
     and pr.revision_id = p.project_id
     and o.offer_id = ofi.offer_id

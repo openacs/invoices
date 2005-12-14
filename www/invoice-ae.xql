@@ -21,14 +21,13 @@
 
 	    select cp.item_id
 	    from cr_items ci, cr_items co, cr_items cp, iv_invoice_items ii,
-	         iv_offer_items oi, pm_projects p, acs_rels r
+	         iv_offer_items oi, pm_projects p, acs_data_links r
 	    where ci.item_id = :invoice_id
 	    and ii.invoice_id = ci.latest_revision
 	    and oi.offer_item_id = ii.offer_item_id
 	    and oi.offer_id = co.latest_revision
 	    and r.object_id_one = co.item_id
 	    and r.object_id_two = cp.item_id
-	    and r.rel_type = 'application_data_link'
 	    and p.project_id = cp.latest_revision
 
       </querytext>
@@ -79,14 +78,13 @@
            ofi.price_per_unit, ofi.item_nr, pi.item_id as project_id, of.credit_percent,
            pr.title as project_title, ofi.vat, ofi.rebate, m.category_id
     from cr_items oi, cr_revisions cr, cr_items pi, cr_revisions pr,
-         acs_objects o, acs_rels r, iv_offers of, iv_offer_items ofi
+         acs_objects o, acs_data_links r, iv_offers of, iv_offer_items ofi
     left outer join category_object_map m on (m.object_id = ofi.offer_item_id)
     where o.object_id = ofi.offer_id
     and o.package_id = :package_id
     and oi.latest_revision = ofi.offer_id
     and r.object_id_one = pi.item_id
     and r.object_id_two = oi.item_id
-    and r.rel_type = 'application_data_link'
     and pr.revision_id = pi.latest_revision
     and pi.item_id in ([join $project_id ,])
     and cr.revision_id = ofi.offer_item_id
@@ -110,7 +108,7 @@
                i.vat as old_vat, i.rebate, m.category_id, i.offer_item_id,
                of.credit_percent
 	from cr_items oi, iv_invoice_items i, cr_revisions ir, cr_items pi,
-	     cr_revisions pr, iv_offers of, cr_items vi, cr_items ii, acs_rels r,
+	     cr_revisions pr, iv_offers of, cr_items vi, cr_items ii, acs_data_links r,
 	     iv_offer_items ofi
 	left outer join category_object_map m on (m.object_id = ofi.offer_item_id)
 	where oi.latest_revision = ofi.offer_id
@@ -121,7 +119,6 @@
 	and vi.item_id = :invoice_id
         and r.object_id_one = pi.item_id
         and r.object_id_two = oi.item_id
-        and r.rel_type = 'application_data_link'
 	and pr.revision_id = pi.latest_revision
         and of.offer_id = ofi.offer_id
 	order by pi.item_id, i.item_nr
@@ -148,11 +145,10 @@
 	       sum(o.vat) as vat,
 	       sum(o.amount_total) as amount_total,
 	       sum(o.amount_sum) as amount_sum
-	from iv_offers o, cr_items i, acs_rels r
+	from iv_offers o, cr_items i, acs_data_links r
 	where o.offer_id = i.latest_revision
 	and r.object_id_one in ([join $project_id ,])
 	and r.object_id_two = i.item_id
-	and r.rel_type = 'application_data_link'
 
       </querytext>
 </fullquery>
@@ -196,11 +192,10 @@
       <querytext>
 
 		select of.offer_id as credit_offer_rev_id
-		from iv_offers of, cr_items oi, acs_rels r,
+		from iv_offers of, cr_items oi, acs_data_links r,
 		     acs_objects o, pm_projects p, cr_items pi
 		where r.object_id_one = pi.item_id
 		and r.object_id_two = oi.item_id
-		and r.rel_type = 'application_data_link'
 		and oi.latest_revision = of.offer_id
 		and of.status = 'credit'
 		and o.object_id = of.offer_id
@@ -217,11 +212,10 @@
 
 		select ofi.offer_id as credit_offer_rev_id,
                        oi.item_id as credit_offer_item_id
-		from iv_offers of, cr_items i, acs_objects o, acs_rels r,
+		from iv_offers of, cr_items i, acs_objects o, acs_data_links r,
                      iv_offer_items ofi, cr_items oi, pm_projects p, cr_items pi
 		where r.object_id_one = pi.item_id
 		and r.object_id_two = i.item_id
-		and r.rel_type = 'application_data_link'
 		and o.object_id = of.offer_id
 		and o.package_id = :package_id
 		and of.offer_id = ofi.offer_id

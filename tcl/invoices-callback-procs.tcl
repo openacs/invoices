@@ -313,11 +313,10 @@ ad_proc -public -callback contact::organization_new_group -impl invoices {
 
     set already_offer_p [db_0or1row check_for_offer {
 	select of.offer_id as credit_offer_rev_id
-	from iv_offers of, cr_items oi, acs_rels r,
+	from iv_offers of, cr_items oi, acs_data_links r,
 	     pm_projects p, cr_items pi
 	where r.object_id_one = pi.item_id
 	and r.object_id_two = oi.item_id
-	and r.rel_type = 'application_data_link'
 	and oi.latest_revision = of.offer_id
 	and of.status = 'credit'
 	and pi.latest_revision = p.project_id

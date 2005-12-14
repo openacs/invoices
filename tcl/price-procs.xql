@@ -6,7 +6,7 @@
       <querytext>
       
 	select p.amount, l.currency
-	from iv_prices p, cr_items pi, acs_objects o, acs_rels r,
+	from iv_prices p, cr_items pi, acs_objects o, acs_data_links r,
 	     iv_price_lists l, cr_items li, category_object_map cm
 	where p.price_id = pi.latest_revision
 	and cm.category_id = p.category_id
@@ -17,7 +17,6 @@
 	and l.list_id = li.latest_revision
 	and r.object_id_one = li.item_id
 	and r.object_id_two = :organization_id
-	and r.rel_type = 'application_data_link'
 	
       </querytext>
 </fullquery>
@@ -36,10 +35,9 @@
 	and p.list_id = li.item_id
 	and l.list_id = li.latest_revision
 	and not exists (select 1
-		       from acs_rels r, acs_objects o
+		       from acs_data_links r, acs_objects o
 		       where r.object_id_one = li.item_id
 		       and r.object_id_two = o.object_id
-		       and r.rel_type = 'application_data_link'
 		       and o.object_type = 'organization')
 	
       </querytext>

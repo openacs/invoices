@@ -20,10 +20,9 @@
       <querytext>
       
 	select sum(o.amount_sum - o.amount_total) as open_rebate
-	from iv_offers o, acs_rels r, cr_items co
+	from iv_offers o, acs_data_links r, cr_items co
 	where r.object_id_one in ([join $project_id ,])
 	and r.object_id_two = co.item_id
-	and r.rel_type = 'application_data_link'
 	and co.latest_revision = o.offer_id
     
       </querytext>
@@ -40,11 +39,10 @@
 	and ci.latest_revision = i.invoice_id
 	and i.invoice_id in (select ii.invoice_id
 	                     from iv_invoice_items ii, iv_offer_items oi,
-	                          cr_items co, acs_rels r
+	                          cr_items co, acs_data_links r
 	                     where oi.offer_id = co.latest_revision
 	                     and r.object_id_one in ([join $project_id ,])
 	                     and r.object_id_two = co.item_id
-	                     and r.rel_type = 'application_data_link'
 	                     and oi.offer_item_id = ii.offer_item_id)
 
       </querytext>

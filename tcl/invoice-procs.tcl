@@ -186,9 +186,10 @@ ad_proc -public iv::invoice::parse_data {
     # Get the invoice data
     db_1row get_data {} -column_array invoice
     set invoice(creator_name) "$invoice(first_names) $invoice(last_name)"
-    set invoice(amount_diff) [lc_numeric [format "%.2f" [expr $invoice(total_amount) - $invoice(amount_sum)]] "" $locale]
+    set invoice(amount_diff) [format "%.2f" [expr $invoice(total_amount) - $invoice(amount_sum)]]
+    set amount_diff $invoice(amount_diff)
+    set invoice(amount_diff) [lc_numeric $invoice(amount_diff) "" $locale]
     set invoice(final_amount) [lc_numeric [format "%.2f" [expr $invoice(total_amount)+$invoice(vat)]] "" $locale]
-    set invoice(vat_percent) [lc_numeric [format "%.1f" $invoice(vat_percent)] "" $locale]
     set invoice(vat) [lc_numeric [format "%.2f" $invoice(vat)] "" $locale]
     set invoice(amount_sum) [lc_numeric [format "%.2f" $invoice(amount_sum)] "" $locale]
     set invoice(total_amount) [lc_numeric [format "%.2f" $invoice(total_amount)] "" $locale]
@@ -198,24 +199,45 @@ ad_proc -public iv::invoice::parse_data {
     set invoice(due_date) [lc_time_fmt $invoice(due_date) $time_format]
 
     set name [contact::name -party_id $recipient_id]
-    set invoice(rep_first_names) [lindex $name 0]
-    set invoice(rep_last_name) [lindex $name 1]
+    set invoice(rep_first_names) [lindex $name 1]
+    set invoice(rep_last_name) [string trim [lindex $name 0] ,]
     set invoice(recipient_name) "$invoice(rep_first_names) $invoice(rep_last_name)"
     set rec_organization_id [contact::util::get_employee_organization -employee_id $invoice(recipient_id)]
+    set orga_revision_id [content::item::get_best_revision -item_id $invoice(organization_id)]
+    set rec_revision_id [content::item::get_best_revision -item_id $recipient_id]
     set invoice(mailing_address) [contact::message::mailing_address -party_id $invoice(organization_id) -format "text/html"]
     set invoice(organization_name) [contact::name -party_id $invoice(organization_id)]
-    # set locale [lang::user::site_wide_locale -user_id $invoice(recipient_id)]
-    # set locale de_DE
+    set invoice(company_name_ext) [ams::value -attribute_name "company_name_ext" -object_id $orga_revision_id -locale $locale]
+    set invoice(sticker_salutation) [ams::value -attribute_name "sticker_salutation" -object_id $rec_revision_id -locale $locale]
+    if {[empty_string_p $invoice(sticker_salutation)]} {
+	set invoice(sticker_salutation) $name
+    }
+    set sum 0.
 
     db_multirow -local -extend {amount_sum amount_total category} invoice_items invoice_items {} {
+	if {[empty_string_p $credit_percent]} {
+	    set credit_percent 0
+	}
+	set item_units [format "%.2f" [expr $item_units * (1. + ($credit_percent / 100.))]]
 	set amount_sum [format "%.2f" [expr $item_units * $price_per_unit]]
-	set amount_total [lc_numeric [format "%.2f" [expr (1. - ($rebate / 100.)) * $amount_sum]] "" $locale]
+	set amount_total [format "%.2f" [expr (1. - ($rebate / 100.)) * $amount_sum]]
+	set sum [expr $sum + $amount_total]
+	set amount_total [lc_numeric $amount_total "" $locale]
 	set amount_sum [lc_numeric $amount_sum "" $locale]
 	set price_per_unit [lc_numeric [format "%.2f" $price_per_unit] "" $locale]
 	set item_units [lc_numeric [format "%.2f" $item_units] "" $locale]
 	set rebate [lc_numeric [format "%.1f" $rebate] "" $locale]
 	set category [lang::util::localize [category::get_name $category_id]]
     }
+
+    set invoice(amount_sum) $sum
+    set invoice(total_amount) [expr $sum + $amount_diff]
+    set invoice(vat) [expr $invoice(vat_percent) * $invoice(total_amount) / 100.]
+    set invoice(final_amount) [lc_numeric [format "%.2f" [expr $invoice(total_amount)+$invoice(vat)]] "" $locale]
+    set invoice(vat_percent) [lc_numeric [format "%.1f" $invoice(vat_percent)] "" $locale]
+    set invoice(vat) [lc_numeric [format "%.2f" $invoice(vat)] "" $locale]
+    set invoice(amount_sum) [lc_numeric [format "%.2f" $invoice(amount_sum)] "" $locale]
+    set invoice(total_amount) [lc_numeric [format "%.2f" $invoice(total_amount)] "" $locale]
 
     set file_url [parameter::get -parameter $template]
     

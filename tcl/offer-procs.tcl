@@ -206,9 +206,14 @@ ad_proc -public iv::offer::parse_data {
     set offer(vat) [lc_numeric [format "%.2f" $offer(vat)] "" $locale]
     set offer(amount_sum) [lc_numeric [format "%.2f" $offer(amount_sum)] "" $locale]
     set offer(amount_total) [lc_numeric [format "%.2f" $offer(amount_total)] "" $locale]
-    set revision_id [contact::live_revision -party_id $recipient_id]
-    # set offer(salutation) [ams::value -attribute_name "salutation" -object_id $revision_id -locale $locale]
-    set offer(salutation) "Sehr geehrter"
+    set orga_revision_id [content::item::get_best_revision -item_id $offer(organization_id)]
+    set rec_revision_id [content::item::get_best_revision -item_id $recipient_id]
+    set offer(salutation) [ams::value -attribute_name "salutation" -object_id $rec_revision_id -locale $locale]
+    set offer(company_name_ext) [ams::value -attribute_name "company_name_ext" -object_id $orga_revision_id -locale $locale]
+    set offer(sticker_salutation) [ams::value -attribute_name "sticker_salutation" -object_id $rec_revision_id -locale $locale]
+    if {[empty_string_p $offer(sticker_salutation)]} {
+	set offer(sticker_salutation) $name
+    }
 
     set time_format "[lc_get -locale $locale d_fmt] [lc_get -locale $locale t_fmt]"
     set offer(finish_date) [lc_time_fmt $offer(finish_date) $time_format]
@@ -217,8 +222,8 @@ ad_proc -public iv::offer::parse_data {
 
     set offer(recipient_id) $recipient_id
     set offer(name) [contact::name -party_id $recipient_id]
-    set offer(rep_first_names) [lindex $offer(name) 0]
-    set offer(rep_last_name) [lindex $offer(name) 1]
+    set offer(rep_first_names) [lindex $offer(name) 1]
+    set offer(rep_last_name) [string trim [lindex $offer(name) 0] ,]
     set offer(recipient_name) "$offer(rep_first_names) $offer(rep_last_name)"
     set rec_organization_id [contact::util::get_employee_organization -employee_id $offer(recipient_id)]
     set offer(mailing_address) [contact::message::mailing_address -party_id $offer(organization_id) -format "text/html"]

@@ -325,12 +325,21 @@ ad_proc -public -callback contact::organization_new_group -impl invoices {
 	and p.customer_id = :organization_id
     }]
 
+    set root_folder_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type content_folder] 0]
+    foreach folder {invoices offers accepted} {
+	if {[empty_string_p [fs::get_folder -name $folder -parent_id $root_folder_id]]} {
+	    set folder_id [fs::new_folder \
+			       -name $folder \
+			       -pretty_name "#invoices.${folder}#" \
+			       -parent_id $root_folder_id \
+			       -no_callback]
+	}
+    }
+
     if {[lsearch $group_ids $group_id] >-1 && !$already_offer_p} {
 	# Create the new project and credit offer
 	foreach package_id [apm_package_id_from_key invoices] {
 	    iv::offer::new_credit -organization_id $organization_id -package_id $package_id
-	    # add folders invoices, offers, accepted
-	    # callback: test if folder exists
 	}
     }
 }

@@ -13,7 +13,7 @@ ad_page_contract {
 }
 
 set user_id [auth::require_login]
-set page_title "[_ invoices.iv_offer_send]"
+set page_title "[_ invoices.template_offer_accepted]"
 
 db_1row offer_data {}
 

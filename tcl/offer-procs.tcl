@@ -212,7 +212,7 @@ ad_proc -public iv::offer::parse_data {
     set offer(company_name_ext) [ams::value -attribute_name "company_name_ext" -object_id $orga_revision_id -locale $locale]
     set offer(sticker_salutation) [ams::value -attribute_name "sticker_salutation" -object_id $rec_revision_id -locale $locale]
     if {[empty_string_p $offer(sticker_salutation)]} {
-	set offer(sticker_salutation) $name
+	set offer(sticker_salutation) [contact::name -party_id $recipient_id]
     }
 
     set time_format "[lc_get -locale $locale d_fmt] [lc_get -locale $locale t_fmt]"

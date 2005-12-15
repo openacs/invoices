@@ -251,23 +251,13 @@ ad_proc -public iv::install::after_upgrade {
 	    }
 	    0.01d19 0.01d20 {
 		foreach package_id [apm_package_id_from_key invoices] {
-		    array set objects [iv::util::get_default_objects -package_id $package_id]
+		    set offer_item_title_id [package_instantiate_object -package_name acs_object -var_list [list [list new__context_id $package_id] [list new__package_id $package_id] [list new__title "Invoice Items Default Object"]] acs_object]
 
-		    set objects(invoice_item_id) [package_instantiate_object -package_name acs_object -var_list [list [list new__context_id $package_id] [list new__package_id $package_id] [list new__title "Invoice Items Default Object"]] acs_object]
-
-		    iv::util::set_default_objects \
-			-package_id $package_id \
-			-list_id $objects(list_id) \
-			-price_id $objects(price_id) \
-			-cost_id $objects(cost_id) \
-			-offer_id $objects(offer_id) \
-			-offer_item_id $objects(offer_item_id) \
-			-offer_item_title_id $objects(offer_item_title_id) \
-			-invoice_id $objects(invoice_id) \
-			-invoice_item_id $objects(invoice_item_id) \
-			-payment_id $objects(payment_id)
-
-		    array unset objects
+		    db_dml set_offer_item_title_id {
+			update iv_default_objects
+			set offer_item_title_id = :offer_item_title_id
+			where package_id = :package_id
+		    }
 		}
 	    }
 	}

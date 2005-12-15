@@ -8,6 +8,7 @@ ad_page_contract {
     {organization_id:integer,optional ""}
     {item_nr:array,optional}
     {item_title:array,optional}
+    {item_title_cat:array,optional}
     {item_description:array,optional}
     {item_comment:array,optional}
     {item_files:array,optional}

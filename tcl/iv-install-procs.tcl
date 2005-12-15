@@ -130,6 +130,7 @@ ad_proc -public iv::install::package_instantiate {
     set cost_id [package_instantiate_object -package_name acs_object -var_list [list [list new__context_id $package_id] [list new__package_id $package_id] [list new__title "Costs Default Object"]] acs_object]
     set offer_id [package_instantiate_object -package_name acs_object -var_list [list [list new__context_id $package_id] [list new__package_id $package_id] [list new__title "Offers Default Object"]] acs_object]
     set offer_item_id [package_instantiate_object -package_name acs_object -var_list [list [list new__context_id $package_id] [list new__package_id $package_id] [list new__title "Offer Items Default Object"]] acs_object]
+    set offer_item_title_id [package_instantiate_object -package_name acs_object -var_list [list [list new__context_id $package_id] [list new__package_id $package_id] [list new__title "Offer Items Title Default Object"]] acs_object]
     set invoice_id [package_instantiate_object -package_name acs_object -var_list [list [list new__context_id $package_id] [list new__package_id $package_id] [list new__title "Invoices Default Object"]] acs_object]
     set invoice_item_id [package_instantiate_object -package_name acs_object -var_list [list [list new__context_id $package_id] [list new__package_id $package_id] [list new__title "Invoice Items Default Object"]] acs_object]
     set payment_id [package_instantiate_object -package_name acs_object -var_list [list [list new__context_id $package_id] [list new__package_id $package_id] [list new__title "Payments Default Object"]] acs_object]
@@ -141,6 +142,7 @@ ad_proc -public iv::install::package_instantiate {
 	-cost_id $cost_id \
 	-offer_id $offer_id \
 	-offer_item_id $offer_item_id \
+	-offer_item_title_id $offer_item_title_id \
 	-invoice_id $invoice_id \
 	-invoice_item_id $invoice_item_id \
 	-payment_id $payment_id
@@ -245,6 +247,27 @@ ad_proc -public iv::install::after_upgrade {
 			    iv::offer::pdf_folders -organization_id $organization_id -package_id $package_id
 			}
 		    }
+		}
+	    }
+	    0.01d19 0.01d20 {
+		foreach package_id [apm_package_id_from_key invoices] {
+		    array set objects [iv::util::get_default_objects -package_id $package_id]
+
+		    set objects(invoice_item_id) [package_instantiate_object -package_name acs_object -var_list [list [list new__context_id $package_id] [list new__package_id $package_id] [list new__title "Invoice Items Default Object"]] acs_object]
+
+		    iv::util::set_default_objects \
+			-package_id $package_id \
+			-list_id $objects(list_id) \
+			-price_id $objects(price_id) \
+			-cost_id $objects(cost_id) \
+			-offer_id $objects(offer_id) \
+			-offer_item_id $objects(offer_item_id) \
+			-offer_item_title_id $objects(offer_item_title_id) \
+			-invoice_id $objects(invoice_id) \
+			-invoice_item_id $objects(invoice_item_id) \
+			-payment_id $objects(payment_id)
+
+		    array unset objects
 		}
 	    }
 	}

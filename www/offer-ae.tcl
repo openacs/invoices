@@ -378,6 +378,13 @@ if {!$has_submit} {
 		       [list help_text "[_ invoices.iv_offer_item_Title_help]"] \
 		       [list section "[_ invoices.iv_offer_item_1] $i"] ] ]
 	ad_form -extend -name iv_offer_form -form \
+	    [list [list "item_title_cat.${i}:text(category),optional" \
+		       [list label "[_ invoices.iv_offer_item_title_category]"] \
+		       [list value [list 0 $container_objects(offer_item_title_id)]] \
+		       [list help_text "[_ invoices.iv_offer_item_title_category_help]"] \
+		       [list section "[_ invoices.iv_offer_item_1] $i"] ] ]
+
+	ad_form -extend -name iv_offer_form -form \
 	    [list [list "item_description.${i}:text(textarea),optional" \
 		       [list label "[_ invoices.iv_offer_item_Description]"] \
 		       [list html [list rows 5 cols 80]] \
@@ -544,6 +551,22 @@ ad_form -extend -name iv_offer_form -new_request {
 	    set item(rebate) $item_rebate($i)
 	    set item(page_count) $item_pages($i)
 	    set item(file_count) $item_files($i)
+	    set title_cat $item_title_cat($i)
+	    
+	    # generate item title from categories if empty title
+	    if {[empty_string_p $item(title)]} {
+		# if only single category
+		if {[llength $title_cat] == 1} {
+		    set item(title) "#invoices.iv_invoice_item_title_cat_1# ([category::get_name [lindex $title_cat 0]])"
+		}
+
+		# if two categories selected
+		if {[llength $title_cat] == 2} {
+		    set from_cat [category::get_name [lindex $title_cat 0]]
+		    set to_cat [category::get_name [lindex $title_cat 1]]
+		    set item(title) "#invoices.iv_invoice_item_title_cat_2# ($from_cat -> $to_cat)"
+		}
+	    }
 
 	    if {[empty_string_p $item(price)]} {
 		set item(sum) "0"

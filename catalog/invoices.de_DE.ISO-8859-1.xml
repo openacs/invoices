@@ -115,6 +115,9 @@
   <msg key="iv_invoice_item_rebate">Rabatt</msg>
   <msg key="iv_invoice_item_sort_order">Nummer</msg>
   <msg key="iv_invoice_item_Title">Titel</msg>
+  <msg key="iv_invoice_item_title_cat_1">Lektorat</msg>
+  <msg key="iv_invoice_item_title_cat_2">Adaption</msg>
+  <msg key="iv_invoice_item_title_category">Sprachen</msg>
   <msg key="iv_invoice_item_vat">Mehrwertsteuer</msg>
   <msg key="iv_invoice_item_View">Rechnungsposition ansehen</msg>
   <msg key="iv_invoice_New">Neue Rechnung</msg>

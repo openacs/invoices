@@ -299,6 +299,9 @@ create table iv_default_objects (
         offer_item_id           integer
                                 constraint iv_default_objects_offer_item_fk
                                 references acs_objects,
+        offer_item_title_id     integer
+                                constraint iv_default_objects_offer_title_fk
+                                references acs_objects,
         invoice_id              integer
                                 constraint iv_default_objects_invoice_fk
                                 references acs_objects,

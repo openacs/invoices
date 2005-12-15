@@ -140,6 +140,9 @@
   <msg key="iv_invoice_item_rebate">Rebate</msg>
   <msg key="iv_invoice_item_sort_order">Sort order</msg>
   <msg key="iv_invoice_item_Title">Title</msg>
+  <msg key="iv_invoice_item_title_cat_1">Editing</msg>
+  <msg key="iv_invoice_item_title_cat_2">Translation</msg>
+  <msg key="iv_invoice_item_title_category">Languages</msg>
   <msg key="iv_invoice_item_vat">VAT</msg>
   <msg key="iv_invoice_item_View">View Invoice Item</msg>
   <msg key="iv_invoice_New">New Invoice</msg>

@@ -5,7 +5,7 @@
 <fullquery name="iv::util::get_default_objects_not_cached.default_object">
       <querytext>
       
-	select list_id, price_id, cost_id, offer_id, offer_item_id, 
+	select list_id, price_id, cost_id, offer_id, offer_item_id, offer_item_title_id,
 	       invoice_id, invoice_item_id, payment_id
 	from iv_default_objects
 	where package_id = :package_id
@@ -17,10 +17,10 @@
       <querytext>
       
 	insert into iv_default_objects
-	(package_id, list_id, price_id, cost_id, offer_id,
+	(package_id, list_id, price_id, cost_id, offer_id, offer_item_title_id,
 	 offer_item_id, invoice_id, invoice_item_id, payment_id)
 	values
-	(:package_id, :list_id, :price_id, :cost_id, :offer_id,
+	(:package_id, :list_id, :price_id, :cost_id, :offer_id, :offer_item_title_id,
 	 :offer_item_id, :invoice_id, :invoice_item_id, :payment_id)
 	
       </querytext>

@@ -311,34 +311,38 @@ ad_proc -public -callback contact::organization_new_group -impl invoices {
 	lappend group_ids [group::get_id -group_name $group_name]
     }
 
-    set already_offer_p [db_0or1row check_for_offer {
-	select of.offer_id as credit_offer_rev_id
-	from iv_offers of, cr_items oi, acs_data_links r,
-	     pm_projects p, cr_items pi
-	where r.object_id_one = pi.item_id
-	and r.object_id_two = oi.item_id
-	and oi.latest_revision = of.offer_id
-	and of.status = 'credit'
-	and pi.latest_revision = p.project_id
-	and p.status_id = 2
-	and p.customer_id = :organization_id
-    }]
+    if {[lsearch $group_ids $group_id] >-1} {
+	# check if there is already an offer dummy project
+	set already_offer_p [db_0or1row check_for_offer {
+	    select of.offer_id as credit_offer_rev_id
+	    from iv_offers of, cr_items oi, acs_data_links r,
+	         pm_projects p, cr_items pi
+	    where r.object_id_one = pi.item_id
+	    and r.object_id_two = oi.item_id
+	    and oi.latest_revision = of.offer_id
+	    and of.status = 'credit'
+	    and pi.latest_revision = p.project_id
+	    and p.status_id = 2
+	    and p.customer_id = :organization_id
+	}]
 
-    set root_folder_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type content_folder] 0]
-    foreach folder {invoices offers accepted} {
-	if {[empty_string_p [fs::get_folder -name $folder -parent_id $root_folder_id]]} {
-	    set folder_id [fs::new_folder \
-			       -name $folder \
-			       -pretty_name "#invoices.${folder}#" \
-			       -parent_id $root_folder_id \
-			       -no_callback]
-	}
-    }
+	if {!$already_offer_p} {
+	    # Create the new project and credit offer
 
-    if {[lsearch $group_ids $group_id] >-1 && !$already_offer_p} {
-	# Create the new project and credit offer
-	foreach package_id [apm_package_id_from_key invoices] {
-	    iv::offer::new_credit -organization_id $organization_id -package_id $package_id
+	    set root_folder_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type content_folder] 0]
+	    foreach folder {invoices offers accepted} {
+		if {[empty_string_p [fs::get_folder -name $folder -parent_id $root_folder_id]]} {
+		    set folder_id [fs::new_folder \
+				       -name "${folder}_${root_folder_id}" \
+				       -pretty_name "#invoices.${folder}#" \
+				       -parent_id $root_folder_id \
+				       -no_callback]
+		}
+	    }
+
+	    foreach package_id [apm_package_id_from_key invoices] {
+		iv::offer::new_credit -organization_id $organization_id -package_id $package_id
+	    }
 	}
     }
 }

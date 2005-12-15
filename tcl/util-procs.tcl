@@ -37,6 +37,7 @@ ad_proc -private iv::util::set_default_objects {
     -cost_id:required
     -offer_id:required
     -offer_item_id:required
+    -offer_item_title_id:required
     -invoice_id:required
     -invoice_item_id:required
     -payment_id:required

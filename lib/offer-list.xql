@@ -16,7 +16,7 @@
       
     select cr.item_id as offer_id, cr.title, cr.description,
            t.offer_nr, t.amount_total, t.amount_sum, t.currency,
-	   p.first_names, p.last_name, o.creation_user, t.comment,
+	   p.first_names, p.last_name, pp.contact_id, o.creation_user, t.comment,
 	   to_char(o.creation_date, :timestamp_format) as creation_date,
 	   to_char(t.accepted_date, :timestamp_format) as accepted_date,
 	   to_char(t.finish_date, :timestamp_format) as finish_date,
@@ -36,6 +36,7 @@
     and r.object_id_two = pi.item_id
     and pr.revision_id = pi.latest_revision
     and pp.project_id = pr.revision_id
+    and p2.person_id = pp.contact_id
     [template::list::filter_where_clauses -and -name iv_offer]
     [template::list::page_where_clause -and -name iv_offer -key cr.item_id]
     [template::list::orderby_clause -name iv_offer -orderby]
@@ -60,6 +61,7 @@
     and r.object_id_two = pi.item_id
     and pr.revision_id = pi.latest_revision
     and pp.project_id = pr.revision_id
+    and p2.person_id = pp.contact_id
     [template::list::filter_where_clauses -and -name iv_offer]
     [template::list::orderby_clause -name iv_offer -orderby]
     

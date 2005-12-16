@@ -24,7 +24,7 @@
            p2.first_names as contact_first_names,
            p2.last_name as contact_last_name
     from cr_folders cf, cr_revisions cr, iv_offers t,
-         acs_objects o, persons p, cr_items ci, acs_rels r,
+         acs_objects o, persons p, cr_items ci, acs_data_links r,
          cr_items pi, cr_revisions pr, pm_projects pp, persons p2
     where cr.revision_id = ci.latest_revision
     and t.offer_id = cr.revision_id
@@ -48,7 +48,7 @@
       
     select cr.item_id as offer_id
     from cr_folders cf, cr_revisions cr, iv_offers t,
-         acs_objects o, persons p, cr_items ci, acs_rels r,
+         acs_objects o, persons p, cr_items ci, acs_data_links r,
          cr_items pi, cr_revisions pr, pm_projects pp, persons p2
     where cr.revision_id = ci.latest_revision
     and t.offer_id = cr.revision_id

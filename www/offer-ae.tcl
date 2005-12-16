@@ -8,7 +8,7 @@ ad_page_contract {
     {organization_id:integer,optional ""}
     {item_nr:array,optional}
     {item_title:array,optional}
-    {item_title_cat:array,optional}
+    {item_title_cat:array,optional,multiple}
     {item_description:array,optional}
     {item_comment:array,optional}
     {item_files:array,optional}
@@ -379,7 +379,7 @@ if {!$has_submit} {
 		       [list help_text "[_ invoices.iv_offer_item_Title_help]"] \
 		       [list section "[_ invoices.iv_offer_item_1] $i"] ] ]
 	ad_form -extend -name iv_offer_form -form \
-	    [list [list "item_title_cat.${i}:text(category),optional" \
+	    [list [list "item_title_cat.${i}:text(category),optional,multiple" \
 		       [list label "[_ invoices.iv_offer_item_title_category]"] \
 		       [list value [list 0 $container_objects(offer_item_title_id)]] \
 		       [list help_text "[_ invoices.iv_offer_item_title_category_help]"] \

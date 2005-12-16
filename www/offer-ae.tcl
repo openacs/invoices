@@ -558,14 +558,14 @@ ad_form -extend -name iv_offer_form -new_request {
 	    if {[empty_string_p $item(title)]} {
 		# if only single category
 		if {[llength $title_cat] == 1} {
-		    set item(title) "#invoices.iv_invoice_item_title_cat_1# ([category::get_name [lindex $title_cat 0]])"
+		    set item(title) "#invoices.iv_offer_item_title_cat_1# ([category::get_name [lindex $title_cat 0]])"
 		}
 
 		# if two categories selected
 		if {[llength $title_cat] == 2} {
 		    set from_cat [category::get_name [lindex $title_cat 0]]
 		    set to_cat [category::get_name [lindex $title_cat 1]]
-		    set item(title) "#invoices.iv_invoice_item_title_cat_2# ($from_cat -> $to_cat)"
+		    set item(title) "#invoices.iv_offer_item_title_cat_2# ($from_cat -> $to_cat)"
 		}
 	    }
 

@@ -23,6 +23,7 @@ set price_url "$categories_url[export_vars -base cadmin/one-object {{object_id $
 set cost_url "$categories_url[export_vars -base cadmin/one-object {{object_id $container_objects(cost_id)}}]"
 set offer_url "$categories_url[export_vars -base cadmin/one-object {{object_id $container_objects(offer_id)}}]"
 set offer_item_url "$categories_url[export_vars -base cadmin/one-object {{object_id $container_objects(offer_item_id)}}]"
+set offer_item_title_url "$categories_url[export_vars -base cadmin/one-object {{object_id $container_objects(offer_item_title_id)}}]"
 set invoice_url "$categories_url[export_vars -base cadmin/one-object {{object_id $container_objects(invoice_id)}}]"
 set invoice_item_url "$categories_url[export_vars -base cadmin/one-object {{object_id $container_objects(invoice_item_id)}}]"
 set payment_url "$categories_url[export_vars -base cadmin/one-object {{object_id $container_objects(payment_id)}}]"

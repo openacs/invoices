@@ -140,9 +140,6 @@
   <msg key="iv_invoice_item_rebate">Rabatt</msg>
   <msg key="iv_invoice_item_sort_order">Nummer</msg>
   <msg key="iv_invoice_item_Title">Titel</msg>
-  <msg key="iv_invoice_item_title_cat_1">Lektorat</msg>
-  <msg key="iv_invoice_item_title_cat_2">Adaption</msg>
-  <msg key="iv_invoice_item_title_category">Sprachen</msg>
   <msg key="iv_invoice_item_vat">Mehrwertsteuer</msg>
   <msg key="iv_invoice_item_View">Rechnungsposition ansehen</msg>
   <msg key="iv_invoice_New">Neue Rechnung</msg>
@@ -249,6 +246,10 @@
   <msg key="iv_offer_item_rebate_help">Rabatt, der auf dieses Angebot/diese Rechnung gegeben wird (in Prozent)</msg>
   <msg key="iv_offer_item_sort_order">Nummer</msg>
   <msg key="iv_offer_item_Title">Titel</msg>
+  <msg key="iv_offer_item_title_cat">Positions-Titel</msg>
+  <msg key="iv_offer_item_title_cat_1">Lektorat</msg>
+  <msg key="iv_offer_item_title_cat_2">Adaption</msg>
+  <msg key="iv_offer_item_title_category">Sprachen</msg>
   <msg key="iv_offer_item_Title_help">Titel, der in dem Angebot/der Rechnung angezeigt wird</msg>
   <msg key="iv_offer_item_vat">Mehrwertsteuer</msg>
   <msg key="iv_offer_item_View">Kostenposition ansehen</msg>

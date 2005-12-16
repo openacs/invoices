@@ -251,7 +251,7 @@ ad_proc -public iv::install::after_upgrade {
 	    }
 	    0.01d19 0.01d20 {
 		foreach package_id [apm_package_id_from_key invoices] {
-		    set offer_item_title_id [package_instantiate_object -package_name acs_object -var_list [list [list new__context_id $package_id] [list new__package_id $package_id] [list new__title "Invoice Items Default Object"]] acs_object]
+		    set offer_item_title_id [package_instantiate_object -package_name acs_object -var_list [list [list new__context_id $package_id] [list new__package_id $package_id] [list new__title "Offer Items Title Default Object"]] acs_object]
 
 		    db_dml set_offer_item_title_id {
 			update iv_default_objects

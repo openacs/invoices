@@ -50,7 +50,7 @@ if { ![exists_and_not_null invoice_id] } {
 	    set projects_error_p 1
 	} else {
 	    set organizations [db_list get_organizations ""]
-	    if { ![llength $organizations] == 1} {
+	    if { [llength $organizations] != 1} {
 		# More than one organization form the projects
 		set more_error_p 1
 	    } else {
@@ -140,8 +140,10 @@ if {[exists_and_not_null parent_invoice_id]} {
     set recipient_options [db_list_of_lists credit_recipients {}]
 } else {
     # normal invoice: get recipients from projects
-    # set recipient_options [db_list_of_lists recipients {}]
-    set recipient_options [wieners::get_recipients -customer_id $organization_id]
+    # We only want to offer invoice recipients that have actually been assigned in the project
+    # The other query would show all of them.
+    set recipient_options [db_list_of_lists recipients {}]
+    # set recipient_options [wieners::get_recipients -customer_id $organization_id]
 }
 
 

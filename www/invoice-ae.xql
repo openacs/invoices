@@ -65,7 +65,7 @@
     from persons p, pm_projects pj, cr_items i
     where i.item_id in ([join $project_id ,])
     and i.latest_revision = pj.project_id
-    and p.person_id in ( select party_id from pm_project_assignment where project_id in ([join $project_id ,]))
+    and pj.recipient_id = p.person_id
     order by lower(p.last_name), lower(p.first_names)
 
       </querytext>
@@ -90,9 +90,10 @@
     and cr.revision_id = ofi.offer_item_id
     and of.offer_id = ofi.offer_id
     and not exists (select 1
-		    from iv_invoice_items ii, iv_invoices i
+		    from iv_invoice_items ii, iv_invoices i, cr_items ci
 		    where ii.offer_item_id = ofi.offer_item_id
                     and i.invoice_id = ii.invoice_id
+                    and ci.latest_revision = i.invoice_id
                     and i.cancelled_p = 'f')
     order by pi.item_id, ofi.item_nr
 
@@ -241,8 +242,7 @@
 <fullquery name="get_organizations">
     <querytext>
 	select 
-		distinct 
-		customer_id 
+		distinct customer_id
 	from 
 		pm_projectsx 
 	where 

@@ -12,7 +12,7 @@
 		total.count_total, 
 		billed.count_billed, 
 		name, 
-		billed.recipient_id,
+		sub.recipient_id,
 		sub.customer_id as org_id
     	from (
     		select 
@@ -21,6 +21,7 @@
 			o.creation_date,
 	   		sum(ofi.item_units * ofi.price_per_unit * (1-(ofi.rebate/100))) as amount_open,
            		p.customer_id, 
+			p.recipient_id,
 			oz.name
 	    	from 
 			cr_items pi, 
@@ -44,12 +45,13 @@
     			and oo.package_id = :package_id
     			and p.customer_id = oz.organization_id		
     			and not exists (select 1
-                    			from iv_invoice_items ii, iv_invoices i
+                    			from iv_invoice_items ii, iv_invoices i, cr_items ci
                     			where ii.offer_item_id = ofi.offer_item_id
                     			and i.invoice_id = ii.invoice_id
+                    			and ci.latest_revision = i.invoice_id
                     			and i.cancelled_p = 'f')
     		group by 
-			oi.item_id, pr.revision_id, o.creation_date, p.customer_id, oz.name
+			oi.item_id, pr.revision_id, o.creation_date, p.customer_id, oz.name, p.recipient_id
 	    ) sub, 
 	    (
     		select 
@@ -63,17 +65,19 @@
     	    ) total, 
 	    (
     		select 
-			count(i.invoice_id) as count_billed, oi.item_id, i.recipient_id
+			count(ci.item_id) as count_billed, oi.item_id
     		from 
 			cr_items oi, iv_offer_items ofi
     			left outer join iv_invoice_items ii
     			on (ii.offer_item_id = ofi.offer_item_id)
     			left outer join iv_invoices i
     			on (ii.invoice_id = i.invoice_id and i.cancelled_p = 'f')
+    			left outer join cr_items ci
+    			on (ci.latest_revision = i.invoice_id)
     		where 
 			ofi.offer_id = oi.latest_revision
     		group by
-			oi.item_id, i.recipient_id
+			oi.item_id
     	    ) billed, 
 		cr_revisions r
     	where 

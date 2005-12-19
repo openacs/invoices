@@ -30,11 +30,13 @@ if {[empty_string_p $accepted_date]} {
     # set offer_text "{[_ invoices.iv_offer_email]}"
     set subject [lang::util::localize "#invoices.iv_offer_email_subject#" $locale]
     set template "OfferTemplate"
+    set file_title [lang::util::localize "#invoices.file_offer#_${offer_nr}.pdf" $locale]
 } else {
     # send accepted offer
     # set offer_text "{[_ invoices.iv_offer_accepted_email]}"
     set subject [lang::util::localize "#invoices.iv_offer_accepted_email_subject#" $locale]
     set template "OfferAcceptedTemplate"
+    set file_title [lang::util::localize "#invoices.file_offer_accepted#_${offer_nr}.pdf" $locale]
 }
 
 set offer_text [iv::offer::parse_data -offer_id $offer_id -recipient_id $contact_id -template $template -locale $locale -accept_link $accept_link]
@@ -42,7 +44,8 @@ set offer_text [iv::offer::parse_data -offer_id $offer_id -recipient_id $contact
 set pdf_file [text_templates::create_pdf_from_html -html_content "$offer_text"]
 if {![empty_string_p $pdf_file]} {
     set file_size [file size $pdf_file]
-    set file_ids [cr_import_content -title "Offer_${offer_id}.pdf" -description "PDF version of <a href=[export_vars -base "/invoices/offer-ae" -url {{mode display} offer_id}]>this offer</a>" $offer_id $pdf_file $file_size application/pdf "[clock seconds]-[expr round([ns_rand]*100000)]"]
+    set file_ids [cr_import_content -title $file_title -description "PDF version of <a href=[export_vars -base "/invoices/offer-ae" -url {{mode display} offer_id}]>this offer</a>" $offer_id $pdf_file $file_size application/pdf "[clock seconds]-[expr round([ns_rand]*100000)]"]
+    set return_url [export_vars -base offer-pdf {offer_id {file_id $file_ids}}]
 } else {
     set file_ids ""
 }
@@ -77,7 +80,7 @@ if {!$task_generated_p && [apm_package_installed_p "tasks"]} {
     # Create a task for the saved offer
     set task_id [tasks::task::new \
 		     -title "Nachfassen Angebot" \
-		     -description "Angebot Nr. <a href=\"[export_vars -base "[ad_url][ad_conn package_url]offer-ae" -url {offer_id {mode display}}]\">$offer_id" \
+		     -description "Angebot Nr. <a href=\"[export_vars -base "[ad_url][ad_conn package_url]offer-ae" -url {offer_id {mode display}}]\">$offer_nr" \
 		     -mime_type "text/plain" \
 		     -party_id $contact_id \
 		     -due_date ${due_date} \

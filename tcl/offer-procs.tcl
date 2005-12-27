@@ -212,14 +212,10 @@ ad_proc -public iv::offer::parse_data {
     set rec_client_id [ams::value -attribute_name "client_id" -object_id $orga_revision_id -locale $locale]
 
     # offer contact data
-    array set contact_address [contact::message::mailing_address_data -party_id $data(organization_id) -locale $locale]
-    foreach attribute {street town_line country country_code} {
-	set data(contact_$attribute) [value_if_exists contact_address($attribute)]
+    contact::employee::get -employee_id $contact_id -array contact_data
+    foreach attribute {name company_name_ext address town_line country country_code salutation salutation_letter} {
+	set data(contact_$attribute) [value_if_exists contact_data($attribute)]
     }
-    set data(contact_sticker_salutation) [contact::salutation -party_id $contact_id -type sticker]
-    set data(contact_salutation) [lang::util::localize [contact::salutation -party_id $contact_id -type salutation] $locale]
-    set data(contact_organization_name) [contact::name -party_id $data(organization_id)]
-    set data(contact_company_name_ext) [ams::value -attribute_name "company_name_ext" -object_id $orga_revision_id -locale $locale]
     set data(document_type) $type
 
     set time_format "[lc_get -locale $locale d_fmt] [lc_get -locale $locale t_fmt]"

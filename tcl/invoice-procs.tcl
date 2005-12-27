@@ -219,23 +219,31 @@ ad_proc -public iv::invoice::parse_data {
     set rec_revision_id [content::item::get_best_revision -item_id $recipient_id]
 
     # invoice contact data
-    array set contact_address [contact::message::mailing_address_data -party_id $data(organization_id) -locale $contact_locale]
-    foreach attribute {street town_line country country_code} {
-	set data(contact_$attribute) [value_if_exists contact_address($attribute)]
+    contact::employee::get -employee_id $contact_id -array contact_data
+    foreach attribute {name company_name_ext address town_line country country_code salutation salutation_letter} {
+	set data(contact_$attribute) [value_if_exists contact_data($attribute)]
     }
-    set data(contact_organization_name) [contact::name -party_id $data(organization_id)]
-    set data(contact_company_name_ext) [ams::value -attribute_name "company_name_ext" -object_id $orga_revision_id -locale $contact_locale]
-    set data(contact_sticker_salutation) [contact::salutation -party_id $contact_id -type sticker]
-    set data(contact_salutation) [lang::util::localize [contact::salutation -party_id $contact_id -type salutation] $contact_locale]
 
     # invoice recipient data
-    array set rec_address [contact::message::mailing_address_data -party_id $rec_organization_id -locale $contact_locale]
-    foreach attribute {street town_line country country_code} {
-	set data(rec_$attribute) [value_if_exists rec_address($attribute)]
+    if {[contact::organization_p -party_id $recipient_id]} {
+	# recipient is organization
+	set data(rec_name) [ams::value -object_id $recipient_id -attribute_name name]
+	set data(rec_company_name_ext) [ams::value -object_id $recipient_id -attribute_name company_name_ext]
+	set data(rec_salutation) [contact::salutation -party_id $recipient_id -type salutation]
+	set data(rec_salutation_letter) ""
+
+	contacts::postal_address::get -attribute_name "company_address" -party_id $recipient_id -array address_array
+	set data(rec_address) [value_if_exists address_array(delivery_address)]
+	set data(rec_country_code) [value_if_exists address_array(country_code)]
+	set data(rec_country) [value_if_exists address_array(country)]
+	set data(rec_town_line) [value_if_exists address_array(town_line)]
+    } else {
+	# recipient is person
+	contact::employee::get -employee_id $recipient_id -array recipient_data
+	foreach attribute {name company_name_ext address town_line country country_code salutation salutation_letter} {
+	    set data(rec_$attribute) [value_if_exists recipient_data($attribute)]
+	}
     }
-    set data(rec_organization_name) [contact::name -party_id $rec_organization_id]
-    set data(rec_company_name_ext) [ams::value -attribute_name "company_name_ext" -object_id $rec_orga_revision_id -locale $rec_locale]
-    set data(rec_sticker_salutation) [contact::salutation -party_id $recipient_id -type sticker]
 
     # get the invoice item data
     set sum 0.

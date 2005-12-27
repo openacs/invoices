@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="invoices" package_version="0.01d19" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="invoices" package_version="0.01d21" locale="en_US" charset="ISO-8859-1">
 
   <msg key="accepted">Accepted Offers</msg>
   <msg key="Accepted_date">Accepted on</msg>
@@ -26,6 +26,7 @@
   <msg key="Category">Category</msg>
   <msg key="clear">clear</msg>
   <msg key="Client_Account_Man">Client Account Manager</msg>
+  <msg key="Contact">Contact</msg>
   <msg key="continue_with_accept">Continue with Offer Acceptance</msg>
   <msg key="continue_with_delete">Continue with Delete</msg>
   <msg key="Cost">Cost</msg>
@@ -50,6 +51,13 @@
   <msg key="Edit">Edit</msg>
   <msg key="email_pdf_template">Template</msg>
   <msg key="File_count">Number of files</msg>
+  <msg key="file_invoice">Invoice</msg>
+  <msg key="file_invoice_cancel">Cancellation</msg>
+  <msg key="file_invoice_copy">Invoice_Copy</msg>
+  <msg key="file_invoice_credit">Credit</msg>
+  <msg key="file_invoice_opening">Invoice_Opening</msg>
+  <msg key="file_offer">Offer</msg>
+  <msg key="file_offer_accepted">Accepted_Offer</msg>
   <msg key="Final_Amount">Final Amount</msg>
   <msg key="Finish_date">Finish date</msg>
   <msg key="Fixed_cost">Fixed cost?</msg>
@@ -99,16 +107,19 @@
   <msg key="iv_invoice_amount_sum">Amount sum</msg>
   <msg key="iv_invoice_cancel_1">Cancellation</msg>
   <msg key="iv_invoice_cancel_Add">Add invoice cancellation</msg>
-  <msg key="iv_invoice_cancel_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Cancellation&lt;/h3&gt;%invoice_text%&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_invoice_cancel_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Cancellation&lt;/h3&gt;%data.contact_salutation%,&lt;p&gt;see attached invoice cancellation %data.invoice_nr%.&lt;p&gt;Best wishes,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_invoice_cancel_email_subject">Cancellation # %invoice_nr%</msg>
   <msg key="iv_invoice_closed_date">Finished on</msg>
+  <msg key="iv_invoice_contact">Invoice Contact</msg>
+  <msg key="iv_invoice_contact_help">Email recipient of this invoice</msg>
+  <msg key="iv_invoice_copy_p">Send Invoice Copy</msg>
   <msg key="iv_invoice_count_billed">Billed items</msg>
   <msg key="iv_invoice_count_total">Total items</msg>
   <msg key="iv_invoice_creation_date">Created on</msg>
   <msg key="iv_invoice_creation_user">Created by</msg>
   <msg key="iv_invoice_credit_1">Credit</msg>
   <msg key="iv_invoice_credit_Add">Add invoice credit</msg>
-  <msg key="iv_invoice_credit_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Credit&lt;/h3&gt;%invoice_text%&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_invoice_credit_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Credit&lt;/h3&gt;%data.contact_salutation%,&lt;p&gt;see attached invoice credit %data.invoice_nr%.&lt;p&gt;Best wishes,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_invoice_credit_email_subject">Credit # %invoice_nr%</msg>
   <msg key="iv_invoice_credit_New">New Credit</msg>
   <msg key="iv_invoice_credit_New2">Create New Credit</msg>
@@ -120,7 +131,7 @@
   <msg key="iv_invoice_due_date_help">Daten when the invoice is due.</msg>
   <msg key="iv_invoice_Edit">Edit Invoice</msg>
   <msg key="iv_invoice_edit_error">You are not allowed to edit a paid or cancelled invoice</msg>
-  <msg key="iv_invoice_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Invoice&lt;/h3&gt;%invoice_text%&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_invoice_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Invoice&lt;/h3&gt;%data.contact_salutation%,&lt;p&gt;see attached invoice %data.invoice_nr%.&lt;p&gt;Best wishes,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_invoice_email_subject">Invoice # %invoice_nr%</msg>
   <msg key="iv_invoice_invoice_nr">Invoice number</msg>
   <msg key="iv_invoice_invoice_nr_help">Number of the Invoice. Needs to be unique for accounting purposes.</msg>
@@ -144,8 +155,10 @@
   <msg key="iv_invoice_item_View">View Invoice Item</msg>
   <msg key="iv_invoice_New">New Invoice</msg>
   <msg key="iv_invoice_New2">Create New Invoice</msg>
+  <msg key="iv_invoice_opening_p">Send Opening Page</msg>
   <msg key="iv_invoice_organization">Customer</msg>
   <msg key="iv_invoice_organization_help">Client for whom to create the invoice</msg>
+  <msg key="iv_invoice_p">Send Invoice</msg>
   <msg key="iv_invoice_paid_amount">Amount paid</msg>
   <msg key="iv_invoice_paid_currency">Currency paid</msg>
   <msg key="iv_invoice_parent_id">Invoice reference</msg>
@@ -182,7 +195,7 @@
   <msg key="iv_offer_2">Cost Sheets</msg>
   <msg key="iv_offer_accept">Accept Offer</msg>
   <msg key="iv_offer_accepted_date">Accepted on</msg>
-  <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Accepted Offer&lt;/h3&gt;%recipient_salutation% %recipient_name%,&lt;p&gt;thank you for your order. We will contact you as soon as possible.&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Accepted Offer&lt;/h3&gt;%data.contact_salutation%, &lt;p&gt;thank you for your order. We will contact you as soon as possible.&lt;p&gt;Best wishes,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_accepted_email_subject">Offer acceptance # %offer_nr%</msg>
   <msg key="iv_offer_accepted_thanks">Thank you for accepting our offer. We will contact you as soon as possible.</msg>
   <msg key="iv_offer_Add">Cost Sheet for &quot;%organization_name%&quot;</msg>
@@ -207,8 +220,11 @@
   <msg key="iv_offer_Description_help">Description of the cost sheet</msg>
   <msg key="iv_offer_Edit">Edit Cost Sheet</msg>
   <msg key="iv_offer_edit_error">You are not allowed to edit an accepted or invoiced cost sheet</msg>
-  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Offer&lt;/h3&gt;%offer_text%&lt;p&gt;To accept this offer, click &lt;a href=&quot;%accept_link%&quot;&gt;here&lt;/a&gt;.&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Offer&lt;/h3&gt;%data.contact_salutation%, &lt;p&gt;see our attached offer.&lt;p&gt;To accept this offer, click &lt;a href=&quot;%accept_link%&quot;&gt;here&lt;/a&gt;.&lt;p&gt;Best wishes,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_email_subject">Offer # %offer_nr%</msg>
+  <msg key="iv_offer_file">File upload</msg>
+  <msg key="iv_offer_file_delete">Delete Files</msg>
+  <msg key="iv_offer_file_view">Files</msg>
   <msg key="iv_offer_finish_date">Finish on</msg>
   <msg key="iv_offer_finish_date_help">Deadline until which the project has to be delivered to the client</msg>
   <msg key="iv_offer_finish_time">Finish time</msg>
@@ -250,6 +266,7 @@
   <msg key="iv_offer_item_title_cat_1">Editing</msg>
   <msg key="iv_offer_item_title_cat_2">Translation</msg>
   <msg key="iv_offer_item_title_category">Languages</msg>
+  <msg key="iv_offer_item_title_category_help">Alternatively to the title provide a source and destination language.</msg>
   <msg key="iv_offer_item_Title_help">Title that is shown in the offer/invoice</msg>
   <msg key="iv_offer_item_vat">VAT</msg>
   <msg key="iv_offer_item_View">View Cost Item</msg>
@@ -318,6 +335,7 @@
   <msg key="Mapped">Mapped</msg>
   <msg key="Month">Month</msg>
   <msg key="month">Month</msg>
+  <msg key="More_than_one_customer">More than one customer</msg>
   <msg key="New">New</msg>
   <msg key="New_clients">New Clients</msg>
   <msg key="no">No</msg>
@@ -369,4 +387,5 @@
   <msg key="VAT_amount">VAT amount</msg>
   <msg key="year">Year</msg>
   <msg key="yes">Yes</msg>
+  <msg key="You_have_selected_more">You have selected more than one customer. This is not allowed (how would you bill two different customers with the same invoice)</msg>
 </message_catalog>

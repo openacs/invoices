@@ -185,9 +185,8 @@ ad_proc -public iv::offer::data {
 
 ad_proc -public iv::offer::parse_data {
     -offer_id:required
-    -recipient_id:required
-    -template:required
-    -locale:required
+    -email_text:required
+    {-type "offer"}
     {-accept_link ""}
 } {
     @author Timo Hentschel (timo@timohentschel.de)
@@ -198,58 +197,72 @@ ad_proc -public iv::offer::parse_data {
     set package_id [ad_conn package_id]
 
     # Get the offer data
-    db_1row get_data {} -column_array offer
-    set offer(creator_name) "$offer(first_names) $offer(last_name)"
-    set offer(amount_diff) [lc_numeric [format "%.2f" [expr $offer(amount_total) - $offer(amount_sum)]] "" $locale]
-    set offer(final_amount) [lc_numeric [format "%.2f" [expr $offer(amount_total)+$offer(vat)]] "" $locale]
-    set offer(vat_percent) [lc_numeric [format "%.1f" $offer(vat_percent)] "" $locale]
-    set offer(vat) [lc_numeric [format "%.2f" $offer(vat)] "" $locale]
-    set offer(amount_sum) [lc_numeric [format "%.2f" $offer(amount_sum)] "" $locale]
-    set offer(amount_total) [lc_numeric [format "%.2f" $offer(amount_total)] "" $locale]
-    set orga_revision_id [content::item::get_best_revision -item_id $offer(organization_id)]
-    set rec_revision_id [content::item::get_best_revision -item_id $recipient_id]
-    set offer(salutation) [ams::value -attribute_name "salutation" -object_id $rec_revision_id -locale $locale]
-    set offer(company_name_ext) [ams::value -attribute_name "company_name_ext" -object_id $orga_revision_id -locale $locale]
-    set offer(sticker_salutation) [ams::value -attribute_name "sticker_salutation" -object_id $rec_revision_id -locale $locale]
-    if {[empty_string_p $offer(sticker_salutation)]} {
-	set offer(sticker_salutation) [contact::name -party_id $recipient_id]
+    db_1row get_data {} -column_array data
+    set locale [lang::user::site_wide_locale -user_id $contact_id]
+    set contact_locale $locale
+    set data(creator_name) "$data(first_names) $data(last_name)"
+    set data(amount_diff) [lc_numeric [format "%.2f" [expr $data(amount_total) - $data(amount_sum)]] "" $locale]
+    set data(final_amount) [lc_numeric [format "%.2f" [expr $data(amount_total)+$data(vat)]] "" $locale]
+    set data(vat_percent) [lc_numeric [format "%.1f" $data(vat_percent)] "" $locale]
+    set data(vat) [lc_numeric [format "%.2f" $data(vat)] "" $locale]
+    set data(amount_sum) [lc_numeric [format "%.2f" $data(amount_sum)] "" $locale]
+    set data(amount_total) [lc_numeric [format "%.2f" $data(amount_total)] "" $locale]
+    set orga_revision_id [content::item::get_best_revision -item_id $data(organization_id)]
+    set contact_revision_id [content::item::get_best_revision -item_id $contact_id]
+    set rec_client_id [ams::value -attribute_name "client_id" -object_id $orga_revision_id -locale $locale]
+
+    # offer contact data
+    array set contact_address [contact::message::mailing_address_data -party_id $data(organization_id) -locale $locale]
+    foreach attribute {street town_line country country_code} {
+	set data(contact_$attribute) [value_if_exists contact_address($attribute)]
     }
+    set data(contact_sticker_salutation) [contact::salutation -party_id $contact_id -type sticker]
+    set data(contact_salutation) [lang::util::localize [contact::salutation -party_id $contact_id -type salutation] $locale]
+    set data(contact_organization_name) [contact::name -party_id $data(organization_id)]
+    set data(contact_company_name_ext) [ams::value -attribute_name "company_name_ext" -object_id $orga_revision_id -locale $locale]
+    set data(document_type) $type
 
     set time_format "[lc_get -locale $locale d_fmt] [lc_get -locale $locale t_fmt]"
-    set offer(finish_date) [lc_time_fmt $offer(finish_date) $time_format]
-    set offer(creation_date) [lc_time_fmt $offer(creation_date) $time_format]
-    set offer(accepted_date) [lc_time_fmt $offer(accepted_date) $time_format]
+    set data(finish_date) [lc_time_fmt $data(finish_date) $time_format]
+    set data(creation_date) [lc_time_fmt $data(creation_date) $time_format]
+    set data(accepted_date) [lc_time_fmt $data(accepted_date) $time_format]
 
-    set offer(recipient_id) $recipient_id
-    set offer(name) [contact::name -party_id $recipient_id]
-    set offer(rep_first_names) [lindex $offer(name) 1]
-    set offer(rep_last_name) [string trim [lindex $offer(name) 0] ,]
-    set offer(recipient_name) "$offer(rep_first_names) $offer(rep_last_name)"
-    set rec_organization_id [contact::util::get_employee_organization -employee_id $offer(recipient_id)]
-    set offer(mailing_address) [contact::message::mailing_address -party_id $offer(organization_id) -format "text/html"]
-    set offer(organization_name) [contact::name -party_id $offer(organization_id)]
+    set data(recipient_id) $recipient_id
+    set data(name) [contact::name -party_id $recipient_id]
+    set data(rep_first_names) [lindex $data(name) 1]
+    set data(rep_last_name) [string trim [lindex $data(name) 0] ,]
+    set data(recipient_name) "$data(rep_first_names) $data(rep_last_name)"
+    set rec_organization_id [contact::util::get_employee_organization -employee_id $data(recipient_id)]
 
-    db_multirow -local -extend {amount_sum amount_total category} offer_items offer_items {} {
+    # data of offer items
+    db_multirow -local -extend {amount_sum amount_total category} items offer_items {} {
 	set amount_sum [format "%.2f" [expr $item_units * $price_per_unit]]
 	set amount_total [lc_numeric [format "%.2f" [expr (1. - ($rebate / 100.)) * $amount_sum]] "" $locale]
 	set amount_sum [lc_numeric $amount_sum "" $locale]
 	set price_per_unit [lc_numeric [format "%.2f" $price_per_unit] "" $locale]
 	set item_units [lc_numeric [format "%.2f" $item_units] "" $locale]
 	set rebate [lc_numeric [format "%.1f" $rebate] "" $locale]
-	set category [lang::util::localize [category::get_name $category_id]]
+	set category [lang::util::localize [category::get_name $category_id] $locale]
     }
 
-    set file_url [parameter::get -parameter $template]
-    
-    if {![empty_string_p $file_url]} {
-	set content [iv::invoice::template_file -template $file_url -locale $locale]
+    # parse offer email text
+    eval [template::adp_compile -string [lang::util::localize $email_text $locale]]
+    set final_content [list $__adp_output]
 
-	# parse template and replace placeholders
-	eval [template::adp_compile -string $content]
-        set final_content $__adp_output
-    } else {
-        set final_content ""
-    }
+    # get the url to the document template
+    set template_path [parameter::get -parameter OfferTemplate]
+    util_unlist [iv::invoice::template_files -template $template_path -locale $locale] content styles
+	
+    # parse template and replace placeholders
+    set __adp_output ""
+    eval [template::adp_compile -string $content]
+    set content_compiled $__adp_output
+	
+    set __adp_output ""
+    eval [template::adp_compile -string $styles]
+    set styles_compiled $__adp_output
+
+    lappend final_content [contact::oo::change_content -path $template_path -document_filename "document.odt" -contents [list "content.xml" $content_compiled "styles.xml" $styles_compiled]]
 
     return $final_content
 }

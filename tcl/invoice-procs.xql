@@ -21,7 +21,8 @@
 	       o.creation_user, p.first_names, p.last_name, t.amount_sum,
 	       to_char(o.creation_date, :timestamp_format) as creation_date,
 	       to_char(t.due_date, :timestamp_format) as due_date,
-	       t.payment_days, t.currency, t.organization_id, t.recipient_id
+	       t.payment_days, t.currency, t.organization_id, t.recipient_id,
+	       t.contact_id
 	from iv_invoices t, cr_revisions r, cr_items i, acs_objects o,
 	     persons p
 	where r.revision_id = t.invoice_id
@@ -67,7 +68,8 @@
 	       o.creation_user, p.first_names, p.last_name, t.amount_sum,
 	       to_char(o.creation_date, 'YYYY-MM-DD HH24:MI:SS') as creation_date,
 	       to_char(t.due_date, 'YYYY-MM-DD HH24:MI:SS') as due_date,
-	       t.payment_days, t.currency, t.organization_id, t.recipient_id
+	       t.payment_days, t.currency, t.organization_id, t.recipient_id,
+	       t.contact_id
 	from iv_invoices t, cr_revisions r, cr_items i, acs_objects o,
 	     persons p
 	where r.revision_id = t.invoice_id
@@ -88,7 +90,7 @@
            ofi.page_count, pr.title as project_title, p.project_code,
            pi.item_id as project_id, o.credit_percent
     from cr_items ci, cr_revisions cr, iv_invoice_items ii, cr_revisions oor,
-         acs_data r, cr_items pi, cr_revisions pr, pm_projects p, iv_offers o,
+         acs_data_links r, cr_items pi, cr_revisions pr, pm_projects p, iv_offers o,
          iv_offer_items ofi
     left outer join category_object_map m on (m.object_id = ofi.offer_item_id)
     where ci.latest_revision = ii.invoice_id

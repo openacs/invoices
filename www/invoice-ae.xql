@@ -33,6 +33,18 @@
       </querytext>
 </fullquery>
 
+<fullquery name="cancellation_contacts">
+      <querytext>
+
+	select p.first_names || ' ' || p.last_name, p.person_id
+	from persons p, iv_invoices i
+	where i.invoice_id = :parent_invoice_id
+	and p.person_id = i.contact_id
+	order by lower(p.last_name), lower(p.first_names)
+
+      </querytext>
+</fullquery>
+
 <fullquery name="cancellation_recipients">
       <querytext>
 
@@ -54,6 +66,19 @@
 	and r.object_id_two = :organization_id
 	and r.rel_type = 'contact_rels_ir'
 	order by lower(p.last_name), lower(p.first_names)
+
+      </querytext>
+</fullquery>
+
+<fullquery name="contacts">
+      <querytext>
+
+    select p.first_names || ' ' || p.last_name, p.person_id
+    from persons p, pm_projects pj, cr_items i
+    where i.item_id in ([join $project_id ,])
+    and i.latest_revision = pj.project_id
+    and pj.contact_id = p.person_id
+    order by lower(p.last_name), lower(p.first_names)
 
       </querytext>
 </fullquery>
@@ -162,7 +187,8 @@
 	       t.paid_amount, t.payment_days, t.vat, t.vat_percent,
 	       to_char(t.due_date, :date_format) as due_date, t.amount_sum,
 	       o.creation_user, p.first_names, p.last_name, t.recipient_id,
-	       to_char(o.creation_date, :timestamp_format) as creation_date
+	       to_char(o.creation_date, :timestamp_format) as creation_date,
+	       t.contact_id
 	from iv_invoices t, cr_revisions r, cr_items i, acs_objects o,
 	     persons p
 	where r.revision_id = t.invoice_id

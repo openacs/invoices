@@ -107,7 +107,7 @@ if {![info exists invoice_id] || $__new_p} {
 }
 
 if {[info exists send]} {
-    ad_returnredirect [export_vars -base invoice-send {organization_id invoice_id}]
+    ad_returnredirect [export_vars -base invoice-send-1 {organization_id invoice_id}]
     ad_script_abort
 }
 
@@ -134,16 +134,18 @@ set currency_options [db_list_of_lists currencies {}]
 
 if {[exists_and_not_null parent_invoice_id]} {
     # cancellation: get recipients from parent invoice
+    set contact_options [db_list_of_lists cancellation_contacts {}]
     set recipient_options [db_list_of_lists cancellation_recipients {}]
 } elseif {$cur_total_amount < 0} {
     # credit: get recipients from organization
     set recipient_options [db_list_of_lists credit_recipients {}]
+    set contact_options $recipient_options
 } else {
     # normal invoice: get recipients from projects
     # We only want to offer invoice recipients that have actually been assigned in the project
     # The other query would show all of them.
+    set contact_options [db_list_of_lists contacts {}]
     set recipient_options [db_list_of_lists recipients {}]
-    # set recipient_options [wieners::get_recipients -customer_id $organization_id]
 }
 
 
@@ -151,6 +153,7 @@ ad_form -name iv_invoice_form -action invoice-ae -mode $mode -has_submit $has_su
     {invoice_id:key}
     {organization_name:text(inform) {label "[_ invoices.iv_invoice_organization]"} {value $organization_name} {help_text "[_ invoices.iv_invoice_organization_help]"}}
     {invoice_specialities:text(inform) {label "[_ invoices.iv_invoice_specialities]"} {value $invoice_specialities} {help_text "[_ invoices.iv_invoice_specialities_help]"}}
+    {contact_id:integer(select),optional {label "[_ invoices.iv_invoice_contact]"} {options $contact_options} {help_text "[_ invoices.iv_invoice_contact_help]"}}
     {recipient_id:integer(select),optional {label "[_ invoices.iv_invoice_recipient]"} {options $recipient_options} {help_text "[_ invoices.iv_invoice_recipient_help]"}}
     {title:text {label "[_ invoices.iv_invoice_Title]"} {html {size 80 maxlength 1000}} {help_text "[_ invoices.iv_invoice_Title_help]"}}
     {description:text(textarea),optional {label "[_ invoices.iv_invoice_Description]"} {html {rows 5 cols 80}} {help_text "[_ invoices.iv_invoice_Description_help]"}}
@@ -358,6 +361,7 @@ ad_form -extend -name iv_invoice_form -new_request {
 	set new_invoice_rev_id [iv::invoice::new  \
 				    -title $title \
 				    -description $description  \
+				    -contact_id $contact_id \
 				    -recipient_id $recipient_id \
 				    -invoice_nr $invoice_nr \
 				    -organization_id $organization_id \
@@ -419,6 +423,7 @@ ad_form -extend -name iv_invoice_form -new_request {
 				    -invoice_item_id $invoice_id \
 				    -title $title \
 				    -description $description  \
+				    -contact_id $contact_id \
 				    -recipient_id $recipient_id \
 				    -invoice_nr $invoice_nr \
 				    -organization_id $organization_id \

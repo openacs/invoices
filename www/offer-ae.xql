@@ -26,6 +26,19 @@
       </querytext>
 </fullquery>
 
+<fullquery name="get_files">
+      <querytext>
+      
+	select i.name as file_name, r.content_length as file_length,
+               i.item_id as file_id
+	from cr_items i, cr_revisions r
+	where i.parent_id = :offer_id
+	and r.item_id = i.item_id
+	and i.publish_status <> 'expired'
+    
+      </querytext>
+</fullquery>
+
 <fullquery name="check_invoices">
       <querytext>
 

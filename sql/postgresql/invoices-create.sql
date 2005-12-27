@@ -84,7 +84,7 @@ create index iv_costs_object_idx on iv_costs(cost_object_id);
 create index iv_costs_organization_idx on iv_costs(organization_id);
 create index iv_costs_currency_idx on iv_costs(currency);
 
-create sequence iv_offer_seq start with 1000;
+create sequence iv_offer_seq start with 100000;
 
 create table iv_offers (
         offer_id                integer
@@ -178,6 +178,10 @@ create table iv_invoices (
                                 constraint iv_invoices_organization_fk
                                 references organizations,
                                 -- who pays?
+        contact_id              integer not null
+                                constraint iv_invoices_contact_fk
+                                references parties,
+                                -- who receives email?
         recipient_id            integer not null
                                 constraint iv_invoices_recipient_fk
                                 references parties,

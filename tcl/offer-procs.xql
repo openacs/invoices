@@ -71,7 +71,7 @@
 	       to_char(t.accepted_date, 'YYYY-MM-DD HH24:MI:SS') as accepted_date,
 	       t.amount_sum, t.payment_days, t.date_comment, t.currency,
                t.organization_id, pr.title as project_title, ci.item_id as offer_id,
-               pp.project_code, pi.item_id as project_id
+               pp.project_code, pi.item_id as project_id, pp.contact_id
 	from iv_offers t, cr_revisions cr, cr_items ci, acs_objects o,
 	     persons p, acs_data_links r, cr_items pi, cr_revisions pr, pm_projects pp
 	where cr.revision_id = t.offer_id

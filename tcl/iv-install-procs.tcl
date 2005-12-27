@@ -74,6 +74,7 @@ ad_proc -public iv::install::create_install {
     content::type::attribute::new -content_type {iv_invoice} -attribute_name {invoice_nr} -datatype {string} -pretty_name {[_ invoices.Invoice_number]} -column_spec {varchar(80)}
     content::type::attribute::new -content_type {iv_invoice} -attribute_name {parent_invoice_id} -datatype {number} -pretty_name {[_ invoices.Invoice_reference]} -column_spec {integer}
     content::type::attribute::new -content_type {iv_invoice} -attribute_name {organization_id} -datatype {number} -pretty_name {[_ invoices.Customer]} -column_spec {integer}
+    content::type::attribute::new -content_type {iv_invoice} -attribute_name {contact_id} -datatype {number} -pretty_name {[_ invoices.Contact]} -column_spec {integer}
     content::type::attribute::new -content_type {iv_invoice} -attribute_name {recipient_id} -datatype {number} -pretty_name {[_ invoices.Recipient]} -column_spec {integer}
     content::type::attribute::new -content_type {iv_invoice} -attribute_name {total_amount} -datatype {number} -pretty_name {[_ invoices.Total_amount]} -column_spec {numeric(12,2)}
     content::type::attribute::new -content_type {iv_invoice} -attribute_name {amount_sum} -datatype {number} -pretty_name {[_ invoices.Amount_sum]} -column_spec {numeric(12,2)}
@@ -259,6 +260,9 @@ ad_proc -public iv::install::after_upgrade {
 			where package_id = :package_id
 		    }
 		}
+	    }
+	    0.01d21 0.01d22 {
+		content::type::attribute::new -content_type {iv_invoice} -attribute_name {contact_id} -datatype {number} -pretty_name {[_ invoices.Contact]} -column_spec {integer}
 	    }
 	}
 }

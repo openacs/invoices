@@ -14,6 +14,7 @@ ad_proc -public iv::invoice::new {
     {-invoice_nr ""}
     {-parent_invoice_id ""}
     {-organization_id ""}
+    {-contact_id ""}
     {-recipient_id ""}
     {-total_amount ""}
     {-amount_sum ""}
@@ -51,6 +52,7 @@ ad_proc -public iv::invoice::new {
 					 [list invoice_nr $invoice_nr] \
 					 [list parent_invoice_id $parent_invoice_id] \
 					 [list organization_id $organization_id] \
+					 [list contact_id $contact_id] \
 					 [list recipient_id $recipient_id] \
 					 [list total_amount $total_amount] \
 					 [list amount_sum $amount_sum] \
@@ -75,6 +77,7 @@ ad_proc -public iv::invoice::edit {
     {-invoice_nr ""}
     {-parent_invoice_id ""}
     {-organization_id ""}
+    {-contact_id ""}
     {-recipient_id ""}
     {-total_amount ""}
     {-amount_sum ""}
@@ -101,6 +104,7 @@ ad_proc -public iv::invoice::edit {
 					     [list invoice_nr $invoice_nr] \
 					     [list parent_invoice_id $parent_invoice_id] \
 					     [list organization_id $organization_id] \
+					     [list contact_id $contact_id] \
 					     [list recipient_id $recipient_id] \
 					     [list total_amount $total_amount] \
 					     [list amount_sum $amount_sum] \
@@ -172,49 +176,70 @@ ad_proc -public iv::invoice::data {
 
 ad_proc -public iv::invoice::parse_data {
     -invoice_id:required
-    -recipient_id:required
-    -template:required
-    -locale:required
+    -email_text:required
+    {-types "invoice"}
 } {
     @author Timo Hentschel (timo@timohentschel.de)
     @creation-date 2005-06-21
 
-    Create array and multirow in callers context with invoice data, invoice items
+    Substitute templates with invoice data.
+
+    @returns list of invoice texts
 } {
     set package_id [ad_conn package_id]
 
     # Get the invoice data
-    db_1row get_data {} -column_array invoice
-    set invoice(creator_name) "$invoice(first_names) $invoice(last_name)"
-    set invoice(amount_diff) [format "%.2f" [expr $invoice(total_amount) - $invoice(amount_sum)]]
-    set amount_diff $invoice(amount_diff)
-    set invoice(amount_diff) [lc_numeric $invoice(amount_diff) "" $locale]
-    set invoice(final_amount) [lc_numeric [format "%.2f" [expr $invoice(total_amount)+$invoice(vat)]] "" $locale]
-    set invoice(vat) [lc_numeric [format "%.2f" $invoice(vat)] "" $locale]
-    set invoice(amount_sum) [lc_numeric [format "%.2f" $invoice(amount_sum)] "" $locale]
-    set invoice(total_amount) [lc_numeric [format "%.2f" $invoice(total_amount)] "" $locale]
+    db_1row get_data {} -column_array data
+    set locale [lang::user::site_wide_locale -user_id $recipient_id]
+    set contact_locale [lang::user::site_wide_locale -user_id $contact_id]
+    set rec_locale $locale
+    set data(creator_name) "$data(first_names) $data(last_name)"
+    set data(amount_diff) [format "%.2f" [expr $data(total_amount) - $data(amount_sum)]]
+    set amount_diff $data(amount_diff)
+    set data(amount_diff) [lc_numeric $data(amount_diff) "" $locale]
+    set data(final_amount) [lc_numeric [format "%.2f" [expr $data(total_amount)+$data(vat)]] "" $locale]
+    set data(vat) [lc_numeric [format "%.2f" $data(vat)] "" $locale]
+    set data(amount_sum) [lc_numeric [format "%.2f" $data(amount_sum)] "" $locale]
+    set data(total_amount) [lc_numeric [format "%.2f" $data(total_amount)] "" $locale]
 
+    set data(contact_creation_date) [lc_time_fmt $data(creation_date) [lc_get -locale $contact_locale d_fmt]]
     set time_format [lc_get -locale $locale d_fmt]
-    set invoice(creation_date) [lc_time_fmt $invoice(creation_date) $time_format]
-    set invoice(due_date) [lc_time_fmt $invoice(due_date) $time_format]
+    set data(creation_date) [lc_time_fmt $data(creation_date) $time_format]
+    set data(due_date) [lc_time_fmt $data(due_date) $time_format]
 
     set name [contact::name -party_id $recipient_id]
-    set invoice(rep_first_names) [lindex $name 1]
-    set invoice(rep_last_name) [string trim [lindex $name 0] ,]
-    set invoice(recipient_name) "$invoice(rep_first_names) $invoice(rep_last_name)"
-    set rec_organization_id [contact::util::get_employee_organization -employee_id $invoice(recipient_id)]
-    set orga_revision_id [content::item::get_best_revision -item_id $invoice(organization_id)]
+    set data(rep_first_names) [lindex $name 1]
+    set data(rep_last_name) [string trim [lindex $name 0] ,]
+    set data(recipient_name) "$data(rep_first_names) $data(rep_last_name)"
+    set rec_organization_id [contact::util::get_employee_organization -employee_id $data(recipient_id)]
+    set orga_revision_id [content::item::get_best_revision -item_id $data(organization_id)]
+    set rec_orga_revision_id [content::item::get_best_revision -item_id $rec_organization_id]
+    set contact_client_id [ams::value -attribute_name "client_id" -object_id $orga_revision_id -locale $contact_locale]
+    set rec_client_id [ams::value -attribute_name "client_id" -object_id $rec_orga_revision_id -locale $rec_locale]
     set rec_revision_id [content::item::get_best_revision -item_id $recipient_id]
-    set invoice(mailing_address) [contact::message::mailing_address -party_id $invoice(organization_id) -format "text/html"]
-    set invoice(organization_name) [contact::name -party_id $invoice(organization_id)]
-    set invoice(company_name_ext) [ams::value -attribute_name "company_name_ext" -object_id $orga_revision_id -locale $locale]
-    set invoice(sticker_salutation) [ams::value -attribute_name "sticker_salutation" -object_id $rec_revision_id -locale $locale]
-    if {[empty_string_p $invoice(sticker_salutation)]} {
-	set invoice(sticker_salutation) $name
-    }
-    set sum 0.
 
-    db_multirow -local -extend {amount_sum amount_total category} invoice_items invoice_items {} {
+    # invoice contact data
+    array set contact_address [contact::message::mailing_address_data -party_id $data(organization_id) -locale $contact_locale]
+    foreach attribute {street town_line country country_code} {
+	set data(contact_$attribute) [value_if_exists contact_address($attribute)]
+    }
+    set data(contact_organization_name) [contact::name -party_id $data(organization_id)]
+    set data(contact_company_name_ext) [ams::value -attribute_name "company_name_ext" -object_id $orga_revision_id -locale $contact_locale]
+    set data(contact_sticker_salutation) [contact::salutation -party_id $contact_id -type sticker]
+    set data(contact_salutation) [lang::util::localize [contact::salutation -party_id $contact_id -type salutation] $contact_locale]
+
+    # invoice recipient data
+    array set rec_address [contact::message::mailing_address_data -party_id $rec_organization_id -locale $contact_locale]
+    foreach attribute {street town_line country country_code} {
+	set data(rec_$attribute) [value_if_exists rec_address($attribute)]
+    }
+    set data(rec_organization_name) [contact::name -party_id $rec_organization_id]
+    set data(rec_company_name_ext) [ams::value -attribute_name "company_name_ext" -object_id $rec_orga_revision_id -locale $rec_locale]
+    set data(rec_sticker_salutation) [contact::salutation -party_id $recipient_id -type sticker]
+
+    # get the invoice item data
+    set sum 0.
+    db_multirow -local -extend {amount_sum amount_total category} items invoice_items {} {
 	if {[empty_string_p $credit_percent]} {
 	    set credit_percent 0
 	}
@@ -227,34 +252,75 @@ ad_proc -public iv::invoice::parse_data {
 	set price_per_unit [lc_numeric [format "%.2f" $price_per_unit] "" $locale]
 	set item_units [lc_numeric [format "%.2f" $item_units] "" $locale]
 	set rebate [lc_numeric [format "%.1f" $rebate] "" $locale]
-	set category [lang::util::localize [category::get_name $category_id]]
+	set category [lang::util::localize [category::get_name $category_id] $locale]
     }
 
-    set invoice(amount_sum) $sum
-    set invoice(total_amount) [expr $sum + $amount_diff]
-    set invoice(vat) [expr $invoice(vat_percent) * $invoice(total_amount) / 100.]
-    set invoice(final_amount) [lc_numeric [format "%.2f" [expr $invoice(total_amount)+$invoice(vat)]] "" $locale]
-    set invoice(vat_percent) [lc_numeric [format "%.1f" $invoice(vat_percent)] "" $locale]
-    set invoice(vat) [lc_numeric [format "%.2f" $invoice(vat)] "" $locale]
-    set invoice(amount_sum) [lc_numeric [format "%.2f" $invoice(amount_sum)] "" $locale]
-    set invoice(total_amount) [lc_numeric [format "%.2f" $invoice(total_amount)] "" $locale]
+    set data(amount_sum) $sum
+    set data(total_amount) [expr $sum + $amount_diff]
+    set data(vat) [expr $data(vat_percent) * $data(total_amount) / 100.]
+    set data(final_amount) [lc_numeric [format "%.2f" [expr $data(total_amount)+$data(vat)]] "" $locale]
+    set data(vat_percent) [lc_numeric [format "%.1f" $data(vat_percent)] "" $locale]
+    set data(vat) [lc_numeric [format "%.2f" $data(vat)] "" $locale]
+    set data(amount_sum) [lc_numeric [format "%.2f" $data(amount_sum)] "" $locale]
+    set data(total_amount) [lc_numeric [format "%.2f" $data(total_amount)] "" $locale]
 
-    set file_url [parameter::get -parameter $template]
+    # parse invoice email text
+    eval [template::adp_compile -string [lang::util::localize $email_text $contact_locale]]
+    set final_content [list $__adp_output]
+
+    # create and parse all invoice documents
+    foreach document_type $types {
+	# get the url to the document templates
+	if {$document_type == "opening"} {
+	    set template_path [parameter::get -parameter InvoiceOpeningTemplate]
+	} else {
+	    set template_path [parameter::get -parameter InvoiceTemplate]
+	}
     
-    if {![empty_string_p $file_url]} {
-	set content [iv::invoice::template_file -template $file_url -locale $locale]
-
+	util_unlist [iv::invoice::template_files -template $template_path -locale $locale] content styles
+	
 	# parse template and replace placeholders
+	set __adp_output ""
 	eval [template::adp_compile -string $content]
-        set final_content $__adp_output
-    } else {
-        set final_content ""
+	set content_compiled $__adp_output
+	
+	set __adp_output ""
+	eval [template::adp_compile -string $styles]
+	set styles_compiled $__adp_output
+
+	lappend final_content [contact::oo::change_content -path $template_path -document_filename "document.odt" -contents [list "content.xml" $content_compiled "styles.xml" $styles_compiled]]
     }
 
     return $final_content
 }
 
-ad_proc -public iv::invoice::template_file {
+ad_proc -public iv::invoice::template_files {
+    -template:required
+    -locale:required
+} {
+    @author Timo Hentschel (timo@timohentschel.de)
+    @creation-date 2005-10-07
+
+    Get template content and styles.
+
+    @returns tcl-list if content and styles document
+} {
+    set filename "[acs_root_dir]/$template/content.xml"
+    set file [open $filename]
+    fconfigure $file -translation binary
+    set content [read $file]
+    close $file
+
+    set filename "[acs_root_dir]/$template/styles.xml"
+    set file [open $filename]
+    fconfigure $file -translation binary
+    set styles [read $file]
+    close $file
+
+    return [list [lang::util::localize $content $locale] [lang::util::localize $styles $locale]]
+}
+
+ad_proc -public iv::invoice::template_file_old {
     -template:required
     -locale:required
 } {

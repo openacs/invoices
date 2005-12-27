@@ -18,6 +18,7 @@ ad_page_contract {
     {item_price:array,optional}
     {item_rebate:array,optional}
     {offer_item_id:array,optional}
+    {delete_files:optional,multiple}
     {__new_p 0}
     {mode edit}
     {accept:optional}
@@ -55,6 +56,7 @@ if {(![info exists offer_id] || $__new_p) && [exists_and_not_null project_id]} {
 if {![info exists offer_id] || $__new_p} {
     set page_title "[_ invoices.iv_offer_Add2]"
     set _offer_id 0
+    set files ""
     set list_id [iv::price_list::get_list_id -organization_id $organization_id]
     if {[empty_string_p $list_id]} {
 	set currency [parameter::get -parameter "DefaultCurrency" -default "EUR" -package_id $package_id]
@@ -64,6 +66,11 @@ if {![info exists offer_id] || $__new_p} {
     }
 } else {
     db_1row get_organization_and_currencies {}
+    set files {}
+    db_foreach get_files {} {
+	lappend files [list "<a href=\"$file_name?item_id=$file_id\">$file_name</a> ($file_length bytes)" $file_id]
+    }
+
     set cur_vat_percent [format "%.1f" $cur_vat_percent]
     if {$mode == "edit"} {
 	db_1row check_invoices {}
@@ -118,7 +125,7 @@ set currency_options [db_list_of_lists currencies {}]
 set list_id [iv::price_list::get_list_id -organization_id $organization_id]
 db_multirow pricelist all_prices {}
 
-ad_form -name iv_offer_form -action offer-ae -mode $mode -has_submit $has_submit -has_edit $has_edit -export {organization_id return_url} -form {
+ad_form -name iv_offer_form -action offer-ae -mode $mode -has_submit $has_submit -has_edit $has_edit -export {organization_id return_url} -html {enctype multipart/form-data} -form {
     {offer_id:key}
     {organization_namex:text(inform) {label "[_ invoices.iv_offer_organization]"} {value "<a href=/contacts/${organization_id}/><font size=2>$organization_name</font></a>"}}
     {title:text {label "[_ invoices.iv_offer_Title]"} {html {size 80 maxlength 1000}} {help_text "[_ invoices.iv_offer_Title_help]"}}
@@ -212,8 +219,29 @@ if {!$has_submit} {
 	{amount_sum:float,optional {label "[_ invoices.iv_offer_amount_sum]"} {html {size 10 maxlength 10 disabled t}} {help_text "[_ invoices.iv_offer_amount_sum_help]"} {after_html $currency}}
 	{amount_total:float,optional {label "[_ invoices.iv_offer_amount_total]"} {html {size 10 maxlength 10}} {help_text "[_ invoices.iv_offer_amount_total_help]"} {after_html $currency}}
     }
-}
 
+    # let user delete uploaded files
+    if {[exists_and_not_null files]} {
+	ad_form -extend -name iv_offer_form -form {
+	    {delete_files:integer(checkbox),multiple,optional {label "[_ invoices.iv_offer_file_delete]"} {help_text "[_ invoices.iv_offer_file_delete_help]"} {options $files}}
+	}
+    }
+
+    # let user upload a file
+    ad_form -extend -name iv_offer_form -form {
+	{upload_file:file,optional {label "[_ invoices.iv_offer_file]"} {help_text "[_ invoices.iv_offer_file_help]"}}
+    }
+
+} else {
+    # we are just displaying an offer
+
+    # display uploaded files
+    if {[exists_and_not_null files]} {
+	ad_form -extend -name iv_offer_form -form {
+	    {delete_files:integer(checkbox),multiple,optional {label "[_ invoices.iv_offer_file_view]"} {help_text "[_ invoices.iv_offer_file_view_help]"} {options $files}}
+	}
+    }
+}
 
 if {$_offer_id} {
     # edit or display existing offer
@@ -552,11 +580,11 @@ ad_form -extend -name iv_offer_form -new_request {
 	    set item(rebate) $item_rebate($i)
 	    set item(page_count) $item_pages($i)
 	    set item(file_count) $item_files($i)
-	    set title_cat $item_title_cat($i)
 	    
 	    # generate item title from categories if empty title
-	    if {[empty_string_p $item(title)]} {
+	    if {[empty_string_p $item(title)] && [exists_and_not_null item_title_cat($i)]} {
 		# if only single category
+		set title_cat $item_title_cat($i)
 		if {[llength $title_cat] == 1} {
 		    set item(title) "#invoices.iv_offer_item_title_cat_1# ([category::get_name [lindex $title_cat 0]])"
 		}
@@ -633,7 +661,7 @@ ad_form -extend -name iv_offer_form -new_request {
 
 	    category::map_object -object_id $new_item_rev_id $item(category)
 	}
-	set offer_id [pm::project::get_project_item_id -project_id $new_offer_rev_id]
+	set offer_id [content::revision::item_id -revision_id $new_offer_rev_id]
     }
 } -edit_data {
     db_transaction {
@@ -700,6 +728,32 @@ ad_form -extend -name iv_offer_form -new_request {
 	}
     }
 } -after_submit {
+    # upload new file
+    if {![empty_string_p $upload_file]} {
+	set filename [lindex $upload_file 0]
+	set tmp_filename [lindex $upload_file 1]
+	set file_mimetype [lindex $upload_file 2]
+	set n_bytes [file size $tmp_filename]
+
+	if { $n_bytes > 0 } {
+	    cr_import_content -title $filename $offer_id $tmp_filename $n_bytes $file_mimetype $filename
+	}
+    }
+
+    # delete files
+    if {[info exists delete_files]} {
+	foreach file_id $delete_files {
+	    db_exec_plsql delete_file {}
+
+	    set path "[cr_fs_path][cr_create_content_file_path $file_id ""]"
+	    foreach revision [glob -directory $path "*"] {
+		ns_unlink $revision
+	    }
+	    ns_rmdir $path
+	}
+    }
+
+    # link offer to project
     if {[exists_and_not_null project_id]} {
 	catch {
 	    application_data_link::new -this_object_id $offer_id -target_object_id $project_id
@@ -707,6 +761,7 @@ ad_form -extend -name iv_offer_form -new_request {
 	}
     }
 
+    # set acceptance date if necessary
     if {[exists_and_not_null _project_id]} {
 	set status [pm::project::get_status_description -project_item_id $_project_id]
 	if {$status == "#acs-kernel.common_Open#"} {
@@ -714,6 +769,7 @@ ad_form -extend -name iv_offer_form -new_request {
 	}
     }
 
+    # set project deadline
     if {![empty_string_p $finish_date]} {
 	db_dml set_finish_date {}
 

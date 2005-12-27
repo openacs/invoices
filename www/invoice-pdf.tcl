@@ -1,11 +1,11 @@
 ad_page_contract {
-    add invoice-pdf to invoice folder
+    add invoice-pdfs to invoice folder
 
     @author Timo Hentschel (timo@timohentschel.de)
     @creation-date 2005-10-05
 } {
     invoice_id:integer
-    file_id:integer
+    file_id:integer,multiple
 }
 
 set user_id [auth::require_login]
@@ -21,12 +21,15 @@ if {![empty_string_p $project_id]} {
 }
 
 set root_folder_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type content_folder] 0]
-set invoice_folder_id [fs::get_folder -name "invoices" -parent_id $root_folder_id]
+set invoice_folder_id [fs::get_folder -name "invoices_${root_folder_id}" -parent_id $root_folder_id]
 db_transaction {
-    # move file to invoice_folder
-    set file_item_id [content::revision::item_id -revision_id $file_id]
-    content::item::move -item_id $file_item_id -target_folder_id $invoice_folder_id
-    application_data_link::new -this_object_id $invoice_id -target_object_id $file_id
+    # move files to invoice_folder
+    foreach one_file $file_id {
+	set file_item_id [content::revision::item_id -revision_id $one_file]
+	content::item::move -item_id $file_item_id -target_folder_id $invoice_folder_id
+	db_dml set_publish_status {}
+	application_data_link::new -this_object_id $invoice_id -target_object_id $one_file
+    }
     iv::invoice::set_status -invoice_id $invoice_id -status "billed"
 }
 

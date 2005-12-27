@@ -24,6 +24,14 @@
       </querytext>
 </fullquery>
 
+<fullquery name="delete_file">
+      <querytext>
+
+      select content_item__delete(:file_id);
+
+      </querytext>
+</fullquery>
+
 <fullquery name="set_finish_date">
       <querytext>
       

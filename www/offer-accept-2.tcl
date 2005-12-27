@@ -38,7 +38,7 @@ if {[empty_string_p $file_ids]} {
 }
 
 if {[empty_string_p [cc_email_from_party $contact_id]]} {
-    ad_return_error "No Recipient" "The recipient does not have a valid e-mail address. Please go back and make sure that you provide an e-mail address first."
+    ad_return_error "No Recipient $contact_id" "The recipient does not have a valid e-mail address. Please go back and make sure that you provide an e-mail address first."
 }
 
 set cancel_url [export_vars -base offer-list {organization_id}]

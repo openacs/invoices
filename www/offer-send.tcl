@@ -41,9 +41,8 @@ if {[empty_string_p $accepted_date]} {
     set file_title [lang::util::localize "#invoices.file_offer_accepted#_${offer_nr}.pdf" $locale]
 }
 
-# substitute variables in invoice text
-# and return the content of all necessary document files
-# (opening, invoice/credit/cancellation, copy)
+# substitute variables in offer text
+# and return the content of the email plus the file-paths to the document file
 set documents [iv::offer::parse_data -offer_id $offer_id -type $document_type -email_text $offer_text -accept_link $accept_link]
 
 set offer_text [lindex $documents 0]

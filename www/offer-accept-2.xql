@@ -23,4 +23,14 @@
       </querytext>
 </fullquery>
 
+<fullquery name="set_publish_status">
+      <querytext>
+
+    update cr_items
+    set publish_status = 'expired'
+    where item_id = (select item_id from cr_revisions where revision_id = :file_ids)
+
+      </querytext>
+</fullquery>
+
 </queryset>

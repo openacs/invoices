@@ -45,7 +45,6 @@ if {![empty_string_p $document_file]} {
     # content::item::set_live_revision -revision_id $file_ids
 
     db_dml set_publish_status {}
-    ns_log notice "\#\#\# $file_ids"
     set return_url [export_vars -base offer-pdf {offer_id {file_id $file_ids}}]
 }
 

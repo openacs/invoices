@@ -37,14 +37,14 @@ ad_form -extend -name invoice_send -form {
     {invoice_p:text(radio) {label "[_ invoices.iv_invoice_p]"} {options $boolean_options}}
     {copy_p:text(radio) {label "[_ invoices.iv_invoice_copy_p]"} {options $boolean_options}}
 } -edit_request {
-    set opening_p 1
-    set invoice_p 0
+    set opening_p 0
+    set invoice_p 1
     set copy_p [ad_decode $invoice_copy t 1 0]
     if {[empty_string_p $copy_p]} {
 	set copy_p 0
     }
 } -after_submit {
-    ad_returnredirect [export_vars "invoice-send" {invoice_id opening_p invoice_p copy_p}]
+    ad_returnredirect [export_vars -base "invoice-send" {invoice_id opening_p invoice_p copy_p}]
     ad_script_abort
 }
 

@@ -221,11 +221,15 @@ ad_proc -public iv::invoice::parse_data {
     # invoice contact data
     contact::employee::get -employee_id $data(contact_id) -array contact_data
     foreach attribute {name company_name_ext address town_line country country_code salutation salutation_letter} {
-	set data(contact_$attribute) [value_if_exists contact_data($attribute)]
+	if {[info exists contact_data($attribute)]} {
+	    set data(contact_$attribute) $contact_data($attribute)
+	} else {
+	    set data(contact_$attribute) ""
+	}
     }
 
     # invoice recipient data
-    if {[contact::organization_p -party_id $data(recipient_id)]} {
+    if {[organization::organization_p -party_id $data(recipient_id)]} {
 	# recipient is organization
 	set data(rec_name) [ams::value -object_id $data(recipient_id) -attribute_name name]
 	set data(rec_company_name_ext) [ams::value -object_id $data(recipient_id) -attribute_name company_name_ext]
@@ -233,15 +237,17 @@ ad_proc -public iv::invoice::parse_data {
 	set data(rec_salutation_letter) ""
 
 	contacts::postal_address::get -attribute_name "company_address" -party_id $data(recipient_id) -array address_array
-	set data(rec_address) [value_if_exists address_array(delivery_address)]
-	set data(rec_country_code) [value_if_exists address_array(country_code)]
-	set data(rec_country) [value_if_exists address_array(country)]
-	set data(rec_town_line) [value_if_exists address_array(town_line)]
+	set attribute_list {address town_line country country_code}
     } else {
 	# recipient is person
 	contact::employee::get -employee_id $data(recipient_id) -array recipient_data
-	foreach attribute {name company_name_ext address town_line country country_code salutation salutation_letter} {
-	    set data(rec_$attribute) [value_if_exists recipient_data($attribute)]
+	set attribute_list {name company_name_ext address town_line country country_code salutation salutation_letter}
+    }
+    foreach attribute $attribute_list {
+	if {[info exists recipient_data($attribute)]} {
+	    set data(rec_$attribute) $recipient_data($attribute)
+	} else {
+	    set data(rec_$attribute) ""
 	}
     }
 

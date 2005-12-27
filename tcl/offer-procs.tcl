@@ -214,7 +214,11 @@ ad_proc -public iv::offer::parse_data {
     # offer contact data
     contact::employee::get -employee_id $data(contact_id) -array contact_data
     foreach attribute {name company_name_ext address town_line country country_code salutation salutation_letter} {
-	set data(contact_$attribute) [value_if_exists contact_data($attribute)]
+	if {[info exists contact_data($attribute)]} {
+	    set data(contact_$attribute) $contact_data($attribute)
+	} else {
+	    set data(contact_$attribute) ""
+	}
     }
     set document_type $type
 

@@ -25,7 +25,7 @@ set locale [lang::user::site_wide_locale -user_id $contact_id]
 
 set context [list [list [export_vars -base offer-list {organization_id}] "[_ invoices.iv_offer_2]"] [list [export_vars -base offer-ae {offer_id}] "[_ invoices.iv_offer_View]"] $page_title]
 
-set offer_text "{#invoices.iv_offer_accepted_email#}"
+set offer_text "#invoices.iv_offer_accepted_email#"
 set subject [lang::util::localize "#invoices.iv_offer_accepted_email_subject#" $locale]
 set file_title [lang::util::localize "#invoices.file_offer_accepted#_${offer_nr}.pdf" $locale]
 
@@ -45,12 +45,8 @@ if {![empty_string_p $document_file]} {
     # content::item::set_live_revision -revision_id $file_ids
 
     db_dml set_publish_status {}
-}
-
-if {[llength $file_ids] > 0} {
+    ns_log notice "\#\#\# $file_ids"
     set return_url [export_vars -base offer-pdf {offer_id {file_id $file_ids}}]
-} else {
-    set return_url ""
 }
 
 if {[empty_string_p [cc_email_from_party $contact_id]]} {

@@ -27,14 +27,14 @@ content::item::set_live_revision -revision_id $offer_rev_id
 
 if {[empty_string_p $accepted_date]} {
     # send pending offer
-    set offer_text "{#invoices.iv_offer_email#}"
+    set offer_text "#invoices.iv_offer_email#"
     set subject [lang::util::localize "#invoices.iv_offer_email_subject#" $locale]
     set template "OfferTemplate"
     set document_type "offer"
     set file_title [lang::util::localize "#invoices.file_offer#_${offer_nr}.pdf" $locale]
 } else {
     # send accepted offer
-    set offer_text "{#invoices.iv_offer_accepted_email#}"
+    set offer_text "#invoices.iv_offer_accepted_email#"
     set subject [lang::util::localize "#invoices.iv_offer_accepted_email_subject#" $locale]
     set template "OfferAcceptedTemplate"
     set document_type "accepted"

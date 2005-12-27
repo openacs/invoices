@@ -29,27 +29,24 @@ if {$opening_p} {
 
 if {$total_amount > 0} {
     # send invoice
-    set invoice_text "{#invoices.iv_invoice_email#}"
+    set invoice_text "#invoices.iv_invoice_email#"
     set subject [lang::util::localize "#invoices.iv_invoice_email_subject#" $locale]
-    set template "InvoiceTemplate"
     set invoice_title [lang::util::localize "#invoices.file_invoice#_${invoice_nr}.pdf" $locale]
     if {$invoice_p} {
 	lappend document_types invoice
     }
 } elseif {[empty_string_p $parent_invoice_id]} {
     # send credit
-    set invoice_text "{#invoices.iv_invoice_credit_email#}"
+    set invoice_text "#invoices.iv_invoice_credit_email#"
     set subject [lang::util::localize "#invoices.iv_invoice_credit_email_subject#" $locale]
-    set template "CreditTemplate"
     set invoice_title [lang::util::localize "#invoices.file_invoice_credit#_${invoice_nr}.pdf" $locale]
     if {$invoice_p} {
 	lappend document_types credit
     }
 } else {
     # send cancellation
-    set invoice_text "{#invoices.iv_invoice_cancel_email#}"
+    set invoice_text "#invoices.iv_invoice_cancel_email#"
     set subject [lang::util::localize "#invoices.iv_invoice_cancel_email_subject#" $locale]
-    set template "CancelTemplate"
     set invoice_title [lang::util::localize "#invoices.file_invoice_cancel#_${invoice_nr}.pdf" $locale]
     if {$invoice_p} {
 	lappend document_types cancel

@@ -198,7 +198,7 @@ ad_proc -public iv::offer::parse_data {
 
     # Get the offer data
     db_1row get_data {} -column_array data
-    set locale [lang::user::site_wide_locale -user_id $contact_id]
+    set locale [lang::user::site_wide_locale -user_id $data(contact_id)]
     set contact_locale $locale
     set data(creator_name) "$data(first_names) $data(last_name)"
     set data(amount_diff) [lc_numeric [format "%.2f" [expr $data(amount_total) - $data(amount_sum)]] "" $locale]
@@ -206,29 +206,28 @@ ad_proc -public iv::offer::parse_data {
     set data(vat_percent) [lc_numeric [format "%.1f" $data(vat_percent)] "" $locale]
     set data(vat) [lc_numeric [format "%.2f" $data(vat)] "" $locale]
     set data(amount_sum) [lc_numeric [format "%.2f" $data(amount_sum)] "" $locale]
-    set data(amount_total) [lc_numeric [format "%.2f" $data(amount_total)] "" $locale]
+    set data(total_amount) [lc_numeric [format "%.2f" $data(amount_total)] "" $locale]
     set orga_revision_id [content::item::get_best_revision -item_id $data(organization_id)]
-    set contact_revision_id [content::item::get_best_revision -item_id $contact_id]
+    set contact_revision_id [content::item::get_best_revision -item_id $data(contact_id)]
     set rec_client_id [ams::value -attribute_name "client_id" -object_id $orga_revision_id -locale $locale]
 
     # offer contact data
-    contact::employee::get -employee_id $contact_id -array contact_data
+    contact::employee::get -employee_id $data(contact_id) -array contact_data
     foreach attribute {name company_name_ext address town_line country country_code salutation salutation_letter} {
 	set data(contact_$attribute) [value_if_exists contact_data($attribute)]
     }
-    set data(document_type) $type
+    set document_type $type
 
     set time_format "[lc_get -locale $locale d_fmt] [lc_get -locale $locale t_fmt]"
     set data(finish_date) [lc_time_fmt $data(finish_date) $time_format]
     set data(creation_date) [lc_time_fmt $data(creation_date) $time_format]
     set data(accepted_date) [lc_time_fmt $data(accepted_date) $time_format]
 
-    set data(recipient_id) $recipient_id
-    set data(name) [contact::name -party_id $recipient_id]
+    set data(name) [contact::name -party_id $data(contact_id)]
     set data(rep_first_names) [lindex $data(name) 1]
     set data(rep_last_name) [string trim [lindex $data(name) 0] ,]
     set data(recipient_name) "$data(rep_first_names) $data(rep_last_name)"
-    set rec_organization_id [contact::util::get_employee_organization -employee_id $data(recipient_id)]
+    set rec_organization_id [contact::util::get_employee_organization -employee_id $data(contact_id)]
 
     # data of offer items
     db_multirow -local -extend {amount_sum amount_total category} items offer_items {} {
@@ -258,7 +257,7 @@ ad_proc -public iv::offer::parse_data {
     eval [template::adp_compile -string $styles]
     set styles_compiled $__adp_output
 
-    lappend final_content [contact::oo::change_content -path $template_path -document_filename "document.odt" -contents [list "content.xml" $content_compiled "styles.xml" $styles_compiled]]
+    lappend final_content [contact::oo::change_content -path "[acs_root_dir]/$template_path" -document_filename "document.odt" -contents [list "content.xml" $content_compiled "styles.xml" $styles_compiled]]
 
     return $final_content
 }

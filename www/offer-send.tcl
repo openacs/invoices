@@ -52,10 +52,10 @@ set file_ids {}
 set document_file [lindex $documents 1]
 if {![empty_string_p $document_file]} {
     set file_size [file size $document_file]
-    # set file_ids [contact::oo::import_oo_pdf -oo_file $document_file -printer_name "pdfconv" -title $file_title -parent_id $offer_id]
+    set file_ids [contact::oo::import_oo_pdf -oo_file $document_file -printer_name "pdfconv" -title $file_title -parent_id $offer_id]
 
-    set file_ids [cr_import_content -title $file_title -description "PDF version of <a href=[export_vars -base "/invoices/offer-ae" -url {{mode display} offer_id}]>this offer</a>" $offer_id $document_file $file_size application/pdf "[clock seconds]-[expr round([ns_rand]*100000)]"]
-    content::item::set_live_revision -revision_id $file_ids
+    # set file_ids [cr_import_content -title $file_title -description "PDF version of <a href=[export_vars -base "/invoices/offer-ae" -url {{mode display} offer_id}]>this offer</a>" $offer_id $document_file $file_size application/pdf "[clock seconds]-[expr round([ns_rand]*100000)]"]
+    # content::item::set_live_revision -revision_id $file_ids
 
     db_dml set_publish_status {}
 }

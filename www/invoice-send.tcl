@@ -96,10 +96,10 @@ foreach document_file $documents type $document_types {
 
     if {![empty_string_p $document_file]} {
 	set file_size [file size $document_file]
-	# set file_id [contact::oo::import_oo_pdf -oo_file $document_file -printer_name "pdfconv" -title $file_title -parent_id $invoice_id]
+	set file_id [contact::oo::import_oo_pdf -oo_file $document_file -printer_name "pdfconv" -title $file_title -parent_id $invoice_id]
 
-	set file_id [cr_import_content -title $file_title -description "PDF version of <a href=[export_vars -base "/invoices/invoice-ae" -url {{mode display} invoice_id}]>this invoice</a>" $invoice_id $document_file $file_size application/pdf "[clock seconds]-[expr round([ns_rand]*100000)]"]
-	content::item::set_live_revision -revision_id $file_id
+	# set file_id [cr_import_content -title $file_title -description "PDF version of <a href=[export_vars -base "/invoices/invoice-ae" -url {{mode display} invoice_id}]>this invoice</a>" $invoice_id $document_file $file_size application/pdf "[clock seconds]-[expr round([ns_rand]*100000)]"]
+	# content::item::set_live_revision -revision_id $file_id
 
 	lappend file_ids $file_id
 	db_dml set_publish_status {}

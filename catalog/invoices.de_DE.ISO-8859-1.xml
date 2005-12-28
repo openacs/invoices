@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="invoices" package_version="0.01d21" locale="de_DE" charset="ISO-8859-1">
+<message_catalog package_key="invoices" package_version="0.01d22" locale="de_DE" charset="ISO-8859-1">
 
   <msg key="accepted">Auftragsbestätigungen</msg>
   <msg key="Accepted_date">Akzeptiert am</msg>
@@ -26,6 +26,7 @@
   <msg key="Category">Kategorie</msg>
   <msg key="clear">aufheben</msg>
   <msg key="Client_Account_Man">Kundenbetreuer des Kunden</msg>
+  <msg key="Contact">Kontakt</msg>
   <msg key="continue_with_accept">Fortfahren mit Angebot akzeptieren</msg>
   <msg key="continue_with_delete">Fortfahren mit löschen</msg>
   <msg key="Cost">Kosten</msg>
@@ -106,7 +107,7 @@
   <msg key="iv_invoice_amount_sum">Summe</msg>
   <msg key="iv_invoice_cancel_1">Storno</msg>
   <msg key="iv_invoice_cancel_Add">Storno hinzufügen</msg>
-  <msg key="iv_invoice_cancel_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Stornorechnung&lt;/h3&gt;%data.contact_salutation%,&lt;p&gt;anbei finden Sie die Stornorechnung %data.invoice_nr%.&lt;p&gt;Mit freundlichen Gr&uuml;&szlig;en,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_invoice_cancel_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Stornorechnung&lt;/h3&gt;%data.contact_salutation%,&lt;p&gt;anbei finden Sie die Stornorechnung %data.invoice_nr%.&lt;p&gt;Mit freundlichen Gr&amp;uuml;&amp;szlig;en,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_invoice_cancel_email_subject">Stornorechnung # %invoice_nr%</msg>
   <msg key="iv_invoice_closed_date">beendet am</msg>
   <msg key="iv_invoice_contact">Kundenkontakt</msg>
@@ -118,7 +119,7 @@
   <msg key="iv_invoice_creation_user">erstellt von</msg>
   <msg key="iv_invoice_credit_1">Gutschrift</msg>
   <msg key="iv_invoice_credit_Add">Gutschrift erstellen</msg>
-  <msg key="iv_invoice_credit_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Gutschrift&lt;/h3&gt;%data.contact_salutation%,&lt;p&gt;anbei finden Sie die Rechnungsgutschrift %data.invoice_nr%.&lt;p&gt;Mit freundlichen Gr&uuml;&szlig;en,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_invoice_credit_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Gutschrift&lt;/h3&gt;%data.contact_salutation%,&lt;p&gt;anbei finden Sie die Rechnungsgutschrift %data.invoice_nr%.&lt;p&gt;Mit freundlichen Gr&amp;uuml;&amp;szlig;en,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_invoice_credit_email_subject">Gutschrift # %invoice_nr%</msg>
   <msg key="iv_invoice_credit_New">Neue Gutschrift</msg>
   <msg key="iv_invoice_credit_New2">Neue Gutschrift erstellen</msg>
@@ -130,7 +131,7 @@
   <msg key="iv_invoice_due_date_help">An welchem Tag wird die Rechnung fällig</msg>
   <msg key="iv_invoice_Edit">Rechnung ändern</msg>
   <msg key="iv_invoice_edit_error">Sie dürfen keine bezahlte oder stornierte Rechnung ändern.</msg>
-  <msg key="iv_invoice_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Rechnung&lt;/h3&gt;%data.contact_salutation%,&lt;p&gt;anbei finden Sie die Rechnung %data.invoice_nr%.&lt;p&gt;Mit freundlichen Gr&uuml;&szlig;en,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_invoice_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Rechnung&lt;/h3&gt;%data.contact_salutation%,&lt;p&gt;anbei finden Sie die Rechnung %data.invoice_nr%.&lt;p&gt;Mit freundlichen Gr&amp;uuml;&amp;szlig;en,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_invoice_email_subject">Rechnung # %invoice_nr%</msg>
   <msg key="iv_invoice_invoice_nr">Rechnungsnummer</msg>
   <msg key="iv_invoice_invoice_nr_help">Rechnungsnummer. Muss eindeutig sein für die Buchhaltung</msg>
@@ -194,7 +195,7 @@
   <msg key="iv_offer_2">Projektaufstellungen</msg>
   <msg key="iv_offer_accept">Angebot akzeptieren</msg>
   <msg key="iv_offer_accepted_date">Akzeptiert am</msg>
-  <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Auftragsbestätigung&lt;/h3&gt;%data.contact_salutation%, &lt;p&gt;Vielen Dank für Ihren Auftrag. Wir werden Sie so schnell wie möglich diesbezüglich kontaktieren.&lt;p&gt;Mit freundlichen Gr&uuml;&szlig;en,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Auftragsbestätigung&lt;/h3&gt;%data.contact_salutation%, &lt;p&gt;Vielen Dank für Ihren Auftrag. Wir werden Sie so schnell wie möglich diesbezüglich kontaktieren.&lt;p&gt;Mit freundlichen Gr&amp;uuml;&amp;szlig;en,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_accepted_email_subject">Auftragsbestätigung # %offer_nr%</msg>
   <msg key="iv_offer_accepted_thanks">Vielen Dank für die Annahme unseres Angebots. Wir werden Sie so schnell wie möglich diesbezüglich kontaktieren.</msg>
   <msg key="iv_offer_Add">Kostenaufstellung für &quot;%organization_name%&quot;</msg>
@@ -219,7 +220,7 @@
   <msg key="iv_offer_Description_help">Beschreibung der Kostenaufstellung</msg>
   <msg key="iv_offer_Edit">Projektaufstellung ändern</msg>
   <msg key="iv_offer_edit_error">Sie dürfen keine akzeptierte oder berechnete Kostenaufstellung ändern.</msg>
-  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Angebot&lt;/h3&gt;%data.contact_salutation%,&lt;p&gt;anbei finden Sie unser Angebot %data.offer_nr%.&lt;p&gt;Um dieses Angebot anzunehmen, klicken Sie bitte &lt;a href=&quot;%accept_link%&quot;&gt;hier&lt;/a&gt;.&lt;p&gt;Mit freundlichen Gr&uuml;&szlig;en,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Angebot&lt;/h3&gt;%data.contact_salutation%,&lt;p&gt;anbei unser Angebot an Sie.&lt;p&gt;Um dieses Angebot anzunehmen, klicken Sie bitte &lt;a href=&quot;%accept_link%&quot;&gt;hier&lt;/a&gt;.&lt;p&gt;Mit freundlichen Grüßen,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_email_subject">Angebot # %offer_nr%</msg>
   <msg key="iv_offer_file">Datei anhängen</msg>
   <msg key="iv_offer_file_delete">Dateien löschen</msg>
@@ -334,6 +335,7 @@
   <msg key="Mapped">Verbunden</msg>
   <msg key="Month">Monat</msg>
   <msg key="month">Monat</msg>
+  <msg key="More_than_one_customer">Mehr als ein Kunde</msg>
   <msg key="New">Neu</msg>
   <msg key="New_clients">Neue Kunden</msg>
   <msg key="no">Nein</msg>
@@ -385,4 +387,5 @@
   <msg key="VAT_amount">Mehrwertsteuer</msg>
   <msg key="year">Jahr</msg>
   <msg key="yes">Ja</msg>
+  <msg key="You_have_selected_more">Sie haben mehr als einen Kunden ausgewählt. Dies ist nicht möglich (wie würden Sie auch zwei Kunden in einer Rechnung abrechnen).</msg>
 </message_catalog>

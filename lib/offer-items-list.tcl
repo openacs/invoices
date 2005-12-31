@@ -241,7 +241,7 @@ template::list::create \
     } \
     -html {width 100%} \
     -page_size $page_size \
-    -page_flush_p 0 \
+    -page_flush_p 1 \
     -page_query_name "offer_items_paginated" \
     -pass_properties return_url \
     -groupby {

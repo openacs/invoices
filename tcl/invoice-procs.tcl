@@ -211,11 +211,8 @@ ad_proc -public iv::invoice::parse_data {
     set data(rep_first_names) [lindex $name 1]
     set data(rep_last_name) [string trim [lindex $name 0] ,]
     set data(recipient_name) "$data(rep_first_names) $data(rep_last_name)"
-    set rec_organization_id [contact::util::get_employee_organization -employee_id $data(recipient_id)]
     set orga_revision_id [content::item::get_best_revision -item_id $data(organization_id)]
-    set rec_orga_revision_id [content::item::get_best_revision -item_id $rec_organization_id]
     set contact_client_id [ams::value -attribute_name "client_id" -object_id $orga_revision_id -locale $contact_locale]
-    set rec_client_id [ams::value -attribute_name "client_id" -object_id $rec_orga_revision_id -locale $rec_locale]
     set rec_revision_id [content::item::get_best_revision -item_id $data(recipient_id)]
 
     # invoice contact data
@@ -231,6 +228,7 @@ ad_proc -public iv::invoice::parse_data {
     # invoice recipient data
     if {[organization::organization_p -party_id $data(recipient_id)]} {
 	# recipient is organization
+	set rec_organization_id $data(recipient_id)
 	set data(rec_name) [ams::value -object_id $data(recipient_id) -attribute_name name]
 	set data(rec_company_name_ext) [ams::value -object_id $data(recipient_id) -attribute_name company_name_ext]
 	set data(rec_salutation) [contact::salutation -party_id $data(recipient_id) -type salutation]
@@ -240,9 +238,14 @@ ad_proc -public iv::invoice::parse_data {
 	set attribute_list {address town_line country country_code}
     } else {
 	# recipient is person
+	set rec_organization_id [contact::util::get_employee_organization -employee_id $data(recipient_id)]
 	contact::employee::get -employee_id $data(recipient_id) -array recipient_data
 	set attribute_list {name company_name_ext address town_line country country_code salutation salutation_letter}
     }
+    set rec_orga_revision_id [content::item::get_best_revision -item_id $rec_organization_id]
+    set rec_client_id [ams::value -attribute_name "client_id" -object_id $rec_orga_revision_id -locale $rec_locale]
+    set data(rec_vat_ident_number) [ams::value -attribute_name "VAT_ident_number" -object_id $rec_orga_revision_id -locale $rec_locale]
+
     foreach attribute $attribute_list {
 	if {[info exists recipient_data($attribute)]} {
 	    set data(rec_$attribute) $recipient_data($attribute)
@@ -277,6 +280,14 @@ ad_proc -public iv::invoice::parse_data {
     set data(vat) [lc_numeric [format "%.2f" $data(vat)] "" $locale]
     set data(amount_sum) [lc_numeric [format "%.2f" $data(amount_sum)] "" $locale]
     set data(total_amount) [lc_numeric [format "%.2f" $data(total_amount)] "" $locale]
+
+    # Get the account manager information for the organization.
+    set account_manager_id [contacts::util::get_account_manager -organization_id $data(organization_id)]
+    if {$account_manager_id ne ""} {
+	set am_name "[contact::name -party_id [lindex $account_manager_id 0]]"
+    } else {
+	set am_name "[contact::name -party_id [parameter::get_from_package_key -package_key contacts -parameter DefaultOrganizationID]]"
+    }
 
     # parse invoice email text
     eval [template::adp_compile -string [lang::util::localize $email_text $contact_locale]]

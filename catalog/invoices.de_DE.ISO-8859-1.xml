@@ -189,13 +189,17 @@
   <msg key="iv_invoice_vat_percent">Mehrwertsteuersatz</msg>
   <msg key="iv_invoice_vat_percent_help">Mehrwertsteuersatz welcher der Rechnung hinzugefügt wird</msg>
   <msg key="iv_invoice_View">Rechnung ansehen</msg>
+  <msg key="iv_invoice_view">Rechnungen ansehen</msg>
+  <msg key="iv_invoices_email">&lt;html&gt;&lt;body&gt;%contact.salutation%,&lt;p&gt;anbei finden Sie die Rechnungen %invoice_nrs%.&lt;p&gt;Mit freundlichen Gr&amp;uuml;&amp;szlig;en,&lt;p&gt;@am_name@&lt;br&gt;Kundenberatung&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_invoices_email_subject">Rechnungen # %invoice_nrs%</msg>
   <msg key="iv_of_month_year">Rechnungen von %long_month% %year%:</msg>
   <msg key="iv_of_year">Rechnungen des Jahres %year%:</msg>
   <msg key="iv_offer_1">Projektaufstellung</msg>
   <msg key="iv_offer_2">Projektaufstellungen</msg>
   <msg key="iv_offer_accept">Angebot akzeptieren</msg>
   <msg key="iv_offer_accepted_date">Akzeptiert am</msg>
-  <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Auftragsbestätigung&lt;/h3&gt;%data.contact_salutation%, &lt;p&gt;Vielen Dank für Ihren Auftrag. Wir werden Sie so schnell wie möglich diesbezüglich kontaktieren.&lt;p&gt;Mit freundlichen Gr&amp;uuml;&amp;szlig;en,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;%data.contact_salutation%, &lt;p&gt;Vielen Dank für Ihren Auftrag!&lt;p&gt;
+Die Details entnehmen Sie bitte der angehängten PDF-Datei.&lt;p&gt;Mit freundlichen Gr&amp;uuml;&amp;szlig;en,&lt;p&gt;@am_name@&lt;br&gt;Kundenberatung&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_accepted_email_subject">Auftragsbestätigung # %offer_nr%</msg>
   <msg key="iv_offer_accepted_thanks">Vielen Dank für die Annahme unseres Angebots. Wir werden Sie so schnell wie möglich diesbezüglich kontaktieren.</msg>
   <msg key="iv_offer_Add">Kostenaufstellung für &quot;%organization_name%&quot;</msg>
@@ -204,7 +208,7 @@
   <msg key="iv_offer_amount_sum">Summe</msg>
   <msg key="iv_offer_amount_sum_help">Automatisch errechnete Summe aus der Summation der angebotenen Positionen</msg>
   <msg key="iv_offer_amount_total">Gesamtsumme</msg>
-  <msg key="iv_offer_amount_total_help">Gesmatsumme der Rechnung. Diese kann von der Summe der einzelnen angebotenen Positionen abweichen.</msg>
+  <msg key="iv_offer_amount_total_help">Gesamtsumme der Rechnung. Hier kann ein Rabatt auf die Gesamtsumme gewährt werden.</msg>
   <msg key="iv_offer_comment">&lt;b&gt;Interner Kommentar&lt;/b&gt;</msg>
   <msg key="iv_offer_comment_help">Interner Kommentar der nicht dem Kunden gezeigt wird.</msg>
   <msg key="iv_offer_count_total">Anzahl Positionen</msg>
@@ -220,7 +224,7 @@
   <msg key="iv_offer_Description_help">Beschreibung der Kostenaufstellung</msg>
   <msg key="iv_offer_Edit">Projektaufstellung ändern</msg>
   <msg key="iv_offer_edit_error">Sie dürfen keine akzeptierte oder berechnete Kostenaufstellung ändern.</msg>
-  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Angebot&lt;/h3&gt;%data.contact_salutation%,&lt;p&gt;anbei unser Angebot an Sie.&lt;p&gt;Um dieses Angebot anzunehmen, klicken Sie bitte &lt;a href=&quot;%accept_link%&quot;&gt;hier&lt;/a&gt;.&lt;p&gt;Mit freundlichen Grüßen,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;%data.contact_salutation%,&lt;p&gt;anbei erhalten Sie das gewünschte Angebot als PDF-Datei.&lt;p&gt;Um das Angebot freizugeben, klicken Sie bitte &lt;a href=&quot;%accept_link%&quot;&gt;hier&lt;/a&gt;.&lt;p&gt;Mit freundlichen Grüßen,&lt;p&gt;@am_name@&lt;br&gt;Kundenberatung&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_email_subject">Angebot # %offer_nr%</msg>
   <msg key="iv_offer_file">Datei anhängen</msg>
   <msg key="iv_offer_file_delete">Dateien löschen</msg>
@@ -266,7 +270,7 @@
   <msg key="iv_offer_item_title_cat_1">Lektorat</msg>
   <msg key="iv_offer_item_title_cat_2">Adaption</msg>
   <msg key="iv_offer_item_title_category">Sprachen</msg>
-  <msg key="iv_offer_item_title_category_help">Alternativ zum Titel kann eine Quell und Zielsprache ausgewählt werden.</msg>
+  <msg key="iv_offer_item_title_category_help">&lt;b&gt;&lt;font color=&quot;red&quot;&gt;Alternativ&lt;/font&gt; zum Titel&lt;/b&gt; kann eine Quell und Zielsprache ausgewählt werden.</msg>
   <msg key="iv_offer_item_Title_help">Titel, der in dem Angebot/der Rechnung angezeigt wird</msg>
   <msg key="iv_offer_item_vat">Mehrwertsteuer</msg>
   <msg key="iv_offer_item_View">Kostenposition ansehen</msg>

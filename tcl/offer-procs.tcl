@@ -244,6 +244,14 @@ ad_proc -public iv::offer::parse_data {
 	set category [lang::util::localize [category::get_name $category_id] $locale]
     }
 
+    # Get the account manager information for the organization.
+    set account_manager_id [contacts::util::get_account_manager -organization_id $data(organization_id)]
+    if {$account_manager_id ne ""} {
+	set am_name "[contact::name -party_id [lindex $account_manager_id 0]]"
+    } else {
+	set am_name "[contact::name -party_id [parameter::get_from_package_key -package_key contacts -parameter DefaultOrganizationID]]"
+    }
+
     # parse offer email text
     eval [template::adp_compile -string [lang::util::localize $email_text $locale]]
     set final_content [list $__adp_output]

@@ -184,7 +184,7 @@ template::list::create \
     } -orderby_name orderby \
     -page_size_variable_p 1 \
     -page_size $page_size \
-    -page_flush_p 0 \
+    -page_flush_p 1 \
     -page_query_name iv_offer_paginated \
     -filters {
         organization_id {

@@ -736,14 +736,15 @@ ad_form -extend -name iv_offer_form -new_request {
 	set n_bytes [file size $tmp_filename]
 
 	if { $n_bytes > 0 } {
-	    cr_import_content -title $filename $offer_id $tmp_filename $n_bytes $file_mimetype $filename
+	    set file_rev_id [cr_import_content -title $filename $offer_id $tmp_filename $n_bytes $file_mimetype $filename]
+	    content::item::set_live_revision -revision_id $file_rev_id
 	}
     }
 
     # delete files
     if {[info exists delete_files]} {
 	foreach file_id $delete_files {
-	    db_exec_plsql delete_file {}
+	    content::item::delete -item_id $file_id
 
 	    set path "[cr_fs_path][cr_create_content_file_path $file_id ""]"
 	    foreach revision [glob -directory $path "*"] {

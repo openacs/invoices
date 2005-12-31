@@ -34,7 +34,7 @@ foreach optional_unset {organization_id} {
 set user_id [ad_conn user_id]
 set date_format [lc_get formbuilder_date_format]
 set timestamp_format "$date_format [lc_get formbuilder_time_format]"
-set bulk_actions [list "[_ invoices.iv_invoice_pay]" "${base_url}invoice-pay" "[_ invoices.iv_invoice_pay]"]
+set bulk_actions [list "[_ invoices.iv_invoice_send]" "${base_url}invoices-view" "[_ invoices.iv_invoice_send]" "[_ invoices.iv_invoice_pay]" "${base_url}invoice-pay" "[_ invoices.iv_invoice_pay]"]
 set invoice_cancel_p [permission::permission_p -party_id $user_id -object_id $package_id -privilege invoice_cancel]
 set return_url [ad_return_url]
 
@@ -150,7 +150,7 @@ template::list::create \
     } -orderby_name orderby -html {width 100%} \
     -page_size_variable_p 1 \
     -page_size $page_size \
-    -page_flush_p 0 \
+    -page_flush_p 1 \
     -page_query_name iv_invoice_paginated \
     -pass_properties {invoice_cancel_p} \
     -filters {organization_id {}} \

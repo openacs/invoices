@@ -18,7 +18,7 @@
 
     update cr_items
     set publish_status = 'expired'
-    where item_id = (select item_id from cr_revisions where revision_id = :file_id)
+    where item_id = :file_id
 
       </querytext>
 </fullquery>

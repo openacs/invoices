@@ -5,7 +5,7 @@ ad_page_contract {
     @creation-date 2005-06-06
 } {
     invoice_id:integer,optional
-    {organization_id:integer,optional ""}
+    organization_id:integer
     {__new_p 0}
 } -properties {
     context:onevalue
@@ -28,7 +28,13 @@ set timestamp_format "$date_format [lc_get formbuilder_time_format]"
 
 set language [lang::conn::language]
 set currency_options [db_list_of_lists currencies {}]
-set recipient_options [db_list_of_lists credit_recipients {}]
+
+# Get the list of valid recipients. These are employees of the organization
+set recipient_list [contact::util::get_employees -organization_id $organization_id]
+set recipient_options [list]
+foreach recipient_id $recipient_list {
+    lappend recipient_options [list [person::name -person_id $recipient_id] $recipient_id]
+}
 
 
 ad_form -name iv_invoice_credit_form -action invoice-credit -export {organization_id} -form {

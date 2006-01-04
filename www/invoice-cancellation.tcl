@@ -29,12 +29,14 @@ set timestamp_format "$date_format [lc_get formbuilder_time_format]"
 
 set language [lang::conn::language]
 set currency_options [db_list_of_lists currencies {}]
+set contact_options [db_list_of_lists cancellation_contacts {}]
 set recipient_options [db_list_of_lists cancellation_recipients {}]
 
 
 ad_form -name iv_invoice_cancel_form -action invoice-cancellation -export {organization_id parent_id} -form {
     {invoice_id:key}
     {organization_name:text(inform) {label "[_ invoices.iv_invoice_organization]"} {value $organization_name} {help_text "[_ invoices.iv_invoice_organization_help]"}}
+    {contact_id:integer(select),optional {label "[_ invoices.iv_invoice_contact]"} {options $contact_options} {help_text "[_ invoices.iv_invoice_contact_help]"}}
     {recipient_id:integer(select),optional {label "[_ invoices.iv_invoice_recipient]"} {options $recipient_options} {help_text "[_ invoices.iv_invoice_recipient_help]"}}
     {title:text {label "[_ invoices.iv_invoice_Title]"} {html {size 80 maxlength 1000}} {help_text "[_ invoices.iv_invoice_Title_help]"}}
     {description:text(textarea),optional {label "[_ invoices.iv_invoice_Description]"} {html {rows 5 cols 80}} {help_text "[_ invoices.iv_invoice_Description_help]"}}
@@ -69,13 +71,15 @@ ad_form -extend -name iv_invoice_cancel_form -new_request {
 	set vat [expr $total_amount * $vat_percent / 100.]
 	set vat [format "%.2f" $vat]
 
-	set new_invoice_rev_id [iv::invoice::new  \
+	set new_invoice_rev_id [iv::invoice::new \
 				    -parent_invoice_id $parent_id \
 				    -title $title \
 				    -description $description  \
 				    -invoice_nr $invoice_nr \
 				    -organization_id $organization_id \
+				    -contact_id $contact_id \
 				    -recipient_id $recipient_id \
+				    -amount_sum $total_amount \
 				    -total_amount $total_amount \
 				    -currency $currency \
 				    -due_date $due_date \
@@ -86,7 +90,7 @@ ad_form -extend -name iv_invoice_cancel_form -new_request {
 	set parent_item_id [content::revision::item_id -revision_id $parent_id]
 	db_1row get_credit_offer {}
 
-	if {[db_0or1row get_old_credit {} && $old_credit > 0.} {
+	if {[db_0or1row get_old_credit {}] && $old_credit > 0.} {
 	    # cancelled invoice has credit
 	    set invoice_id [content::revision::item_id -revision_id $new_invoice_rev_id]
 	    set total_credit "-$old_credit"

@@ -30,12 +30,7 @@ set language [lang::conn::language]
 set currency_options [db_list_of_lists currencies {}]
 
 # Get the list of valid recipients. These are employees of the organization
-set recipient_list [contact::util::get_employees -organization_id $organization_id]
-set recipient_options [list]
-foreach recipient_id $recipient_list {
-    lappend recipient_options [list [person::name -person_id $recipient_id] $recipient_id]
-}
-
+set recipient_options [contact::util::get_employees_list_of_lists -organization_id $organization_id]
 
 ad_form -name iv_invoice_credit_form -action invoice-credit -export {organization_id} -form {
     {invoice_id:key}
@@ -85,9 +80,11 @@ ad_form -extend -name iv_invoice_credit_form -new_request {
 				    -title $title \
 				    -description $description  \
 				    -invoice_nr $invoice_nr \
+				    -contact_id $recipient_id \
 				    -organization_id $organization_id \
 				    -recipient_id $recipient_id \
 				    -total_amount $total_amount \
+				    -amount_sum $total_amount \
 				    -currency $currency \
 				    -due_date $due_date \
 				    -vat_percent $vat_percent \

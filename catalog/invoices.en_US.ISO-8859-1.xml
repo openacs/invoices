@@ -66,6 +66,7 @@
   <msg key="folder_iv_offer">Offers</msg>
   <msg key="Group_by">Group By</msg>
   <msg key="Invoice">Invoice</msg>
+  <msg key="Invoice_Cancel">Cancel</msg>
   <msg key="Invoice_Item">Invoice Item</msg>
   <msg key="Invoice_item_number">Invoice item number</msg>
   <msg key="Invoice_Item_title">Invoice Item Title</msg>

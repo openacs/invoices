@@ -28,6 +28,7 @@ db_transaction {
 	set file_item_id [content::revision::item_id -revision_id $one_file]
 	content::item::move -item_id $file_item_id -target_folder_id $invoice_folder_id
 	db_dml set_publish_status {}
+	db_dml set_context_id {}
 	application_data_link::new -this_object_id $invoice_id -target_object_id $one_file
     }
     iv::invoice::set_status -invoice_id $invoice_id -status "billed"

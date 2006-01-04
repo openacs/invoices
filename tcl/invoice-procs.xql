@@ -103,7 +103,7 @@
     and pi.latest_revision = pr.revision_id
     and pr.revision_id = p.project_id
     and o.offer_id = ofi.offer_id
-    order by ii.sort_order
+    order by pr.title, ii.sort_order
 
       </querytext>
 </fullquery>

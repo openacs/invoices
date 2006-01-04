@@ -66,6 +66,7 @@
   <msg key="folder_iv_offer">Angebote</msg>
   <msg key="Group_by">Gruppieren nach</msg>
   <msg key="Invoice">Rechnung</msg>
+  <msg key="Invoice_Cancel">Stornieren</msg>
   <msg key="Invoice_Item">Rechnungsposition</msg>
   <msg key="Invoice_item_number">Positionsnummer</msg>
   <msg key="Invoice_Item_title">Title der Rechnungsposition</msg>

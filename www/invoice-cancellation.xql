@@ -1,6 +1,18 @@
 <?xml version="1.0"?>
 <queryset>
 
+<fullquery name="cancellation_contacts">
+      <querytext>
+
+	select p.first_names || ' ' || p.last_name, p.person_id
+	from persons p, iv_invoices i
+	where i.invoice_id = :parent_id
+	and p.person_id = i.contact_id
+	order by lower(p.last_name), lower(p.first_names)
+
+      </querytext>
+</fullquery>
+
 <fullquery name="cancellation_recipients">
       <querytext>
 

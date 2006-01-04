@@ -256,7 +256,7 @@ ad_proc -public iv::invoice::parse_data {
 
     # get the invoice item data
     set sum 0.
-    db_multirow -local -extend {amount_sum amount_total category} items invoice_items {} {
+    db_multirow -local -extend {amount_sum amount_total amount_diff category} items invoice_items {} {
 	if {[empty_string_p $credit_percent]} {
 	    set credit_percent 0
 	}
@@ -264,6 +264,7 @@ ad_proc -public iv::invoice::parse_data {
 	set amount_sum [format "%.2f" [expr $item_units * $price_per_unit]]
 	set amount_total [format "%.2f" [expr (1. - ($rebate / 100.)) * $amount_sum]]
 	set sum [expr $sum + $amount_total]
+	set amount_diff [format "%.2f" [expr $amount_total - $amount_sum]]
 	set amount_total [lc_numeric $amount_total "" $locale]
 	set amount_sum [lc_numeric $amount_sum "" $locale]
 	set price_per_unit [lc_numeric [format "%.2f" $price_per_unit] "" $locale]
@@ -272,14 +273,18 @@ ad_proc -public iv::invoice::parse_data {
 	set category [lang::util::localize [category::get_name $category_id] $locale]
     }
 
-    set data(amount_sum) $sum
-    set data(total_amount) [expr $sum + $amount_diff]
-    set data(vat) [expr $data(vat_percent) * $data(total_amount) / 100.]
-    set data(final_amount) [lc_numeric [format "%.2f" [expr $data(total_amount)+$data(vat)]] "" $locale]
+    # It is possible that you have an invoice without items, e.g. a credit invoice
+    if {$sum ne "0."} {
+	set data(amount_sum) $sum
+	set data(total_amount) [expr $sum + $amount_diff]
+	set data(vat) [expr $data(vat_percent) * $data(total_amount) / 100.]
+	set data(final_amount) [lc_numeric [format "%.2f" [expr $data(total_amount)+$data(vat)]] "" $locale]
+	set data(vat) [lc_numeric [format "%.2f" $data(vat)] "" $locale]
+	set data(amount_sum) [lc_numeric [format "%.2f" $data(amount_sum)] "" $locale]
+	set data(total_amount) [lc_numeric [format "%.2f" $data(total_amount)] "" $locale]
+    }
+
     set data(vat_percent) [lc_numeric [format "%.1f" $data(vat_percent)] "" $locale]
-    set data(vat) [lc_numeric [format "%.2f" $data(vat)] "" $locale]
-    set data(amount_sum) [lc_numeric [format "%.2f" $data(amount_sum)] "" $locale]
-    set data(total_amount) [lc_numeric [format "%.2f" $data(total_amount)] "" $locale]
 
     # Get the account manager information for the organization.
     set account_manager_id [contacts::util::get_account_manager -organization_id $data(organization_id)]

@@ -138,7 +138,7 @@ if {[exists_and_not_null parent_invoice_id]} {
     set recipient_options [db_list_of_lists cancellation_recipients {}]
 } elseif {$cur_total_amount < 0} {
     # credit: get recipients from organization
-    set recipient_options [db_list_of_lists credit_recipients {}]
+    set recipient_options [contact::util::get_employees_list_of_lists -organization_id $organization_id]
     set contact_options $recipient_options
 } else {
     # normal invoice: get recipients from projects

@@ -95,9 +95,9 @@ template::list::create \
 	    display_template {[_ invoices.iv_invoice_status_@iv_invoice.status@]}
 	}
         action {
-	    display_template {<if @iv_invoice.status@ eq new><a href="@iv_invoice.edit_link@">#invoices.Edit#</a>&nbsp;<if @iv_invoice.organization_id@ not nil and @invoice_cancel_p@ true><a href="@iv_invoice.cancel_link@">#invoices.Cancel#</a></if></if><if @iv_invoice.status@ ne billed and @iv_invoice.status@ ne paid>&nbsp;<a href="@iv_invoice.delete_link@">#invoices.Delete#</a></if>}
-	}
-	} -actions $actions -sub_class narrow \
+	    display_template {<if @iv_invoice.status@ eq new><a href="@iv_invoice.edit_link@">#invoices.Edit#</a>&nbsp;</if><else><if @invoice_cancel_p@ true><a href="@iv_invoice.cancel_link@">#invoices.Invoice_Cancel#</a>&nbsp;</if></else><if @iv_invoice.status@ ne billed and @iv_invoice.status@ ne paid><a href="@iv_invoice.delete_link@">#invoices.Delete#</a></if>}
+        }
+    } -actions $actions -sub_class narrow \
 	    -bulk_actions $bulk_actions \
 	    -bulk_action_export_vars {return_url} \
     -orderby {
@@ -170,7 +170,7 @@ template::list::create \
 
 set contacts_p [apm_package_installed_p contacts]
 
-db_multirow -extend {creator_link edit_link cancel_link delete_link recipient organization_id} iv_invoice iv_invoice {} {
+db_multirow -extend {creator_link edit_link cancel_link delete_link recipient} iv_invoice iv_invoice {} {
     # Ugly hack. We should find out which contact package is linked
 
     set edit_link [export_vars -base "${base_url}invoice-ae" {invoice_id}]

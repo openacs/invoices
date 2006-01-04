@@ -14,6 +14,8 @@ set page_title "[_ invoices.admin]"
 set context [list]
 set categories_url "categories-admin"
 set linking_url "linking"
-set parameter_url [export_vars -base "/shared/parameters" {{package_id "[ad_conn package_id]"} {return_url [ad_return_url]}}]
+set package_id [ad_conn package_id]
+set permission_url [export_vars -base "/permissions/one" {{object_id $package_id} {application_url [ad_return_url]}}]
+set parameter_url [export_vars -base "/shared/parameters" {package_id {return_url [ad_return_url]}}]
 
 ad_return_template

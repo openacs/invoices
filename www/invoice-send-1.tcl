@@ -17,7 +17,12 @@ db_1row invoice_data {}
 
 set context [list [list [export_vars -base invoice-list {organization_id}] "[_ invoices.iv_invoice_2]"] [list [export_vars -base invoice-ae {invoice_id}] "[_ invoices.iv_invoice_View]"] $page_title]
 
-set rec_organization_id [contact::util::get_employee_organization -employee_id $recipient_id]
+if {[person::person_p -party_id $recipient_id]} {
+    set rec_organization_id [contact::util::get_employee_organization -employee_id $recipient_id]
+} else {
+    set rec_organization_id $recipient_id
+}
+
 set rec_orga_revision_id [content::item::get_best_revision -item_id $rec_organization_id]
 set invoice_copy [ams::value -attribute_name "invoice_copy" -object_id $rec_orga_revision_id]
 
@@ -27,7 +32,7 @@ ad_form -name invoice_send -action invoice-send-1 -form {
     {invoice_id:key}
 }
 
-if {$organization_id != $rec_organization_id} {
+if {$contact_id != $recipient_id} {
     ad_form -extend -name invoice_send -form {
 	{opening_p:text(radio) {label "[_ invoices.iv_invoice_opening_p]"} {options $boolean_options}}
     }

@@ -104,7 +104,7 @@ foreach document_file $documents type $document_types {
 }
 
 if {[llength $file_ids] > 0} {
-    set return_url [export_vars -base invoice-pdf {invoice_id {file_id $file_ids}}]
+    set return_url [export_vars -base invoice-pdf {invoice_id {file_id:multiple $file_ids}}]
 } else {
     set return_url [export_vars -base invoice-list {organization_id}]
 }

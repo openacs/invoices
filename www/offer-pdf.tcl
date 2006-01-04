@@ -38,6 +38,7 @@ db_transaction {
     content::item::move -item_id $file_item_id -target_folder_id $offer_folder_id
     application_data_link::new -this_object_id $offer_id -target_object_id $file_id
     db_dml set_publish_status {}
+    db_dml set_context_id {}
 
     # Set the task by default to phone three days later.
     set due_date [clock format [clock scan "3 days" -base [clock scan [dt_systime]]] -format "%Y-%m-%d"]

@@ -22,4 +22,14 @@
       </querytext>
 </fullquery>
 
+<fullquery name="set_context_id">
+      <querytext>
+
+    update acs_objects
+    set context_id = :invoice_folder_id
+    where object_id = :file_item_id
+
+      </querytext>
+</fullquery>
+
 </queryset>

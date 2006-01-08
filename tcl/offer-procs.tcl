@@ -195,7 +195,7 @@ ad_proc -public iv::offer::parse_data {
     Create array and multirow in callers context with offer data, offer items
 } {
     set package_id [ad_conn package_id]
-
+    set user_id [ad_conn user_id]
     # Get the offer data
     db_1row get_data {} -column_array data
     set locale [lang::user::site_wide_locale -user_id $data(contact_id)]
@@ -224,8 +224,13 @@ ad_proc -public iv::offer::parse_data {
 
     set time_format "[lc_get -locale $locale d_fmt] [lc_get -locale $locale t_fmt]"
     set data(finish_date) [lc_time_fmt $data(finish_date) $time_format]
+    set data(current_date) [lc_time_fmt $data(current_date) $time_format]
     set data(creation_date) [lc_time_fmt $data(creation_date) $time_format]
     set data(accepted_date) [lc_time_fmt $data(accepted_date) $time_format]
+
+    if {$type == "offer"} {
+	set data(accepted_date) $data(current_date)
+    }
 
     set data(name) [contact::name -party_id $data(contact_id)]
     set data(rep_first_names) [lindex $data(name) 1]
@@ -245,11 +250,22 @@ ad_proc -public iv::offer::parse_data {
     }
 
     # Get the account manager information for the organization.
-    set account_manager_id [contacts::util::get_account_manager -organization_id $data(organization_id)]
-    if {$account_manager_id ne ""} {
-	set am_name "[contact::name -party_id [lindex $account_manager_id 0]]"
+    set account_manager_ids [contacts::util::get_account_manager -organization_id $data(organization_id)]
+    if {$account_manager_ids ne ""} {
+
+	# We do have one or more account manager. Now check if the current user is one of them
+	if {[lsearch $account_manager_ids $user_id] > -1} {
+	    set am_name "[contact::name -party_id $user_id]"
+	    set data(am_name) $am_name
+	} else {
+	    # Someone else is sending the offer. We need to mark this in the name
+	    set account_manager_name [contact::name -party_id [lindex $account_manager_ids 0]]
+	    set data(am_name) $account_manager_name
+	    set am_name "[_ contacts.pp] [contact::name -party_id $user_id]<p>$account_manager_name"
+	}
     } else {
 	set am_name "[contact::name -party_id [parameter::get_from_package_key -package_key contacts -parameter DefaultOrganizationID]]"
+	set data(am_name) "[contact::name -party_id $user_id]"
     }
 
     # parse offer email text

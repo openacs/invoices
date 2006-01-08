@@ -535,8 +535,8 @@ ad_form -extend -name iv_offer_form -new_request {
     set credit_sum "0.00"
 
     # get this from organization_id
-    set payment_days "30"
-    set vat_percent "16.0"
+    set payment_days "0"
+    set vat_percent "0.0"
     set contacts_package_id [lindex [application_link::get_linked -from_package_id $package_id -to_package_key contacts] 0]
     array set org_data [contacts::get_values \
 			    -group_name "Customers" \

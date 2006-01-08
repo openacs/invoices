@@ -137,8 +137,9 @@ if {![empty_string_p [category_tree::get_mapped_trees $container_objects(offer_i
     category::ad_form::add_widgets -container_object_id $container_objects(offer_id) -categorized_object_id $_offer_id -form_name iv_offer_form
 }
 
+# We do not want a separate offer-Number, but use the project_title
 ad_form -extend -name iv_offer_form -form {
-    {offer_nr:text {label "[_ invoices.iv_offer_offer_nr]"} {html {size 80 maxlength 200}} {help_text "[_ invoices.iv_offer_offer_nr_help]"}}
+    {offer_nr:text(hidden) {label "[_ invoices.iv_offer_offer_nr]"} {html {size 80 maxlength 200}} {help_text "[_ invoices.iv_offer_offer_nr_help]"}}
 }
 
 if {[exists_and_not_null _project_id]} {
@@ -146,12 +147,14 @@ if {[exists_and_not_null _project_id]} {
 
     db_1row get_project {}
     set project_title $project_name
+    set project_date [lc_time_fmt $project_date_ansi "%x %X"]
     set dotlrn_club_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type "dotlrn_club"] 0]
     set pm_base_url [apm_package_url_from_id [dotlrn_community::get_package_id_from_package_key -package_key "project-manager" -community_id $dotlrn_club_id]]
     set project_name "<a href=\"[export_vars -base "${pm_base_url}one" {{project_item_id $item_id}}]\">$project_name</a>"
 
     ad_form -extend -name iv_offer_form -form {
 	{project:text(inform),optional {label "[_ invoices.iv_offer_project]"} {value $project_name} {help_text "[_ invoices.iv_offer_project_help]"}}
+	{project_date:text(inform) {label "[_ invoices.iv_offer_project_date]"} {html {size 30}} {help_text "[_ invoices.iv_offer_project_date_help]"}}
 	{project_id:text(hidden) {value $_project_id}}
     }
 } elseif {!$has_submit} {
@@ -185,7 +188,6 @@ if {$has_submit} {
     # we are adding/editing data
 
     ad_form -extend -name iv_offer_form -form {
-	{currency:text(select) {mode display} {label "[_ invoices.iv_offer_currency]"} {options $currency_options} {help_text "[_ invoices.iv_offer_currency_help]"}}
 	{finish_date:text,optional {label "[_ invoices.iv_offer_finish_date]"} {html {size 12 maxlength 10 id sel1}} {help_text "[_ invoices.iv_offer_finish_date_help]"} {after_html {<input type='reset' value=' ... ' onclick=\"return showCalendar('sel1', 'y-m-d');\"> \[<b>y-m-d </b>\]}}}
 	{finish_time:date,optional {label "[_ invoices.iv_offer_finish_time]"} {format {[lc_get formbuilder_time_format]}} {help_text "[_ invoices.iv_offer_finish_time_help]"}}
 	{date_comment:text,optional {label "[_ invoices.iv_offer_date_comment]"} {html {size 80 maxlength 1000}} {help_text "[_ invoices.iv_offer_date_comment_help]"}}
@@ -200,6 +202,7 @@ if {!$has_submit} {
     # we are adding/editing data
     ad_form -extend -name iv_offer_form -form {
 	{vat_percent:float {label "[_ invoices.iv_offer_vat_percent]"} {html {size 5 maxlength 10}} {help_text "[_ invoices.iv_offer_vat_percent_help]"} {after_html {%}}}
+	{currency:text(select) {mode display} {label "[_ invoices.iv_offer_currency]"} {options $currency_options} {help_text "[_ invoices.iv_offer_currency_help]"}}
     }
 
     if {![empty_string_p $_credit_percent] && $_credit_percent > 0} {
@@ -303,7 +306,7 @@ if {$_offer_id} {
 		[list [list "item_title.${i}:text,optional" \
 			   [list label "[_ invoices.iv_offer_item_Title]"] \
 			   [list html [list size 80 maxlength 1000]] \
-			   [list value $item(title)] \
+			   [list value [lang::util::localize $item(title)]] \
 			   [list help_text "[_ invoices.iv_offer_item_Title_help]"] \
 			   [list section "[_ invoices.iv_offer_item_1] $i"] ] ]
 	    ad_form -extend -name iv_offer_form -form \
@@ -492,12 +495,13 @@ if {$has_submit} {
     ad_form -extend -name iv_offer_form -form {
 	{amount_total:float,optional {label "[_ invoices.iv_offer_amount_total]"} {html {size 10 maxlength 10}} {help_text "[_ invoices.iv_offer_amount_total_help]"} {after_html $currency}}
 	{vat:float {label "[_ invoices.iv_offer_vat]"} {html {size 10 maxlength 10}} {help_text "[_ invoices.iv_offer_vat_help]"} {after_html "$currency ($cur_vat_percent%)"}}
+	{currency:text(select) {mode display} {label "[_ invoices.iv_offer_currency]"} {options $currency_options} {help_text "[_ invoices.iv_offer_currency_help]"}}
     }
 
     if {[empty_string_p $accepted_date]} {
 	ad_form -extend -name iv_offer_form -form {
-	    {accept:text(submit) {label "[_ invoices.iv_offer_accept]"} {value t}}
 	    {send:text(submit) {label "[_ invoices.iv_offer_send]"} {value t}}
+	    {accept:text(submit) {label "[_ invoices.iv_offer_accept]"} {value t}}
 	}
     } else {
 	ad_form -extend -name iv_offer_form -form {
@@ -513,17 +517,19 @@ ad_form -extend -name iv_offer_form -new_request {
     if {[exists_and_not_null _project_id]} {
 	db_1row get_project_description {}
     } else {
-	set description ""
+	set comment ""
     }
     set today [db_string today {}]
     set finish_date ""
-    set finish_time ""
+    set finish_time "[template::util::date::now]"
     if {[exists_and_not_null project_title]} {
 	set title "[_ invoices.iv_offer_1] $project_title"
     } else {
 	set title "[_ invoices.iv_offer_1] $organization_name $today"
     }
-    set offer_nr [db_nextval iv_offer_seq]
+    # We do not want a seperate offer_number but use the project title
+    # set offer_nr [db_nextval iv_offer_seq]
+    set offer_nr $project_title
     set amount_sum "0.00"
     set amount_total "0.00"
     set credit_sum "0.00"
@@ -553,6 +559,9 @@ ad_form -extend -name iv_offer_form -new_request {
     }
     set amount_total [format "%.2f" $amount_total]
     set credit_sum $total_credit
+    set finish_date [lc_time_fmt $finish_ansi "%x %X"]
+    set creation_date [lc_time_fmt $creation_ansi "%x %X"]
+    set accepted_date [lc_time_fmt $accepted_ansi "%x %X"]
 
     if {$has_submit} {
 	set amount_sum [format "%.2f" $amount_sum_]

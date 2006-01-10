@@ -82,7 +82,8 @@
 <fullquery name="get_project">
       <querytext>
 
-	select r.title as project_name, r.item_id
+	select r.title as project_name, r.item_id,
+               to_char(p.planned_end_date,'YYYY-MM-DD HH24:MI:SS') as project_date_ansi
 	from cr_revisions r, cr_items i, pm_projects p
 	where i.item_id = :_project_id
 	and i.latest_revision = r.revision_id
@@ -113,7 +114,7 @@
 <fullquery name="get_project_description">
       <querytext>
 
-	    select r.description
+	    select r.description as comment
 	    from cr_revisions r, cr_items i
 	    where r.revision_id = i.latest_revision
 	    and i.item_id = :_project_id
@@ -127,10 +128,9 @@
 	select t.offer_id as offer_rev_id, r.title, r.description,
 	       t.offer_nr, t.amount_total, t.vat, t.vat_percent, t.comment,
 	       to_char(t.finish_date, 'YYYY-MM-DD HH24:MI:SS') as finish_ansi,
-	       to_char(t.finish_date, :timestamp_format) as finish_date,
 	       o.creation_user, p.first_names, p.last_name,
-	       to_char(o.creation_date, :timestamp_format) as creation_date,
-	       to_char(t.accepted_date, :timestamp_format) as accepted_date,
+	       to_char(o.creation_date, 'YYYY-MM-DD HH24:MI:SS') as creation_ansi,
+	       to_char(t.accepted_date, 'YYYY-MM-DD HH24:MI:SS') as accepted_ansi,
 	       t.amount_sum as amount_sum_, t.payment_days, t.date_comment
 	from iv_offers t, cr_revisions r, cr_items i, acs_objects o,
 	     persons p

@@ -135,7 +135,7 @@
                of.credit_percent
 	from cr_items oi, iv_invoice_items i, cr_revisions ir, cr_items pi,
 	     cr_revisions pr, iv_offers of, cr_items vi, cr_items ii, acs_data_links r,
-	     iv_offer_items ofi
+	     pm_projects p, iv_offer_items ofi
 	left outer join category_object_map m on (m.object_id = ofi.offer_item_id)
 	where oi.latest_revision = ofi.offer_id
 	and i.offer_item_id = ofi.offer_item_id
@@ -146,6 +146,7 @@
         and r.object_id_one = pi.item_id
         and r.object_id_two = oi.item_id
 	and pr.revision_id = pi.latest_revision
+	and p.project_id = pr.revision_id
         and of.offer_id = ofi.offer_id
 	order by pi.item_id, i.item_nr
 

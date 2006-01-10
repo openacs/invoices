@@ -45,19 +45,33 @@ db_transaction {
 
     # Make sure to set the task only once
     set task_generated_p [db_string task_generated "select count(*) from t_tasks where object_id=:offer_id and status_id <> 2"]
+    
+    # Set the assignee to the account manager of the organization
+    # Otherwise use user_id
+
+    set assignee_ids [contacts::util::get_account_manager -organization_id $organization_id]
+    
+    if {$assignee_ids eq ""} {
+	set assignee_ids $user_id
+    }
+			      
 
     if {!$task_generated_p && [apm_package_installed_p "tasks"]} {
 
-	# Create a task for the saved offer
-	set task_id [tasks::task::new \
-			 -title "Nachfassen Angebot" \
-			 -description "Angebot Nr. <a href=\"[export_vars -base "[ad_url][ad_conn package_url]offer-ae" -url {offer_id {mode display}}]\">$offer_nr" \
-			 -mime_type "text/plain" \
-			 -party_id $contact_id \
-			 -due_date ${due_date} \
-			 -object_id $offer_id \
-			 -mime_type "text/html" \
-			 -priority "1"]
+	foreach assignee_id $assignee_ids {
+	    # Create a task for the saved offer
+	    set task_id [tasks::task::new \
+			     -title "Nachfassen Angebot" \
+			     -description "Angebot Nr. <a href=\"[export_vars -base "[ad_url][ad_conn package_url]offer-ae" -url {offer_id {mode display}}]\">$offer_nr" \
+			     -mime_type "text/plain" \
+			     -party_id $contact_id \
+			     -due_date ${due_date} \
+			     -object_id $offer_id \
+			     -mime_type "text/html" \
+			     -priority "1" \
+			     -assignee_id $assignee_id
+			]
+	}
     }
 }
 

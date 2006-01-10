@@ -17,6 +17,10 @@ set page_title "[_ invoices.iv_offer_send]"
 db_1row offer_data {}
 set project_id [lindex [application_data_link::get_linked -from_object_id $offer_id -to_object_type content_item] 0]
 db_1row project_data {}
+
+# We don't want to use a seperate offer number but use the project_title
+set offer_nr $project_title
+
 set locale [lang::user::site_wide_locale -user_id $contact_id]
 
 set context [list [list [export_vars -base offer-list {organization_id}] "[_ invoices.iv_offer_2]"] [list [export_vars -base offer-ae {offer_id}] "[_ invoices.iv_offer_View]"] $page_title]

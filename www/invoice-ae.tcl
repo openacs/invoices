@@ -155,7 +155,7 @@ ad_form -name iv_invoice_form -action invoice-ae -mode $mode -has_submit $has_su
     {invoice_specialities:text(inform) {label "[_ invoices.iv_invoice_specialities]"} {value $invoice_specialities} {help_text "[_ invoices.iv_invoice_specialities_help]"}}
     {contact_id:integer(select),optional {label "[_ invoices.iv_invoice_contact]"} {options $contact_options} {help_text "[_ invoices.iv_invoice_contact_help]"}}
     {recipient_id:integer(select),optional {label "[_ invoices.iv_invoice_recipient]"} {options $recipient_options} {help_text "[_ invoices.iv_invoice_recipient_help]"}}
-    {title:text {label "[_ invoices.iv_invoice_Title]"} {html {size 80 maxlength 1000}} {help_text "[_ invoices.iv_invoice_Title_help]"}}
+    {title:text(inform) {label "[_ invoices.iv_invoice_Title]"} {html {size 80 maxlength 1000}} {help_text "[_ invoices.iv_invoice_Title_help]"}}
     {description:text(textarea),optional {label "[_ invoices.iv_invoice_Description]"} {html {rows 5 cols 80}} {help_text "[_ invoices.iv_invoice_Description_help]"}}
 }
 	

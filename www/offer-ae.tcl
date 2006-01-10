@@ -521,7 +521,7 @@ ad_form -extend -name iv_offer_form -new_request {
     }
     set today [db_string today {}]
     set finish_date ""
-    set finish_time "[template::util::date::now]"
+    set finish_time ""
     if {[exists_and_not_null project_title]} {
 	set title "[_ invoices.iv_offer_1] $project_title"
     } else {
@@ -559,7 +559,11 @@ ad_form -extend -name iv_offer_form -new_request {
     }
     set amount_total [format "%.2f" $amount_total]
     set credit_sum $total_credit
-    set finish_date [lc_time_fmt $finish_ansi "%x %X"]
+    if {$mode eq "display"} {
+	set finish_date [lc_time_fmt $finish_ansi "%x %X"]
+    } else {
+	set finish_date $finish_ansi
+    }
     set creation_date [lc_time_fmt $creation_ansi "%x %X"]
     set accepted_date [lc_time_fmt $accepted_ansi "%x %X"]
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="invoices" package_version="0.01d22" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="invoices" package_version="1.0d1" locale="en_US" charset="ISO-8859-1">
 
-  <msg key="accepted">Accepted Offers</msg>
+  <msg key="accepted">Order confirmation</msg>
   <msg key="Accepted_date">Accepted on</msg>
   <msg key="Add_offer_project">Add offer project</msg>
   <msg key="admin">Admin</msg>
@@ -35,6 +35,7 @@
   <msg key="Cost_number">Cost number</msg>
   <msg key="Costs">Costs</msg>
   <msg key="count">Count</msg>
+  <msg key="Create_new_pricelist_for_customer">New price list for the client</msg>
   <msg key="Creation_Date">Creation Date</msg>
   <msg key="credit_offer_desc">Credit awarded by projects</msg>
   <msg key="credit_offer_title">Credit</msg>
@@ -47,21 +48,22 @@
   <msg key="Date_Range">Date Range:</msg>
   <msg key="day">Day</msg>
   <msg key="Delete">Delete</msg>
+  <msg key="Due">Due</msg>
   <msg key="Due_date">Due date</msg>
   <msg key="Edit">Edit</msg>
   <msg key="email_pdf_template">Template</msg>
   <msg key="File_count">Number of files</msg>
   <msg key="file_invoice">Invoice</msg>
   <msg key="file_invoice_cancel">Cancellation</msg>
-  <msg key="file_invoice_copy">Invoice_Copy</msg>
+  <msg key="file_invoice_copy">Invoice copy</msg>
   <msg key="file_invoice_credit">Credit</msg>
-  <msg key="file_invoice_opening">Invoice_Opening</msg>
+  <msg key="file_invoice_opening">Covering letter for invoice</msg>
   <msg key="file_offer">Offer</msg>
-  <msg key="file_offer_accepted">Accepted_Offer</msg>
-  <msg key="Final_Amount">Final Amount</msg>
-  <msg key="Finish_date">Finish date</msg>
+  <msg key="file_offer_accepted">Order confirmation</msg>
+  <msg key="Final_Amount">Gross amount</msg>
+  <msg key="Finish_date">Deadline</msg>
   <msg key="Fixed_cost">Fixed cost?</msg>
-  <msg key="folder_iv_accepted">Accepted Offers</msg>
+  <msg key="folder_iv_accepted">Order confirmation</msg>
   <msg key="folder_iv_invoice">Invoices</msg>
   <msg key="folder_iv_offer">Offers</msg>
   <msg key="Group_by">Group By</msg>
@@ -77,6 +79,9 @@
   <msg key="Invoice_Title">Invoice Title</msg>
   <msg key="Invoices">Invoices</msg>
   <msg key="invoices">Invoices</msg>
+  <msg key="invoices.iv_offer_accepted_date_help">When was this offer accepted</msg>
+  <msg key="invoices.iv_offer_creation_date_help">When was this offer created</msg>
+  <msg key="invoices.iv_offer_vat_help">What is the VAT in percent</msg>
   <msg key="Invoices_items">Invoices Items</msg>
   <msg key="Item_Id">Item ID</msg>
   <msg key="iv_cost_1">Cost</msg>
@@ -148,7 +153,7 @@
   <msg key="iv_invoice_item_New">New Invoice Item</msg>
   <msg key="iv_invoice_item_New2">Create New Invoice Item</msg>
   <msg key="iv_invoice_item_parent_id">Parent Item</msg>
-  <msg key="iv_invoice_item_price_per_unit">Price per unit</msg>
+  <msg key="iv_invoice_item_price_per_unit">Hourly rate</msg>
   <msg key="iv_invoice_item_rebate">Rebate</msg>
   <msg key="iv_invoice_item_sort_order">Sort order</msg>
   <msg key="iv_invoice_item_Title">Title</msg>
@@ -199,8 +204,8 @@
   <msg key="iv_offer_2">Cost Sheets</msg>
   <msg key="iv_offer_accept">Accept Offer</msg>
   <msg key="iv_offer_accepted_date">Accepted on</msg>
-  <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Accepted Offer&lt;/h3&gt;%data.contact_salutation%, &lt;p&gt;thank you for your order. We will contact you as soon as possible.&lt;p&gt;Best wishes,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
-  <msg key="iv_offer_accepted_email_subject">Offer acceptance # %offer_nr%</msg>
+  <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;%data.contact_salutation%, &lt;p&gt;thank you for your order! You'll find the details in the attached PDF file.&lt;p&gt;With best regards&lt;p&gt;@am_name@&lt;br&gt;Customer service&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_accepted_email_subject">Order confirmation # %offer_nr%</msg>
   <msg key="iv_offer_accepted_thanks">Thank you for accepting our offer. We will contact you as soon as possible.</msg>
   <msg key="iv_offer_Add">Cost Sheet for &quot;%organization_name%&quot;</msg>
   <msg key="iv_offer_Add2">Add Cost Sheet</msg>
@@ -214,9 +219,11 @@
   <msg key="iv_offer_count_total">Total items</msg>
   <msg key="iv_offer_creation_date">Created on</msg>
   <msg key="iv_offer_creation_user">Created by</msg>
+  <msg key="iv_offer_creation_user_help">Creation user</msg>
   <msg key="iv_offer_credit_percent">Credit percent</msg>
   <msg key="iv_offer_credit_sum">Credit sum</msg>
   <msg key="iv_offer_currency">Currency</msg>
+  <msg key="iv_offer_currency_help">What is the currency used</msg>
   <msg key="iv_offer_date_comment">Date Comment:</msg>
   <msg key="iv_offer_date_comment_help">Internal Notes explaining the deadline communicated to the client</msg>
   <msg key="iv_offer_Delete">Delete Cost Sheet</msg>
@@ -224,7 +231,7 @@
   <msg key="iv_offer_Description_help">Description of the cost sheet</msg>
   <msg key="iv_offer_Edit">Edit Cost Sheet</msg>
   <msg key="iv_offer_edit_error">You are not allowed to edit an accepted or invoiced cost sheet</msg>
-  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Offer&lt;/h3&gt;%data.contact_salutation%, &lt;p&gt;see our attached offer.&lt;p&gt;To accept this offer, click &lt;a href=&quot;%accept_link%&quot;&gt;here&lt;/a&gt;.&lt;p&gt;Best wishes,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;%data.contact_salutation%,&lt;p&gt;you'll find the requested offer in the attached PDF file.&lt;p&gt;To accept this offer, please klick &lt;a href=&quot;%accept_link%&quot;&gt;here&lt;/a&gt;.&lt;p&gt;With best regards&lt;p&gt;%am_name%&lt;br&gt;Kundenberatung&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_email_subject">Offer # %offer_nr%</msg>
   <msg key="iv_offer_file">File upload</msg>
   <msg key="iv_offer_file_delete">Delete Files</msg>
@@ -285,6 +292,8 @@
   <msg key="iv_offer_payment_days_help">How many days has the customer until the invoice has to be paid</msg>
   <msg key="iv_offer_project">Project</msg>
   <msg key="iv_offer_project_contact">Contact</msg>
+  <msg key="iv_offer_project_date">Project deadline</msg>
+  <msg key="iv_offer_project_date_help">Deadline to finish the project</msg>
   <msg key="iv_offer_project_descr">Description</msg>
   <msg key="iv_offer_project_help">Project Name</msg>
   <msg key="iv_offer_project_id">Project ID</msg>
@@ -381,7 +390,7 @@
   <msg key="template_invoice_cancel">Invoice cancellation</msg>
   <msg key="template_invoice_credit">Credit</msg>
   <msg key="template_offer">Offer</msg>
-  <msg key="template_offer_accepted">Accepted Offer</msg>
+  <msg key="template_offer_accepted">Order confirmation</msg>
   <msg key="Total">Total</msg>
   <msg key="Total_amount">Total amount</msg>
   <msg key="Total_offers">Total Offers</msg>

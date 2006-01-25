@@ -28,14 +28,13 @@ if {$status == "new"} {
     # this is an unaccepted offer
     set offer_folder_id [fs::get_folder -name "offers_${root_folder_id}" -parent_id $root_folder_id]
 } else {
-    # this is an accapted offer
+    # this is an accepted offer
     set offer_folder_id [fs::get_folder -name "accepted_${root_folder_id}" -parent_id $root_folder_id]
 }
 
 db_transaction {
     # move file to offer /accepted offer folder
-    set file_item_id [content::revision::item_id -revision_id $file_id]
-    content::item::move -item_id $file_item_id -target_folder_id $offer_folder_id
+    content::item::move -item_id $file_id -target_folder_id $offer_folder_id
     application_data_link::new -this_object_id $offer_id -target_object_id $file_id
     db_dml set_publish_status {}
     db_dml set_context_id {}
@@ -56,7 +55,7 @@ db_transaction {
     }
 			      
 
-    if {!$task_generated_p && [apm_package_installed_p "tasks"]} {
+    if {!$task_generated_p && [apm_package_installed_p "tasks"] && [string eq $status "new"]} {
 
 	foreach assignee_id $assignee_ids {
 	    # Create a task for the saved offer

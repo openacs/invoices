@@ -68,6 +68,7 @@
 	       to_char(t.finish_date, 'YYYY-MM-DD HH24:MI:SS') as finish_date,
 	       o.creation_user, p.first_names, p.last_name, t.credit_percent,
 	       to_char(o.creation_date, 'YYYY-MM-DD HH24:MI:SS') as creation_date,
+	       to_char(now(), 'YYYY-MM-DD HH24:MI:SS') as current_date,
 	       to_char(t.accepted_date, 'YYYY-MM-DD HH24:MI:SS') as accepted_date,
 	       t.amount_sum, t.payment_days, t.date_comment, t.currency,
                t.organization_id, pr.title as project_title, ci.item_id as offer_id,
@@ -101,7 +102,7 @@
     and r.revision_id = ofi.offer_item_id
     and oi.item_id = :offer_id
     and m.object_id = ofi.offer_item_id
-    order by ofi.sort_order
+    order by ofi.item_nr
 
       </querytext>
 </fullquery>
@@ -120,7 +121,7 @@
     and r.revision_id = ofi.offer_item_id
     and oi.item_id = :offer_id
     and m.object_id = ofi.offer_item_id
-    order by ofi.sort_order
+    order by ofi.item_nr
 
       </querytext>
 </fullquery>

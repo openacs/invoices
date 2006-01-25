@@ -187,6 +187,7 @@ ad_proc -public iv::invoice::parse_data {
     @returns list of invoice texts
 } {
     set package_id [ad_conn package_id]
+    set user_id [ad_conn user_id]
 
     # Get the invoice data
     db_1row get_data {} -column_array data
@@ -194,7 +195,7 @@ ad_proc -public iv::invoice::parse_data {
     set contact_locale [lang::user::site_wide_locale -user_id $data(contact_id)]
     set rec_locale $locale
     set data(creator_name) "$data(first_names) $data(last_name)"
-    set data(amount_diff) [format "%.2f" [expr $data(total_amount) - $data(amount_sum)]]
+    set data(amount_diff) [format "%.2f" [expr abs($data(total_amount) - $data(amount_sum))]]
     set amount_diff $data(amount_diff)
     set data(amount_diff) [lc_numeric $data(amount_diff) "" $locale]
     set data(final_amount) [lc_numeric [format "%.2f" [expr $data(total_amount)+$data(vat)]] "" $locale]
@@ -208,9 +209,7 @@ ad_proc -public iv::invoice::parse_data {
     set data(due_date) [lc_time_fmt $data(due_date) $time_format]
 
     set name [contact::name -party_id $data(recipient_id)]
-    set data(rep_first_names) [lindex $name 1]
-    set data(rep_last_name) [string trim [lindex $name 0] ,]
-    set data(recipient_name) "$data(rep_first_names) $data(rep_last_name)"
+    set data(recipient_name) $name
     set orga_revision_id [content::item::get_best_revision -item_id $data(organization_id)]
     set contact_client_id [ams::value -attribute_name "client_id" -object_id $orga_revision_id -locale $contact_locale]
     set rec_revision_id [content::item::get_best_revision -item_id $data(recipient_id)]
@@ -287,11 +286,31 @@ ad_proc -public iv::invoice::parse_data {
     set data(vat_percent) [lc_numeric [format "%.1f" $data(vat_percent)] "" $locale]
 
     # Get the account manager information for the organization.
-    set account_manager_id [contacts::util::get_account_manager -organization_id $data(organization_id)]
-    if {$account_manager_id ne ""} {
-	set am_name "[contact::name -party_id [lindex $account_manager_id 0]]"
+    set account_manager_ids [contacts::util::get_account_manager -organization_id $data(organization_id)]
+    if {$account_manager_ids ne ""} {
+
+	# We do have one or more account manager. Now check if the current user is one of them
+	if {[lsearch $account_manager_ids $user_id] > -1} {
+	    contact::employee::get -employee_id $user_id -array account_manager
+	    set am_name "$account_manager(first_names) $account_manager(last_name)"
+	    set data(am_name) $am_name
+	    set data(am_directphoneno) [ad_html_to_text -no_format $account_manager(directphoneno)]
+	    set am_directphoneno $data(am_directphoneno)
+	} else {
+	    # Someone else is sending the offer. We need to mark this in the name
+	    contact::employee::get -employee_id [lindex $account_manager_ids 0] -array account_manager
+	    set account_manager_name "$account_manager(first_names) $account_manager(last_name)"
+	    set data(am_name) $account_manager_name
+	    set data(am_directphoneno) [ad_html_to_text -no_format $account_manager(directphoneno)]
+	    set am_directphoneno $data(am_directphoneno)
+	    set am_name "[_ contacts.pp] [contact::name -party_id $user_id]<p>$account_manager_name"
+	}
     } else {
-	set am_name "[contact::name -party_id [parameter::get_from_package_key -package_key contacts -parameter DefaultOrganizationID]]"
+	set default_orga_id [parameter::get_from_package_key -package_key contacts -parameter DefaultOrganizationID]
+	set am_name "[contact::name -party_id $default_orga_id]"
+	set am_directphoneno [ams::value -object_id [content::item::get_best_revision -item_id $default_orga_id] -attribute_name directphoneno]
+	set data(am_name) "[contact::name -party_id $user_id]"
+	set data(am_directphoneno) [ad_html_to_text -no_format $am_directphoneno]
     }
 
     # parse invoice email text

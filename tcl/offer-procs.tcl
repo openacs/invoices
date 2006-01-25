@@ -222,11 +222,10 @@ ad_proc -public iv::offer::parse_data {
     }
     set document_type $type
 
-    set time_format "[lc_get -locale $locale d_fmt] [lc_get -locale $locale t_fmt]"
-    set data(finish_date) [lc_time_fmt $data(finish_date) $time_format]
-    set data(current_date) [lc_time_fmt $data(current_date) $time_format]
-    set data(creation_date) [lc_time_fmt $data(creation_date) $time_format]
-    set data(accepted_date) [lc_time_fmt $data(accepted_date) $time_format]
+    set data(finish_date) [lc_time_fmt $data(finish_date) "%x, %X"]
+    set data(current_date) [lc_time_fmt $data(current_date) "%x, %X"]
+    set data(creation_date) [lc_time_fmt $data(creation_date) "%x, %X"]
+    set data(accepted_date) [lc_time_fmt $data(accepted_date) "%x, %X"]
 
     if {$type == "offer"} {
 	set data(accepted_date) $data(current_date)
@@ -255,17 +254,26 @@ ad_proc -public iv::offer::parse_data {
 
 	# We do have one or more account manager. Now check if the current user is one of them
 	if {[lsearch $account_manager_ids $user_id] > -1} {
-	    set am_name "[contact::name -party_id $user_id]"
+	    contact::employee::get -employee_id $user_id -array account_manager
+	    set am_name "$account_manager(first_names) $account_manager(last_name)"
 	    set data(am_name) $am_name
+	    set data(am_directphoneno) [ad_html_to_text -no_format $account_manager(directphoneno)]
+	    set am_directphoneno $data(am_directphoneno)
 	} else {
 	    # Someone else is sending the offer. We need to mark this in the name
-	    set account_manager_name [contact::name -party_id [lindex $account_manager_ids 0]]
+	    contact::employee::get -employee_id [lindex $account_manager_ids 0] -array account_manager
+	    set account_manager_name "$account_manager(first_names) $account_manager(last_name)"
 	    set data(am_name) $account_manager_name
+	    set data(am_directphoneno) [ad_html_to_text -no_format $account_manager(directphoneno)]
+	    set am_directphoneno $data(am_directphoneno)
 	    set am_name "[_ contacts.pp] [contact::name -party_id $user_id]<p>$account_manager_name"
 	}
     } else {
-	set am_name "[contact::name -party_id [parameter::get_from_package_key -package_key contacts -parameter DefaultOrganizationID]]"
+	set default_orga_id [parameter::get_from_package_key -package_key contacts -parameter DefaultOrganizationID]
+	set am_name "[contact::name -party_id $default_orga_id]"
+	set am_directphoneno [ams::value -object_id [content::item::get_best_revision -item_id $default_orga_id] -attribute_name directphoneno]
 	set data(am_name) "[contact::name -party_id $user_id]"
+	set data(am_directphoneno) [ad_html_to_text -no_format $am_directphoneno]
     }
 
     # parse offer email text

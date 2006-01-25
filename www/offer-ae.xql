@@ -82,7 +82,7 @@
 <fullquery name="get_project">
       <querytext>
 
-	select r.title as project_name, r.item_id,
+	select r.title as project_name, r.item_id, p.project_code,
                to_char(p.planned_end_date,'YYYY-MM-DD HH24:MI:SS') as project_date_ansi
 	from cr_revisions r, cr_items i, pm_projects p
 	where i.item_id = :_project_id
@@ -106,7 +106,7 @@
     and r.revision_id = ofi.offer_item_id
     and oi.item_id = :offer_id
     and m.object_id = ofi.offer_item_id
-    order by ofi.sort_order
+    order by ofi.item_nr
 
       </querytext>
 </fullquery>

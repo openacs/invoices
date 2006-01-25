@@ -154,6 +154,7 @@ if {[exists_and_not_null _project_id]} {
 
     ad_form -extend -name iv_offer_form -form {
 	{project:text(inform),optional {label "[_ invoices.iv_offer_project]"} {value $project_name} {help_text "[_ invoices.iv_offer_project_help]"}}
+	{project_code:text(inform) {label "[_ project-manager.Project_code]"} {value $project_code} {help_text "[_ project-manager.project_code_help]"}}
 	{project_date:text(inform) {label "[_ invoices.iv_offer_project_date]"} {html {size 30}} {help_text "[_ invoices.iv_offer_project_date_help]"}}
 	{project_id:text(hidden) {value $_project_id}}
     }
@@ -609,7 +610,6 @@ ad_form -extend -name iv_offer_form -new_request {
 		    set item(title) "#invoices.iv_offer_item_title_cat_2# ($from_cat -> $to_cat)"
 		}
 	    }
-
 	    if {[empty_string_p $item(price)]} {
 		set item(sum) "0"
 	    } else {

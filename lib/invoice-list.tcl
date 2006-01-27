@@ -95,7 +95,7 @@ template::list::create \
 	    display_template {[_ invoices.iv_invoice_status_@iv_invoice.status@]}
 	}
         action {
-	    display_template {<if @iv_invoice.status@ eq new><a href="@iv_invoice.edit_link@">#invoices.Edit#</a>&nbsp;</if><else><if @invoice_cancel_p@ true><a href="@iv_invoice.cancel_link@">#invoices.Invoice_Cancel#</a>&nbsp;</if></else><if @iv_invoice.status@ ne billed and @iv_invoice.status@ ne paid><a href="@iv_invoice.delete_link@">#invoices.Delete#</a></if>}
+	    display_template {<if @iv_invoice.status@ eq new><a href="@iv_invoice.edit_link@">#invoices.Edit#</a>&nbsp;</if><else><if @invoice_cancel_p@ true><a href="@iv_invoice.cancel_link@">#invoices.Invoice_Cancel#</a>&nbsp;</if></else><if @iv_invoice.status@ ne billed and @iv_invoice.status@ ne paid><a href="@iv_invoice.delete_link@">#invoices.Delete#</a></if> <a href="@iv_invoice.preview_link@">#invoices.Preview#</a>}
         }
     } -actions $actions -sub_class narrow \
 	    -bulk_actions $bulk_actions \
@@ -153,7 +153,11 @@ template::list::create \
     -page_flush_p 1 \
     -page_query_name iv_invoice_paginated \
     -pass_properties {invoice_cancel_p} \
-    -filters {organization_id {}} \
+    -filters {
+	organization_id {
+	    where_clause {t.organization_id = :organization_id}
+	}
+    } \
     -formats {
 	normal {
 	    label "[_ invoices.Table]"
@@ -170,12 +174,13 @@ template::list::create \
 
 set contacts_p [apm_package_installed_p contacts]
 
-db_multirow -extend {creator_link edit_link cancel_link delete_link recipient} iv_invoice iv_invoice {} {
+db_multirow -extend {creator_link edit_link cancel_link delete_link preview_link recipient} iv_invoice iv_invoice {} {
     # Ugly hack. We should find out which contact package is linked
 
     set edit_link [export_vars -base "${base_url}invoice-ae" {invoice_id}]
     set cancel_link [export_vars -base "${base_url}invoice-cancellation" {organization_id {parent_id $invoice_rev_id}}]
     set delete_link [export_vars -base "${base_url}invoice-delete" {invoice_id}]
+    set preview_link [export_vars -base "${base_url}invoice-preview" {invoice_id}]
     if {[empty_string_p $total_amount]} {
 	set total_amount 0
     }

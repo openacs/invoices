@@ -14,6 +14,13 @@ ad_page_contract {
 }
 
 set user_id [auth::require_login]
+
+# If there is no organization_id require admin permission on invoices
+if {[string eq $organization_id ""]} {
+    set package_id [ad_conn package_id]
+    permission::require_permission -object_id $package_id -privilege "admin"
+}
+
 set page_title "[_ invoices.iv_invoice_2]"
 set context [list $page_title]
 

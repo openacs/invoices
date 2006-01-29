@@ -318,9 +318,6 @@ if {$mode == "display"} {
     ad_form -extend -name iv_invoice_form -form {
 	{send:text(submit) {label "[_ invoices.iv_invoice_send]"} {value t}}
     }
-    ad_form -extend -name iv_invoice_form -form {
-	{print:text(submit) {label "[_ invoices.iv_invoice_print]"} {value t}}
-    }
 }
 
 

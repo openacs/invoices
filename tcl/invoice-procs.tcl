@@ -206,6 +206,7 @@ ad_proc -public iv::invoice::parse_data {
     set data(contact_creation_date) [lc_time_fmt $data(creation_date) [lc_get -locale $contact_locale d_fmt]]
     set time_format [lc_get -locale $locale d_fmt]
     set data(creation_date) [lc_time_fmt $data(creation_date) $time_format]
+    set data(invoice_date) [lc_time_fmt $data(invoice_date) $time_format]
     set data(due_date) [lc_time_fmt $data(due_date) $time_format]
 
     set name [contact::name -party_id $data(recipient_id)]
@@ -269,6 +270,7 @@ ad_proc -public iv::invoice::parse_data {
 	set price_per_unit [lc_numeric [format "%.2f" $price_per_unit] "" $locale]
 	set item_units [lc_numeric [format "%.2f" $item_units] "" $locale]
 	set rebate [lc_numeric [format "%.1f" $rebate] "" $locale]
+	set last_modified [lc_time_fmt $last_modified $time_format]
 	set category [lang::util::localize [category::get_name $category_id] $locale]
     }
 

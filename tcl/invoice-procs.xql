@@ -67,7 +67,8 @@
 	       t.invoice_nr, t.total_amount, t.vat, t.vat_percent,
 	       o.creation_user, p.first_names, p.last_name, t.amount_sum,
 	       to_char(o.creation_date, 'YYYY-MM-DD HH24:MI:SS') as creation_date,
-	       to_char(t.due_date, 'YYYY-MM-DD HH24:MI:SS') as due_date,
+	       to_char(t.due_date, 'YYYY-MM-DD HH24:MI:SS') as invoice_date,
+	       to_char(t.due_date + cast((to_string(t.payment_days) || ' days' as interval), 'YYYY-MM-DD HH24:MI:SS') as due_date,
 	       t.payment_days, t.currency, t.organization_id, t.recipient_id,
 	       t.contact_id
 	from iv_invoices t, cr_revisions r, cr_items i, acs_objects o,
@@ -87,10 +88,10 @@
     select cr.title, cr.description, cr.item_id, ii.offer_item_id,
            ii.item_units, ii.price_per_unit, ii.item_nr,
            ii.rebate, ii.vat, m.category_id, ofi.file_count,
-           ofi.page_count, pr.title as project_title, p.project_code,
+           ofi.page_count, pr.title as project_title, p.project_code, p.last_modified,
            pi.item_id as project_id, o.credit_percent
     from cr_items ci, cr_revisions cr, iv_invoice_items ii, cr_revisions oor,
-         acs_data_links r, cr_items pi, cr_revisions pr, pm_projects p, iv_offers o,
+         acs_data_links r, cr_items pi, cr_revisions pr, pm_projectsx p, iv_offers o,
          iv_offer_items ofi
     left outer join category_object_map m on (m.object_id = ofi.offer_item_id)
     where ci.latest_revision = ii.invoice_id
@@ -103,7 +104,7 @@
     and pi.latest_revision = pr.revision_id
     and pr.revision_id = p.project_id
     and o.offer_id = ofi.offer_id
-    order by pr.title, ii.sort_order
+    order by pr.title, ofi.sort_order
 
       </querytext>
 </fullquery>

@@ -14,7 +14,13 @@ set language [lang::conn::language]
 db_1row currency {}
 array set container_objects [iv::util::get_default_objects -package_id $package_id]
 
-set actions [list "[_ invoices.iv_price_Edit]" [export_vars -base "${base_url}price-ae" {list_id organization_id}] "[_ invoices.iv_price_Edit]" "[_ invoices.iv_price_list_Edit]" [export_vars -base "${base_url}price-list-ae" {list_id organization_id}] "[_ invoices.iv_price_list_Edit]"]
+set sw_admin_p [acs_user::site_wide_admin_p]
+
+if {$sw_admin_p} {
+    set actions [list "[_ invoices.iv_price_Edit]" [export_vars -base "${base_url}price-ae" {list_id organization_id}] "[_ invoices.iv_price_Edit]" "[_ invoices.iv_price_list_Edit]" [export_vars -base "${base_url}price-list-ae" {list_id organization_id}] "[_ invoices.iv_price_list_Edit]"]
+} else {
+    set actions ""
+}
 
 if {![empty_string_p $return_url]} {
     lappend actions "[_ invoices.back]" $return_url "[_ invoices.back]"

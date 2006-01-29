@@ -68,7 +68,7 @@
 	       o.creation_user, p.first_names, p.last_name, t.amount_sum,
 	       to_char(o.creation_date, 'YYYY-MM-DD HH24:MI:SS') as creation_date,
 	       to_char(t.due_date, 'YYYY-MM-DD HH24:MI:SS') as invoice_date,
-	       to_char(t.due_date + cast((to_string(t.payment_days) || ' days' as interval), 'YYYY-MM-DD HH24:MI:SS') as due_date,
+	       to_char(t.due_date + cast(t.payment_days || ' days' as interval), 'YYYY-MM-DD HH24:MI:SS') as due_date,
 	       t.payment_days, t.currency, t.organization_id, t.recipient_id,
 	       t.contact_id
 	from iv_invoices t, cr_revisions r, cr_items i, acs_objects o,

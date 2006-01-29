@@ -118,7 +118,12 @@ template::list::create \
 	type multivar
 	values { {[_ invoices.Customer] { {groupby name } {orderby project_id,asc }}}}
     } -orderby {
-	default_value project_id
+	default_value name
+        name {
+	    label {[_ invoices.Customer]}
+	    orderby {name}
+	    default_direction asc
+        }
 	project_id {
 	    label {[_ invoices.iv_invoice_project_id]}
 	    orderby {r.item_id}

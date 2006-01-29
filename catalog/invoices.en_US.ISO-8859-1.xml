@@ -171,6 +171,7 @@
   <msg key="iv_invoice_pay">Pay invoices</msg>
   <msg key="iv_invoice_payment_days">Payment after .. days</msg>
   <msg key="iv_invoice_payment_days_help">Days until the recipient until should have paid.</msg>
+  <msg key="iv_invoice_print">Print</msg>
   <msg key="iv_invoice_project_descr">Description</msg>
   <msg key="iv_invoice_project_id">Project ID</msg>
   <msg key="iv_invoice_project_title">Title</msg>

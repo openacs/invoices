@@ -25,8 +25,7 @@ set invoice_folder_id [fs::get_folder -name "invoices_${root_folder_id}" -parent
 db_transaction {
     # move files to invoice_folder
     foreach one_file $file_id {
-	set file_item_id [content::revision::item_id -revision_id $one_file]
-	content::item::move -item_id $file_item_id -target_folder_id $invoice_folder_id
+	content::item::move -item_id $one_file -target_folder_id $invoice_folder_id
 	db_dml set_publish_status {}
 	db_dml set_context_id {}
 	application_data_link::new -this_object_id $invoice_id -target_object_id $one_file

@@ -111,6 +111,7 @@ if {[info exists send]} {
     ad_script_abort
 }
 
+
 set organization_name [organizations::name -organization_id $organization_id]
 
 # If the contacts package is installed we can get the incoice specialities.
@@ -316,6 +317,9 @@ if {!$_invoice_id} {
 if {$mode == "display"} {
     ad_form -extend -name iv_invoice_form -form {
 	{send:text(submit) {label "[_ invoices.iv_invoice_send]"} {value t}}
+    }
+    ad_form -extend -name iv_invoice_form -form {
+	{print:text(submit) {label "[_ invoices.iv_invoice_print]"} {value t}}
     }
 }
 

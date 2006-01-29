@@ -18,6 +18,12 @@ set user_id [auth::require_login]
 set page_title "[_ invoices.iv_invoice_send]"
 
 db_1row invoice_data {}
+
+# We are only getting the invoice_nr here.
+if {[string eq $invoice_nr ""]} {
+    set invoice_nr [db_nextval iv_invoice_seq]
+}
+
 set locale [lang::user::site_wide_locale -user_id $contact_id]
 
 set context [list [list [export_vars -base invoice-list {organization_id}] "[_ invoices.iv_invoice_2]"] [list [export_vars -base invoice-ae {invoice_id}] "[_ invoices.iv_invoice_View]"] $page_title]
@@ -99,14 +105,42 @@ foreach document_file $documents type $document_types {
 	# content::item::set_live_revision -revision_id $file_id
 
 	lappend file_ids $file_id
-	db_dml set_publish_status {}
+#	db_dml set_publish_status {}
     }
 }
 
 if {[llength $file_ids] > 0} {
-    set return_url [export_vars -base invoice-pdf {invoice_id {file_id:multiple $file_ids}}]
-} else {
-    set return_url [export_vars -base invoice-list {organization_id}]
+
+    # an invoice has been generated.
+    # Store this fact as "Billed" in the system.
+
+    set project_id [lindex [application_data_link::get_linked -from_object_id $invoice_id -to_object_type content_item] 0]
+    if {![empty_string_p $project_id]} {
+	acs_object::get -object_id $project_id -array project
+	set pm_url [lindex [site_node::get_url_from_object_id -object_id $project(package_id)] 0]
+	set return_url [export_vars -base "${pm_url}one" {{project_item_id $project_id}}]
+    } else {
+	set return_url [export_vars -base invoice-list {organization_id}]
+    }
+    
+    set root_folder_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type content_folder] 0]
+    set invoice_folder_id [fs::get_folder -name "invoices_${root_folder_id}" -parent_id $root_folder_id]
+    db_transaction {
+	# move files to invoice_folder
+	foreach one_file $file_id {
+	    content::item::move -item_id $one_file -target_folder_id $invoice_folder_id
+	    application_data_link::new -this_object_id $invoice_id -target_object_id $one_file
+	    db_dml set_publish_status {}
+	    db_dml set_context_id {}
+	}
+	db_dml set_invoice_nr {}
+	if {$status != "paid"} {
+	    iv::invoice::set_status -invoice_id $invoice_id -status "billed"
+	}
+    }
+    
 }
+ 
+set return_url [export_vars -base invoice-list {organization_id}]
 
 ad_return_template

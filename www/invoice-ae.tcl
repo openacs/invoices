@@ -165,7 +165,7 @@ if {![empty_string_p [category_tree::get_mapped_trees $container_objects(invoice
 }
 
 ad_form -extend -name iv_invoice_form -form {
-    {invoice_nr:text {label "[_ invoices.iv_invoice_invoice_nr]"} {html {size 80 maxlength 200}} {help_text "[_ invoices.iv_invoice_invoice_nr_help]"}}
+    {invoice_nr:text(inform) {label "[_ invoices.iv_invoice_invoice_nr]"} {help_text "[_ invoices.iv_invoice_invoice_nr_help]"}}
 }
 
 if {$has_submit} {
@@ -325,7 +325,6 @@ ad_form -extend -name iv_invoice_form -new_request {
     set description [lang::util::localize [join [db_list project_titles {}] ",\n"]]
     set due_date [db_string today {}]
     set title "[_ invoices.iv_invoice_1] $organization_name $due_date"
-    set invoice_nr [db_nextval iv_invoice_seq]
 
     db_1row offer_data {}
     set vat_percent [format "%.1f" $vat_percent]

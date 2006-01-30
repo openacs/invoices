@@ -229,13 +229,8 @@ ad_proc -public iv::invoice::parse_data {
     if {[organization::organization_p -party_id $data(recipient_id)]} {
 	# recipient is organization
 	set rec_organization_id $data(recipient_id)
-	set data(rec_name) [ams::value -object_id $data(recipient_id) -attribute_name name]
-	set data(rec_company_name_ext) [ams::value -object_id $data(recipient_id) -attribute_name company_name_ext]
-	set data(rec_salutation) [contact::salutation -party_id $data(recipient_id) -type salutation]
-	set data(rec_salutation_letter) ""
-
-	contacts::postal_address::get -attribute_name "company_address" -party_id $data(recipient_id) -array address_array
-	set attribute_list {address town_line country country_code}
+	contact::employee::get -employee_id $data(recipient_id) -array recipient_data
+	set attribute_list {name company_name_ext address town_line country country_code salutation salutation_letter}
     } else {
 	# recipient is person
 	set rec_organization_id [contact::util::get_employee_organization -employee_id $data(recipient_id)]
@@ -256,7 +251,7 @@ ad_proc -public iv::invoice::parse_data {
 
     # get the invoice item data
     set sum 0.
-    db_multirow -local -extend {amount_sum amount_total amount_diff category} items invoice_items {} {
+    db_multirow -local -extend {amount_sum amount_total amount_diff contact_name category} items invoice_items {} {
 	if {[empty_string_p $credit_percent]} {
 	    set credit_percent 0
 	}
@@ -272,6 +267,7 @@ ad_proc -public iv::invoice::parse_data {
 	set rebate [lc_numeric [format "%.1f" $rebate] "" $locale]
 	set last_modified [lc_time_fmt $last_modified $time_format]
 	set category [lang::util::localize [category::get_name $category_id] $locale]
+	set contact_name [contact::name -party_id $contact_id]
     }
 
     # It is possible that you have an invoice without items, e.g. a credit invoice

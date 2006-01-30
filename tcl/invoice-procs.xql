@@ -88,7 +88,7 @@
     select cr.title, cr.description, cr.item_id, ii.offer_item_id,
            ii.item_units, ii.price_per_unit, ii.item_nr,
            ii.rebate, ii.vat, m.category_id, ofi.file_count,
-           ofi.page_count, pr.title as project_title, p.project_code, p.last_modified,
+           ofi.page_count, pr.title as project_title, p.project_code, p.last_modified, p.contact_id,
            pi.item_id as project_id, o.credit_percent
     from cr_items ci, cr_revisions cr, iv_invoice_items ii, cr_revisions oor,
          acs_data_links r, cr_items pi, cr_revisions pr, pm_projectsx p, iv_offers o,

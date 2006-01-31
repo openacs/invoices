@@ -147,9 +147,11 @@ if {[exists_and_not_null parent_invoice_id]} {
     # The other query would show all of them.
     set contact_options [db_list_of_lists contacts {}]
     set recipient_options [db_list_of_lists recipients {}]
-    set rec_organization_id [contact::util::get_employee_organization -employee_id [lindex [lindex $recipient_options 0] 1]]
-    lappend recipient_options [list [organizations::name -organization_id $rec_organization_id] $rec_organization_id]
 }
+
+# Get the recipient_organization_id
+set rec_organization_id [contact::util::get_employee_organization -employee_id [lindex [lindex $recipient_options 0] 1]]
+lappend recipient_options [list [organizations::name -organization_id $rec_organization_id] $rec_organization_id]
 
 
 ad_form -name iv_invoice_form -action invoice-ae -mode $mode -has_submit $has_submit -has_edit $has_edit -export {organization_id project_id} -form {
@@ -366,7 +368,7 @@ ad_form -extend -name iv_invoice_form -new_request {
 				    -contact_id $contact_id \
 				    -recipient_id $recipient_id \
 				    -invoice_nr $invoice_nr \
-				    -organization_id $organization_id \
+				    -organization_id $rec_organization_id \
 				    -total_amount $total_amount \
 				    -amount_sum $amount_sum \
 				    -currency $currency \
@@ -428,7 +430,7 @@ ad_form -extend -name iv_invoice_form -new_request {
 				    -contact_id $contact_id \
 				    -recipient_id $recipient_id \
 				    -invoice_nr $invoice_nr \
-				    -organization_id $organization_id \
+				    -organization_id $rec_organization_id \
 				    -total_amount $total_amount \
 				    -amount_sum $amount_sum \
 				    -currency $currency \

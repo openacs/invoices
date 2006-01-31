@@ -208,11 +208,11 @@ ad_proc -public iv::invoice::parse_data {
     set data(creation_date) [lc_time_fmt $data(creation_date) $time_format]
     set data(invoice_date) [lc_time_fmt $data(invoice_date) $time_format]
     set data(due_date) [lc_time_fmt $data(due_date) $time_format]
-
     set name [contact::name -party_id $data(recipient_id)]
     set data(recipient_name) $name
     set orga_revision_id [content::item::get_best_revision -item_id $data(organization_id)]
     set contact_client_id [ams::value -attribute_name "client_id" -object_id $orga_revision_id -locale $contact_locale]
+    set data(vat_number) [ams::value -attribute_name "VAT_ident_number" -object_id $orga_revision_id -locale $contact_locale]
     set rec_revision_id [content::item::get_best_revision -item_id $data(recipient_id)]
 
     # invoice contact data

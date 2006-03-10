@@ -59,17 +59,26 @@ db_transaction {
 
 	foreach assignee_id $assignee_ids {
 	    # Create a task for the saved offer
+
+	    # the apm_package_id_from_key for the package_id is not a permanent fix
+            # and will break this feature on servers with multiple contacts instances
+            # we need some way of figuring out what what package_id of a contacts
+            # instance this task should be assigned to for this invoices instance.
+
 	    set task_id [tasks::task::new \
 			     -title "Nachfassen Angebot" \
-			     -description "Angebot Nr. <a href=\"[export_vars -base "[ad_url][ad_conn package_url]offer-ae" -url {offer_id {mode display}}]\">$offer_nr" \
-			     -mime_type "text/plain" \
-			     -party_id $contact_id \
-			     -due_date ${due_date} \
-			     -object_id $offer_id \
+			     -description "Angebot Nr. <a href=\"[export_vars -base "[ad_url][ad_conn package_url]offer-ae" -url {offer_id {mode display}}]\">$offer_nr</a>" \
 			     -mime_type "text/html" \
+			     -object_id $contact_id \
+			     -due_date ${due_date} \
 			     -priority "1" \
-			     -assignee_id $assignee_id
-			]
+			     -assignee_id $assignee_id \
+                             -package_id [apm_package_id_from_key contacts] \
+			    ]
+
+	    # tasks doesn't do anything with this data link but its probably worth
+            # keeping just in case it does something with it in the future.
+	    application_data_link::new -this_object_id $offer_id -target_object_id $task_id
 	}
     }
 }

@@ -22,6 +22,7 @@ db_1row invoice_data {}
 # We are only getting the invoice_nr here.
 if {[string eq $invoice_nr ""]} {
     set invoice_nr [db_nextval iv_invoice_seq]
+    db_dml set_invoice_nr {}
 }
 
 set locale [lang::user::site_wide_locale -user_id $contact_id]
@@ -133,7 +134,6 @@ if {[llength $file_ids] > 0} {
 	    db_dml set_publish_status {}
 	    db_dml set_context_id {}
 	}
-	db_dml set_invoice_nr {}
 	if {$status != "paid"} {
 	    iv::invoice::set_status -invoice_id $invoice_id -status "billed"
 	}

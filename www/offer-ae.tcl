@@ -68,7 +68,7 @@ if {![info exists offer_id] || $__new_p} {
     db_1row get_organization_and_currencies {}
     set files {}
     db_foreach get_files {} {
-	lappend files [list "<a href=\"$file_name?item_id=$file_id\">$file_name</a> ($file_length bytes)" $file_id]
+	lappend files [list "<a href=\"download/$file_name?item_id=$file_id\">$file_name</a> ($file_length bytes)" $file_id]
     }
 
     set cur_vat_percent [format "%.1f" $cur_vat_percent]
@@ -175,14 +175,48 @@ if {$has_submit} {
     ad_form -extend -name iv_offer_form -form {
 	{creator_name:text,optional {label "[_ invoices.iv_offer_creation_user]"} {html {size 80 maxlength 200}} {help_text "[_ invoices.iv_offer_creation_user_help]"}}
 	{creation_date:text,optional {label "[_ invoices.iv_offer_creation_date]"} {html {size 12 maxlength 10}} {help_text "[_ invoices.iv_offer_creation_date_help]"}}
-	{finish_date:text,optional {label "[_ invoices.iv_offer_finish_date]"} {html {size 12 maxlength 10}} {help_text "[_ invoices.iv_offer_finish_date_help]"}}
-	{date_comment:text,optional {label "[_ invoices.iv_offer_date_comment]"} {html {size 80 maxlength 1000}} {help_text "[_ invoices.iv_offer_date_comment_help]"}}
     }
 
     if {![empty_string_p $accepted_date]} {
 	ad_form -extend -name iv_offer_form -form {
 	    {accepted_date:text,optional {label "[_ invoices.iv_offer_accepted_date]"} {html {size 12 maxlength 10}} {help_text "[_ invoices.iv_offer_accepted_date_help]"}}
 	}
+    }
+}
+
+if {[exists_and_not_null _project_id]} {
+    # display timings of all subprojects
+
+    set subprojects [db_list_of_lists all_subprojects {
+	select p.title, to_char(p.planned_end_date,'YYYY-MM-DD HH24:MI:SS')
+	from pm_projectsx p, cr_items i
+	where p.parent_id = :item_id
+	and p.project_id = i.latest_revision
+    }]
+
+    # set subprojects ""
+    
+    set i 0
+    foreach one_subproject $subprojects {
+	incr i
+	util_unlist $one_subproject subproject_title subproject_finish_date
+	set subproject_finish_date [lc_time_fmt $subproject_finish_date "%x %X"]
+    
+	ad_form -extend -name iv_offer_form -form \
+	    [list [list "sub_finish_date.${i}:text(inform),optional" \
+		       [list label "[_ invoices.iv_offer_project_date] $subproject_title"] \
+		       [list html [list size 12 maxlength 10]] \
+		       [list value $subproject_finish_date] \
+		       [list help_text "[_ invoices.iv_offer_subproject_finish_date_help]"] ] ]
+    }
+}
+
+if {$has_submit} {
+    # we are just displaying an offer
+
+    ad_form -extend -name iv_offer_form -form {
+	{finish_date:text,optional {label "[_ invoices.iv_offer_finish_date]"} {html {size 12 maxlength 10}} {help_text "[_ invoices.iv_offer_finish_date_help]"}}
+	{date_comment:text,optional {label "[_ invoices.iv_offer_date_comment]"} {html {size 80 maxlength 1000}} {help_text "[_ invoices.iv_offer_date_comment_help]"}}
     }
 
 } else {
@@ -196,13 +230,13 @@ if {$has_submit} {
 }
 
 ad_form -extend -name iv_offer_form -form {
-    {payment_days:integer,optional {label "[_ invoices.iv_offer_payment_days]"} {html {size 5 maxlength 5}} {help_text "[_ invoices.iv_offer_payment_days_help]"}}
+    {payment_days:integer,optional {mode display} {label "[_ invoices.iv_offer_payment_days]"} {html {size 5 maxlength 5}} {help_text "[_ invoices.iv_offer_payment_days_help]"}}
 }
 
 if {!$has_submit} {
     # we are adding/editing data
     ad_form -extend -name iv_offer_form -form {
-	{vat_percent:float {label "[_ invoices.iv_offer_vat_percent]"} {html {size 5 maxlength 10}} {help_text "[_ invoices.iv_offer_vat_percent_help]"} {after_html {%}}}
+	{vat_percent:float {mode display} {label "[_ invoices.iv_offer_vat_percent]"} {html {size 5 maxlength 10}} {help_text "[_ invoices.iv_offer_vat_percent_help]"} {after_html {%}}}
 	{currency:text(select) {mode display} {label "[_ invoices.iv_offer_currency]"} {options $currency_options} {help_text "[_ invoices.iv_offer_currency_help]"}}
     }
 
@@ -255,6 +289,12 @@ if {$_offer_id} {
 
     db_foreach offer_items {} -column_array item {
 	incr i
+	if {[empty_string_p $item(price_per_unit)]} {
+	    set item(price_per_unit) 0
+	}
+	if {[empty_string_p $item(item_units)]} {
+	    set item(item_units) 0
+	}
 	set item(price_per_unit) [format "%.2f" $item(price_per_unit)]
 	set item(amount_sum) [format "%.2f" [expr $item(item_units) * $item(price_per_unit)]]
 	set item(amount_total) [format "%.2f" [expr (1. - ($item(rebate) / 100.)) * $item(amount_sum)]]
@@ -342,6 +382,7 @@ if {$_offer_id} {
 		[list [list "item_category.${i}:text(category)" \
 			   [list label "[_ invoices.iv_offer_item_category]"] \
 			   [list value [list $item(offer_item_id) $container_objects(offer_item_id)]] \
+			   [list html [list onChange setItemPrice(${i})]] \
 			   [list help_text "[_ invoices.iv_offer_item_category_help]"] \
 			   [list section "[_ invoices.iv_offer_item_1] $i"] ] ]
 	    ad_form -extend -name iv_offer_form -form \
@@ -361,9 +402,9 @@ if {$_offer_id} {
 			   [list after_html $currency] \
 			   [list section "[_ invoices.iv_offer_item_1] $i"] ] ]
 	    ad_form -extend -name iv_offer_form -form \
-		[list [list "amount_sum.${i}:float(inform)" \
+		[list [list "amount_sum.${i}:float,optional" \
 			   [list label "[_ invoices.iv_offer_item_amount]"] \
-			   [list html [list size 10 maxlength 10]] \
+			   [list html [list size 10 maxlength 10 disabled t]] \
 			   [list value $item(amount_sum)] \
 			   [list help_text "[_ invoices.iv_offer_item_amount_help]"] \
 			   [list after_html $currency] \
@@ -525,12 +566,12 @@ ad_form -extend -name iv_offer_form -new_request {
     set finish_time ""
     if {[exists_and_not_null project_title]} {
 	set title "[_ invoices.iv_offer_1] $project_title"
+	set offer_nr $project_title
     } else {
 	set title "[_ invoices.iv_offer_1] $organization_name $today"
     }
     # We do not want a seperate offer_number but use the project title
     # set offer_nr [db_nextval iv_offer_seq]
-    set offer_nr $project_title
     set amount_sum "0.00"
     set amount_total "0.00"
     set credit_sum "0.00"
@@ -610,10 +651,18 @@ ad_form -extend -name iv_offer_form -new_request {
 		    set item(title) "#invoices.iv_offer_item_title_cat_2# ($from_cat -> $to_cat)"
 		}
 	    }
+	    if {[empty_string_p $item(title)]} {
+		set item(title) [category::get_name $item(category)]
+	    }
+
 	    if {[empty_string_p $item(price)]} {
+		set item(price) 0
 		set item(sum) "0"
 	    } else {
 		set item(sum) [expr $item(units) * $item(price)]
+	    }
+	    if {[empty_string_p $item(units)]} {
+		set item(units) 0
 	    }
 	    set item(total) [expr (1. - ($item(rebate)/100.)) * $item(sum)]
 	    set item(vat) [expr $vat_percent * $item(total) / 100.]
@@ -795,6 +844,7 @@ ad_form -extend -name iv_offer_form -new_request {
 	}
     }
 
+    set return_url ""
     if {[empty_string_p $return_url]} {
 	ad_returnredirect [export_vars -base offer-ae {offer_id {mode display}}]
 	ad_script_abort

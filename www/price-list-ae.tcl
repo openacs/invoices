@@ -7,7 +7,7 @@ ad_page_contract {
     list_id:integer,optional
     {__new_p 0}
     {mode edit}
-    {organization_id ""}
+    {organization_id:multiple ""}
 } -properties {
     context:onevalue
     page_title:onevalue
@@ -57,7 +57,7 @@ if {[string eq "" $organization_id]} {
 	{organization_id:text(multiselect),optional,multiple {label "[_ invoices.iv_price_list_organization]"} {options $organization_options} {help_text "[_ invoices.iv_price_list_organization_help]"} {values {$organization_values}}}
     }
 } else {
-    set organization_name [contact::name -party_id $organization_id]
+    set organization_name [contact::name -party_id [lindex $organization_id 0]]
     ad_form -extend -name iv_price_list_form -form {
 	{organization_name:text(inform) {label "[_ invoices.iv_price_list_organization]"} {value $organization_name } {help_text "[_ invoices.iv_price_list_organization_help]"} }
 	{organization_id:text(hidden)}
@@ -108,7 +108,20 @@ ad_form -extend -name iv_price_list_form -form {
 
 	application_data_link::delete_links -object_id $new_list_id
 	foreach o_id $organization_id {
-	    set package_id [ad_conn package_id]
+	    # delete old link from organization to price list
+	    foreach old_list_id [application_data_link::get_linked_content -from_object_id $o_id -to_content_type iv_price_list] {
+		db_dml delete_forward_link {
+		    delete from acs_data_links
+		    where object_id_one = :o_id
+		    and object_id_two = :old_list_id
+		}
+		db_dml delete_backward_link {
+		    delete from acs_data_links
+		    where object_id_one = :old_list_id
+		    and object_id_two = :o_id
+		}
+	    }
+
 	    application_data_link::new -this_object_id $new_list_id -target_object_id $o_id
 	}
     }

@@ -11,6 +11,7 @@
 		organization_id="@organization_id@" 
 		row_list="@row_list@"
 		orderby="@orderby@" 
+		page="@page@" 
 		format="@format@" 
 		page_size="@page_size@" />
         </td>

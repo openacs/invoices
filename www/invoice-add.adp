@@ -4,7 +4,7 @@
 
 <include src="/packages/invoices/lib/projects-billable-portlet"
 	organization_id="@organization_id@" 
-	elements="checkbox project_id title description amount_open count_total count_billed creation_date" 
+	elements="recipient title description amount_open count_total count_billed creation_date" 
 	package_id=""
 	base_url=""
 	format="@format@" 

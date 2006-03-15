@@ -8,6 +8,7 @@ ad_page_contract {
     {organization_id:integer,optional ""}
     {project_id:multiple,optional ""}
     {offer_item_ids:array,optional}
+    {return_url:optional ""}
     {__new_p 0}
     {mode edit}
     {send:optional}
@@ -136,8 +137,12 @@ set currency_options [db_list_of_lists currencies {}]
 if {[exists_and_not_null parent_invoice_id]} {
     # cancellation: get recipients from parent invoice
     set contact_options [db_list_of_lists cancellation_contacts {}]
-    set recipient_options [db_list_of_lists cancellation_recipients {}]
-} elseif {$cur_total_amount < 0} {
+    set recipient_options {}
+    db_foreach cancellation_recipients {} {
+	lappend recipient_options [list [contact::name -party_id $rec_id -reverse_order] $rec_id]
+    }
+    set recipient_options [lsort -dictionary $recipient_options]
+} elseif {$cur_total_amount < 0 || [empty_string_p $project_id]} {
     # credit: get recipients from organization
     set recipient_options [contact::util::get_employees_list_of_lists -organization_id $organization_id]
     set contact_options $recipient_options
@@ -146,15 +151,19 @@ if {[exists_and_not_null parent_invoice_id]} {
     # We only want to offer invoice recipients that have actually been assigned in the project
     # The other query would show all of them.
     set contact_options [db_list_of_lists contacts {}]
-    set recipient_options [db_list_of_lists recipients {}]
+    set recipient_options {}
+    db_foreach recipients {} {
+	lappend recipient_options [list [contact::name -party_id $rec_id -reverse_order] $rec_id]
+    }
+    set recipient_options [lsort -dictionary $recipient_options]
 }
 
 # Get the recipient_organization_id
-set rec_organization_id [contact::util::get_employee_organization -employee_id [lindex [lindex $recipient_options 0] 1]]
-lappend recipient_options [list [organizations::name -organization_id $rec_organization_id] $rec_organization_id]
+# set rec_organization_id [contact::util::get_employee_organization -employee_id [lindex [lindex $recipient_options 0] 1]]
+# lappend recipient_options [list [organizations::name -organization_id $rec_organization_id] $rec_organization_id]
 
 
-ad_form -name iv_invoice_form -action invoice-ae -mode $mode -has_submit $has_submit -has_edit $has_edit -export {organization_id project_id} -form {
+ad_form -name iv_invoice_form -action invoice-ae -mode $mode -has_submit $has_submit -has_edit $has_edit -export {organization_id project_id return_url} -form {
     {invoice_id:key}
     {organization_name:text(inform) {label "[_ invoices.iv_invoice_organization]"} {value $organization_name} {help_text "[_ invoices.iv_invoice_organization_help]"}}
     {invoice_specialities:text(inform) {label "[_ invoices.iv_invoice_specialities]"} {value $invoice_specialities} {help_text "[_ invoices.iv_invoice_specialities_help]"}}
@@ -170,6 +179,28 @@ if {![empty_string_p [category_tree::get_mapped_trees $container_objects(invoice
 
 ad_form -extend -name iv_invoice_form -form {
     {invoice_nr:text(inform) {label "[_ invoices.iv_invoice_invoice_nr]"} {help_text "[_ invoices.iv_invoice_invoice_nr_help]"}}
+}
+
+# display link to cancelled invoice
+if {[exists_and_not_null parent_invoice_id]} {
+    db_1row check_cancelled_invoice {}
+    set cancel_link [export_vars -base invoice-ae {{invoice_id $cancel_id} {mode display}}]
+    set cancelled_invoice "<a href=\"$cancel_link\">$cancel_title</a>"
+
+    ad_form -extend -name iv_invoice_form -form {
+	{cancelled_invoice:text(inform) {label "[_ invoices.iv_invoice_cancelled_invoice]"} {help_text "[_ invoices.iv_invoice_cancelled_help]"}}
+    }
+}
+
+# display link to cancellation
+if {[exists_and_not_null invoice_id] && [db_0or1row check_cancellation {}]} {
+
+    set cancel_link [export_vars -base invoice-ae {{invoice_id $cancel_id} {mode display}}]
+    set cancellation "<a href=\"$cancel_link\">$cancel_title</a>"
+
+    ad_form -extend -name iv_invoice_form -form {
+	{cancellation:text(inform) {label "[_ invoices.iv_invoice_cancellation]"} {help_text "[_ invoices.iv_invoice_cancellation_help]"}}
+    }
 }
 
 if {$has_submit} {
@@ -265,7 +296,7 @@ if {!$_invoice_id} {
 			   [list label "$offer(item_nr), $offer(title)"] \
 			   [list options [list [list "$offer_name" t]]] \
 			   [list values [list t]] \
-			   [list section "$offer(project_id) $offer(project_title)"] ] ]
+			   [list section "[_ invoices.iv_invoice_project_title] $offer(project_title)"] ] ]
 	}
     }
 } else {
@@ -306,14 +337,14 @@ if {!$_invoice_id} {
 			   [list label "$offer(item_nr), $offer(title)"] \
 			   [list options [list [list "$offer_name" t]]] \
 			   [list values [list t]] \
-			   [list section "$offer(project_id) $offer(project_title)"] ] ]
+			   [list section "[_ invoices.iv_invoice_project_title] $offer(project_title)"] ] ]
 	} else {
 	    # display: no checkboxes
 	    ad_form -extend -name iv_invoice_form -form \
 		[list [list "offer_item_ids.${offer(iv_item_id)}:text(inform)" \
 			   [list label "$offer(title), $offer(item_nr)"] \
 			   [list value "$offer_name"] \
-			   [list section "$offer(project_id) $offer(project_title)"] ] ]
+			   [list section "[_ invoices.iv_invoice_project_title] $offer(project_title)"] ] ]
 	}
     }
 }
@@ -360,6 +391,13 @@ ad_form -extend -name iv_invoice_form -new_request {
     }
     set total_amount [format "%.2f" $total_amount]
     set vat [format "%.2f" [expr $total_amount * $vat_percent / 100.]]
+
+    if {[person::person_p -party_id $recipient_id]} {
+	set rec_organization_id [contact::util::get_employee_organization -employee_id $recipient_id]
+    } else {
+	set rec_organization_id $recipient_id
+    }
+
 } -new_data {
     db_transaction {
 	set new_invoice_rev_id [iv::invoice::new  \
@@ -511,7 +549,11 @@ ad_form -extend -name iv_invoice_form -new_request {
 	}
     }
 
-    ad_returnredirect "/contacts/$organization_id/"
+    if {[empty_string_p $return_url]} {
+	ad_returnredirect "/contacts/$organization_id/"
+    } else {
+	ad_returnredirect $return_url
+    }
     ad_script_abort
 }
 

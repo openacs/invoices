@@ -14,6 +14,8 @@ if {![info exists package_id]} {
 
 if {![info exists base_url]} {
     set base_url [apm_package_url_from_id $package_id]
+} else {
+    set package_id [site_node::get_object_id -node_id [site_node::get_node_id -url $base_url]]
 }
 
 
@@ -32,8 +34,7 @@ foreach optional_unset {organization_id} {
 }
 
 set user_id [ad_conn user_id]
-set date_format [lc_get formbuilder_date_format]
-set timestamp_format "$date_format [lc_get formbuilder_time_format]"
+set timestamp_format "YYYY-MM-DD HH24:MI:SS"
 set bulk_actions [list "[_ invoices.iv_invoice_send]" "${base_url}invoices-view" "[_ invoices.iv_invoice_send]" "[_ invoices.iv_invoice_pay]" "${base_url}invoice-pay" "[_ invoices.iv_invoice_pay]"]
 set invoice_cancel_p [permission::permission_p -party_id $user_id -object_id $package_id -privilege invoice_cancel]
 set return_url [ad_return_url]
@@ -43,10 +44,14 @@ if { [info exists organization_id] } {
     set dotlrn_club_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type "dotlrn_club"] 0]
     set pm_base_url [apm_package_url_from_id [dotlrn_community::get_package_id_from_package_key -package_key "project-manager" -community_id $dotlrn_club_id]]
     if {$invoice_cancel_p} {
-	set actions [list "[_ invoices.iv_invoice_New]" [export_vars -base invoice-add {organization_id}] "[_ invoices.iv_invoice_New2]" "[_ invoices.iv_invoice_credit_New]" [export_vars -base invoice-credit {organization_id}] "[_ invoices.iv_invoice_credit_New2]" "[_ invoices.iv_offer_2]" [export_vars -base offer-list {organization_id}] "[_ invoices.iv_offer_2]" "[_ invoices.projects]" $pm_base_url "[_ invoices.projects]" "[_ invoices.iv_reports]" [export_vars -base invoice-reports {organization_id}]]
+	set actions [list "[_ invoices.iv_invoice_New]" [export_vars -base invoice-add {organization_id}] "[_ invoices.iv_invoice_New2]" "[_ invoices.iv_invoice_credit_New]" [export_vars -base invoice-credit {organization_id}] "[_ invoices.iv_invoice_credit_New2]" "[_ invoices.iv_offer_2]" [export_vars -base offer-list {organization_id}] "[_ invoices.iv_offer_2]" "[_ invoices.projects]" $pm_base_url "[_ invoices.projects]" "[_ invoices.iv_reports]" [export_vars -base invoice-reports {organization_id}] "[_ invoices.iv_reports]"]
     } else {
 	set actions [list "[_ invoices.iv_invoice_New]" [export_vars -base invoice-add {organization_id}] "[_ invoices.iv_invoice_New2]" "[_ invoices.iv_offer_2]" [export_vars -base offer-list {organization_id}] "[_ invoices.iv_offer_2]" "[_ invoices.projects]" $pm_base_url "[_ invoices.projects]" "[_ invoices.iv_reports]" [export_vars -base invoice-reports {organization_id}]]
     }
+}
+
+if {$invoice_cancel_p} {
+    lappend actions "[_ invoices.iv_journal_check]" "${base_url}journal-check" "[_ invoices.iv_journal_check]"
 }
 
 # If the sum was paid, the total_amount should appear green.
@@ -63,7 +68,7 @@ template::list::create \
 	}
         title {
 	    label {[_ invoices.iv_invoice_1]}
-	    link_url_eval {[export_vars -base "invoice-ae" {invoice_id {mode display}}]}
+	    display_template {<a href="@iv_invoice.display_link@">@iv_invoice.title@</if>}
         }
         description {
 	    label {[_ invoices.iv_invoice_Description]}
@@ -157,6 +162,7 @@ template::list::create \
 	organization_id {
 	    where_clause {t.organization_id = :organization_id}
 	}
+	page_num {}
     } \
     -formats {
 	normal {
@@ -172,13 +178,19 @@ template::list::create \
 	}
     }
 
+set time_format "[lc_get d_fmt] %X"
+set date_format [lc_get d_fmt]
 set contacts_p [apm_package_installed_p contacts]
 
-db_multirow -extend {creator_link edit_link cancel_link delete_link preview_link recipient} iv_invoice iv_invoice {} {
+db_multirow -extend {creator_link edit_link display_link cancel_link delete_link preview_link recipient} iv_invoice iv_invoice {} {
     # Ugly hack. We should find out which contact package is linked
 
+    set creation_date [lc_time_fmt $creation_date $time_format]
+    set due_date [lc_time_fmt $due_date $date_format]
+
+    set display_link [export_vars -base "${base_url}invoice-ae" {invoice_id {mode display}}]
     set edit_link [export_vars -base "${base_url}invoice-ae" {invoice_id}]
-    set cancel_link [export_vars -base "${base_url}invoice-cancellation" {organization_id {parent_id $invoice_rev_id}}]
+    set cancel_link [export_vars -base "${base_url}invoice-cancellation" {{organization_id $orga_id} {parent_id $invoice_rev_id}}]
     set delete_link [export_vars -base "${base_url}invoice-delete" {invoice_id}]
     set preview_link [export_vars -base "${base_url}invoice-preview" {invoice_id}]
     if {[empty_string_p $total_amount]} {

@@ -6,6 +6,7 @@ ad_page_contract {
 } {
     {format:optional "normal"}
     {orderby:optional ""}
+    {page:optional 1}
     {page_size:optional 25}
     {organization_id ""}
 } -properties {
@@ -24,6 +25,6 @@ if {[string eq $organization_id ""]} {
 set page_title "[_ invoices.iv_invoice_2]"
 set context [list $page_title]
 
-set row_list {checkbox {} invoice_nr {} title {} description {} recipient {} total_amount {} creation_user {} creation_date {} due_date {} action {}}
+set row_list {checkbox {} invoice_nr {} title {} description {} recipient {} total_amount {} creation_date {} due_date {} action {}}
 
 ad_return_template

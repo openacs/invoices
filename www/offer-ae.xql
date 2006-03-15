@@ -43,9 +43,17 @@
       <querytext>
 
 	    select count(*) as invoice_count
-	    from iv_invoice_items ii, iv_offer_items oi
+	    from iv_invoice_items ii, iv_offer_items oi, iv_invoices i, cr_items cri
 	    where ii.offer_item_id = oi.offer_item_id
 	    and oi.offer_id = :offer_rev_id
+	    and i.invoice_id = ii.invoice_id
+	    and i.cancelled_p = 'f'
+	    and cri.latest_revision = i.invoice_id
+	    and not exists (select 1
+	                    from iv_invoices ci, cr_items cri
+	                    where ci.parent_invoice_id = i.invoice_id
+	                    and i.cancelled_p = 't'
+	                    and cri.latest_revision = ci.invoice_id)
 
       </querytext>
 </fullquery>
@@ -137,7 +145,7 @@
 	where r.revision_id = t.offer_id
 	and i.latest_revision = r.revision_id
 	and i.item_id = :offer_id
-	and o.object_id = t.offer_id
+	and o.object_id = i.item_id
 	and p.person_id = o.creation_user
 
       </querytext>

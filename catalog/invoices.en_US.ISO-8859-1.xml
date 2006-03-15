@@ -29,6 +29,7 @@
   <msg key="Contact">Contact</msg>
   <msg key="continue_with_accept">Continue with Offer Acceptance</msg>
   <msg key="continue_with_delete">Continue with Delete</msg>
+  <msg key="continue_with_journal">Continue with Export</msg>
   <msg key="Cost">Cost</msg>
   <msg key="Cost_cause">Cost cause</msg>
   <msg key="Cost_item">Cost item</msg>
@@ -199,6 +200,7 @@
   <msg key="iv_invoice_view">View Invoices</msg>
   <msg key="iv_invoices_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Invoices&lt;/h3&gt;%contact.salutation%,&lt;p&gt;see attached invoices %invoice_nrs%.&lt;p&gt;Best wishes,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_invoices_email_subject">Invoices # %invoice_nrs%</msg>
+  <msg key="iv_journal_check">Export Journal</msg>
   <msg key="iv_of_month_year">Invoices of %long_month% %year%:</msg>
   <msg key="iv_of_year">Invoices of year %year%:</msg>
   <msg key="iv_offer_1">Cost Sheet</msg>
@@ -393,6 +395,7 @@
   <msg key="template_invoice">Invoice</msg>
   <msg key="template_invoice_cancel">Invoice cancellation</msg>
   <msg key="template_invoice_credit">Credit</msg>
+  <msg key="template_invoice_number">Invoice-Nr.</msg>
   <msg key="template_offer">Offer</msg>
   <msg key="template_offer_accepted">Order confirmation</msg>
   <msg key="Total">Total</msg>

@@ -16,11 +16,9 @@
 <fullquery name="cancellation_recipients">
       <querytext>
 
-	select p.first_names || ' ' || p.last_name, p.person_id
-	from persons p, iv_invoices i
+	select i.recipient_id as rec_id
+	from iv_invoices i
 	where i.invoice_id = :parent_id
-	and p.person_id = i.recipient_id
-	order by lower(p.last_name), lower(p.first_names)
 
       </querytext>
 </fullquery>

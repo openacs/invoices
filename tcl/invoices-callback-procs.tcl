@@ -106,6 +106,29 @@ ad_proc -public -callback pm::project_links -impl invoices {
 	if {![empty_string_p $offer_id]} {
 	    # link to linked offer
 	    # append project_links "<li> <a href=\"[export_vars -base "${invoice_base_url}offer-ae" {offer_id {mode display}}]\">[_ invoices.iv_offer_View]</a></li>"
+
+	    # check if invoice exists
+	    db_foreach invoices {
+		select cri.item_id as invoice_id, r.title as invoice_title
+		from iv_invoice_items ii, iv_offer_items oi, iv_invoices i, cr_items cri,
+		     cr_items cro, cr_revisions r
+		where ii.offer_item_id = oi.offer_item_id
+		and oi.offer_id = cro.latest_revision
+		and i.invoice_id = ii.invoice_id
+		and i.cancelled_p = 'f'
+		and r.revision_id = i.invoice_id
+		and cri.latest_revision = i.invoice_id
+		and cro.item_id = :offer_id
+		and not exists (select 1
+				from iv_invoices ci, cr_items cri
+				where ci.parent_invoice_id = i.invoice_id
+				and i.cancelled_p = 't'
+				and cri.latest_revision = ci.invoice_id)
+		group by cri.item_id, r.title
+	    } {
+		append project_links "<li> <a href=\"[export_vars -base "${invoice_base_url}invoice-ae" {invoice_id {mode display}}]\">$invoice_title</a></li>"
+            }
+
 	} else {
 	    # link to offer-list
 	    db_1row get_project_organization {

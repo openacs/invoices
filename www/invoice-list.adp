@@ -3,5 +3,5 @@
 <property name="context">@context;noquote@</property>
 
 <include src="/packages/invoices/lib/invoice-list"
- organization_id="@organization_id@" row_list="@row_list@"
+ organization_id="@organization_id@" row_list="@row_list@" page="@page@"
  orderby="@orderby@" format="@format@" page_size="@page_size@">

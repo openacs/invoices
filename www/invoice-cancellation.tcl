@@ -30,7 +30,12 @@ set timestamp_format "$date_format [lc_get formbuilder_time_format]"
 set language [lang::conn::language]
 set currency_options [db_list_of_lists currencies {}]
 set contact_options [db_list_of_lists cancellation_contacts {}]
-set recipient_options [db_list_of_lists cancellation_recipients {}]
+
+set recipient_options {}
+db_foreach cancellation_recipients {} {
+    lappend recipient_options [list [contact::name -party_id $rec_id -reverse_order] $rec_id]
+}
+set recipient_options [lsort -dictionary $recipient_options]
 
 
 ad_form -name iv_invoice_cancel_form -action invoice-cancellation -export {organization_id parent_id} -form {

@@ -60,6 +60,18 @@ ad_proc -public iv::offer::new {
 					 [list vat $vat] \
 					 [list status new] \
 					 [list credit_percent $credit_percent] ] ]
+
+	set account_manager_id [lindex [contacts::util::get_account_manager -organization_id $organization_id] 0]
+
+	if {[empty_string_p $account_manager_id]} {
+	    set account_manager_id [ad_conn user_id]
+	}
+
+	db_dml set_account_manager_creator {
+	    update acs_objects
+	    set creation_user = :account_manager_id
+	    where object_id = :item_id
+	}
     }
 
     return $new_id

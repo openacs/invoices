@@ -48,11 +48,9 @@
 <fullquery name="cancellation_recipients">
       <querytext>
 
-	select p.first_names || ' ' || p.last_name, p.person_id
-	from persons p, iv_invoices i
+	select i.recipient_id as rec_id
+	from iv_invoices i
 	where i.invoice_id = :parent_invoice_id
-	and p.person_id = i.recipient_id
-	order by lower(p.last_name), lower(p.first_names)
 
       </querytext>
 </fullquery>
@@ -86,12 +84,36 @@
 <fullquery name="recipients">
       <querytext>
 
-    select p.first_names || ' ' || p.last_name, p.person_id
-    from persons p, pm_projects pj, cr_items i
+    select pj.recipient_id as rec_id
+    from pm_projects pj, cr_items i
     where i.item_id in ([join $project_id ,])
     and i.latest_revision = pj.project_id
-    and pj.recipient_id = p.person_id
-    order by lower(p.last_name), lower(p.first_names)
+
+      </querytext>
+</fullquery>
+
+<fullquery name="check_cancelled_invoice">
+      <querytext>
+
+	select cri.item_id as cancel_id, r.title as cancel_title
+	from iv_invoices ci, cr_items cri, cr_revisions r
+	where cri.latest_revision = ci.invoice_id
+	and ci.invoice_id = :parent_invoice_id
+	and r.revision_id = ci.invoice_id
+
+      </querytext>
+</fullquery>
+
+<fullquery name="check_cancellation">
+      <querytext>
+
+    select ii.item_id as cancel_id, r.title as cancel_title
+    from iv_invoices ci, cr_items cri, iv_invoices i, cr_items ii, cr_revisions r
+    where cri.latest_revision = ci.invoice_id
+    and ci.invoice_id = i.parent_invoice_id
+    and i.invoice_id = ii.latest_revision
+    and cri.item_id = :invoice_id
+    and r.revision_id = i.invoice_id
 
       </querytext>
 </fullquery>

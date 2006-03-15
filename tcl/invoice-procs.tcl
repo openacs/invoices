@@ -191,12 +191,13 @@ ad_proc -public iv::invoice::parse_data {
 
     # Get the invoice data
     db_1row get_data {} -column_array data
+
     set locale [lang::user::site_wide_locale -user_id $data(recipient_id)]
     set contact_locale [lang::user::site_wide_locale -user_id $data(contact_id)]
     set rec_locale $locale
     set data(creator_name) "$data(first_names) $data(last_name)"
     set data(amount_diff) [format "%.2f" [expr abs($data(total_amount) - $data(amount_sum))]]
-    set amount_diff $data(amount_diff)
+    set total_amount_diff $data(amount_diff)
     set data(amount_diff) [lc_numeric $data(amount_diff) "" $locale]
     set data(final_amount) [lc_numeric [format "%.2f" [expr $data(total_amount)+$data(vat)]] "" $locale]
     set data(vat) [lc_numeric [format "%.2f" $data(vat)] "" $locale]
@@ -251,17 +252,27 @@ ad_proc -public iv::invoice::parse_data {
 
     # get the invoice item data
     set sum 0.
-    db_multirow -local -extend {amount_sum amount_total amount_diff contact_name category} items invoice_items {} {
+    set project_sum 0.
+    set project_count 0
+    set prev_project_id 0
+    db_multirow -local -extend {amount_sum amount_total amount_diff contact_name category amount_sum_project} items invoice_items {} {
 	if {[empty_string_p $credit_percent]} {
 	    set credit_percent 0
+	}
+	if {$prev_project_id != $project_id} {
+	    set prev_project_id $project_id
+	    incr project_count
+	    set project_sum 0.
 	}
 	set item_units [format "%.2f" [expr $item_units * (1. + ($credit_percent / 100.))]]
 	set amount_sum [format "%.2f" [expr $item_units * $price_per_unit]]
 	set amount_total [format "%.2f" [expr (1. - ($rebate / 100.)) * $amount_sum]]
 	set sum [expr $sum + $amount_total]
+	set project_sum [expr $project_sum + $amount_total]
 	set amount_diff [format "%.2f" [expr $amount_total - $amount_sum]]
 	set amount_total [lc_numeric $amount_total "" $locale]
 	set amount_sum [lc_numeric $amount_sum "" $locale]
+	set amount_sum_project [lc_numeric [format "%.2f" $project_sum] "" $locale]
 	set price_per_unit [lc_numeric [format "%.2f" $price_per_unit] "" $locale]
 	set item_units [lc_numeric [format "%.2f" $item_units] "" $locale]
 	set rebate [lc_numeric [format "%.1f" $rebate] "" $locale]
@@ -273,7 +284,7 @@ ad_proc -public iv::invoice::parse_data {
     # It is possible that you have an invoice without items, e.g. a credit invoice
     if {$sum ne "0."} {
 	set data(amount_sum) $sum
-	set data(total_amount) [expr $sum + $amount_diff]
+	set data(total_amount) [expr $sum - $total_amount_diff]
 	set data(vat) [expr $data(vat_percent) * $data(total_amount) / 100.]
 	set data(final_amount) [lc_numeric [format "%.2f" [expr $data(total_amount)+$data(vat)]] "" $locale]
 	set data(vat) [lc_numeric [format "%.2f" $data(vat)] "" $locale]
@@ -282,6 +293,7 @@ ad_proc -public iv::invoice::parse_data {
     }
 
     set data(vat_percent) [lc_numeric [format "%.1f" $data(vat_percent)] "" $locale]
+    set data(project_count) $project_count
 
     # Get the account manager information for the organization.
     set account_manager_ids [contacts::util::get_account_manager -organization_id $data(organization_id)]

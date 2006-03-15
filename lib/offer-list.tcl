@@ -1,5 +1,5 @@
 set required_param_list [list]
-set optional_param_list [list orderby elements base_url package_id]
+set optional_param_list [list orderby elements base_url package_id page_num party_id]
 set optional_unset_list [list organization_id]
 
 foreach required_param $required_param_list {
@@ -34,6 +34,9 @@ if {![info exists format]} {
 if {![info exists page_size]} {
     set page_size "25"
 }
+if {![info exists show_filter_p]} {
+    set show_filter_p 0
+}
 
 if {[empty_string_p $package_id]} {
     set package_id [apm_package_id_from_key "invoices"]
@@ -43,27 +46,44 @@ if {[empty_string_p $base_url]} {
     set base_url [apm_package_url_from_id $package_id]
 }
 
+set project_where_clause "1 = 1"
+if {[exists_and_not_null project_id]} {
+    set project_ids $project_id
+}
+if {[exists_and_not_null project_ids]} {
+    set project_where_clause "pi.item_id in ([join $project_ids ,])"
+}
+
+if {[exists_and_not_null party_id]} {
+    set party_where_clause "o.creation_user = :party_id"
+} else {
+    set party_where_clause ""
+}
+
 foreach element $elements {
     append row_list "$element {}\n"
 }
 
+set user_id [ad_conn user_id]
 set pm_base_url ""
 if {[exists_and_not_null organization_id]} {
-    set dotlrn_club_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type "dotlrn_club"] 0]
-
-    if {$dotlrn_club_id > 0} {
-	set pm_base_url [apm_package_url_from_id [dotlrn_community::get_package_id_from_package_key -package_key "project-manager" -community_id $dotlrn_club_id]]
-    }
 }
 
 #set package_id [ad_conn package_id]
-set date_format [lc_get formbuilder_date_format]
-set timestamp_format "$date_format [lc_get formbuilder_time_format]"
+set timestamp_format "YYYY-MM-DD HH24:MI:SS"
 
 if {[exists_and_not_null organization_id]} {
     set price_list_id [iv::price_list::get_list_id -organization_id $organization_id]
     if {![info exists actions]} {
 	set actions [list "[_ invoices.iv_invoice_2]" [export_vars -base "${base_url}invoice-list" {organization_id}] "[_ invoices.iv_invoice_2]" "[_ invoices.iv_price_list]" [export_vars -base "${base_url}price-list" {{list_id $price_list_id} organization_id}] "[_ invoices.iv_display_price_list]"]
+
+	# We are looking at an organization, try to get the base_url for the Project manager
+	set dotlrn_club_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type "dotlrn_club"] 0]
+
+	if {$dotlrn_club_id > 0} {
+	    set pm_base_url [apm_package_url_from_id [dotlrn_community::get_package_id_from_package_key -package_key "project-manager" -community_id $dotlrn_club_id]]
+	}
+
 	if {[exists_and_not_null pm_base_url]} {
 	    lappend actions "[_ project-manager.Projects]" $pm_base_url "[_ project-manager.Projects]"
 	    lappend actions "[_ invoices.Add_offer_project]" "[export_vars -base "${pm_base_url}/add-edit" -url {{customer_id $organization_id} status_id}]" "[_ invoices.Add_offer_project]"
@@ -96,6 +116,10 @@ template::list::create \
 	    label {[_ invoices.iv_offer_project]}
 	    display_template {<if @iv_offer.project_id@ not nil><a href="@iv_offer.project_link@">@iv_offer.project_title@</a></if>}
         }
+	project_customer {
+	    label {[_ invoices.iv_offer_project_customer]}
+	    display_template {<a href="@iv_offer.customer_link@">@iv_offer.customer_name@</a>}
+	}
 	project_contact {
 	    label {[_ invoices.iv_offer_project_contact]}
 	    display_template {<a href="@iv_offer.contact_link@">@iv_offer.contact_first_names@ @iv_offer.contact_last_name@</a>}
@@ -122,7 +146,7 @@ template::list::create \
 	}
     } -actions $actions -sub_class narrow \
     -orderby {
-	default_value offer_nr
+	default_value project_id
 	offer_nr {
 	    label {[_ invoices.iv_offer_offer_nr]}
 	    orderby {t.offer_nr}
@@ -146,7 +170,7 @@ template::list::create \
 	project_id {
 	    label {[_ invoices.iv_offer_project]}
 	    orderby {lower(pr.title)}
-	    default_direction asc
+	    default_direction desc
 	}
 	project_contact {
 	    label {[_ invoices.iv_offer_project_contact]}
@@ -175,7 +199,7 @@ template::list::create \
 	    orderby {t.finish_date}
 	    default_direction desc
 	}
-	finish_date {
+	accepted_date {
 	    label {[_ invoices.iv_offer_accepted_date]}
 	    orderby {t.accepted_date}
 	    default_direction desc
@@ -189,12 +213,16 @@ template::list::create \
         organization_id {
             where_clause {t.organization_id = :organization_id}
         }
-        project_id {
-            where_clause {pi.item_id = :project_id}
+        project_ids {
+            where_clause {$project_where_clause}
         }
         status_id {
             where_clause {pp.status_id = :status_id}
         }
+	party_id {
+	    where_clause {$party_where_clause}
+	}
+	page_num {}
     } \
     -formats {
 	normal {
@@ -210,15 +238,30 @@ template::list::create \
 	}
     }
 
+set time_format "[lc_get d_fmt] %X"
 
-db_multirow -extend {creator_link contact_link edit_link delete_link title_link project_link} iv_offer iv_offer {} {
+db_multirow -extend {creator_link contact_link edit_link delete_link title_link project_link customer_name customer_link} iv_offer iv_offer {} {
 
     # Ugly hack. We should find out which contact package is linked
     # aso. asf.
     set creator_link "/contacts/$creation_user"
     set contact_link "/contacts/$contact_id"
+    set customer_link "/contacts/$customer_id"
+    set customer_name [contact::name -party_id $customer_id]
     set edit_link [export_vars -base "${base_url}offer-ae" {offer_id}]
     set title_link [export_vars -base "${base_url}offer-ae" {offer_id {mode display}}]
     set delete_link [export_vars -base "${base_url}offer-delete" {offer_id}]
+    
+    # Get the base url for the customer
+    set dotlrn_club_id [lindex [application_data_link::get_linked -from_object_id $customer_id -to_object_type "dotlrn_club"] 0]
+
+    if {$dotlrn_club_id > 0} {
+	set pm_base_url [apm_package_url_from_id [dotlrn_community::get_package_id_from_package_key -package_key "project-manager" -community_id $dotlrn_club_id]]
+    }
+
     set project_link [export_vars -base "${pm_base_url}one" {{project_item_id $project_id}}]
+
+    set creation_date [lc_time_fmt $creation_date $time_format]
+    set accepted_date [lc_time_fmt $accepted_date $time_format]
+    set finish_date [lc_time_fmt $finish_date $time_format]
 }

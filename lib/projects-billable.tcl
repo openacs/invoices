@@ -1,6 +1,6 @@
 set required_param_list [list]
-set optional_param_list [list elements base_url package_id no_actions_p]
-set optional_unset_list [list organization_id orderby]
+set optional_param_list [list elements base_url package_id no_actions_p page_num orderby format groupby]
+set optional_unset_list [list organization_id orderby page_num format groupby]
 
 foreach required_param $required_param_list {
     if {![info exists $required_param]} {
@@ -53,6 +53,7 @@ if { ![exists_and_not_null organization_id] } {
 }
 
 
+set return_url "[ad_conn url]?[ad_conn query]"
 set p_closed_id [pm::project::default_status_closed]
 set t_closed_id [pm::task::default_status_closed]
 set contacts_p [apm_package_installed_p contacts]
@@ -69,7 +70,7 @@ if {$no_actions_p} {
     set bulk_id_list ""
 } else {
     set actions [list "[_ invoices.iv_invoice_New]" "${base_url}invoice-ae" "[_ invoices.iv_invoice_New2]" ]
-    set bulk_id_list [list organization_id]
+    set bulk_id_list [list organization_id return_url]
     set row_list "checkbox {}\n $row_list"
 }
 
@@ -135,6 +136,12 @@ template::list::create \
 	    orderby_asc {lower(r.title) asc, r.item_id}
 	    default_direction asc
 	}
+	recipient {
+	    label {[_ invoices.iv_invoice_recipient]}
+	    orderby_desc {sub.recipient_id desc, r.item_id}
+	    orderby_asc {sub.recipient_id, r.item_id}
+	    default_direction asc
+	}
 	description {
 	    label {[_ invoices.iv_invoice_project_descr]}
 	    orderby_desc {lower(r.description) desc, r.item_id}
@@ -166,6 +173,7 @@ template::list::create \
 	}
     } -orderby_name orderby -html {width 100%} \
     -filters {
+	page_num {}
         organization_id {
             where_clause {sub.customer_id = :organization_id}
         }
@@ -185,20 +193,21 @@ template::list::create \
     }
 
 
+set time_format "[lc_get d_fmt] %X"
 set tot_amount_open 0
 
 db_multirow -extend {project_link recipient currency} projects projects_to_bill {} {
     set amount_open [format "%.2f" $amount_open]
     set tot_amount_open [expr $tot_amount_open + $amount_open]
     set currency [iv::price_list::get_currency -organization_id $org_id]
-    set creation_date [lc_time_fmt $creation_date "%q %X"]
+    set creation_date [lc_time_fmt $creation_date $time_format]
 
     if { $contacts_p } {
 	set recipient "<a href=\"[contact::url -party_id $recipient_id]\">[contact::name -party_id $recipient_id]</a>"
 	set name "<a href=\"[contact::url -party_id $org_id]\">[contact::name -party_id $org_id]</a>"
     } else {
 	set recipient [person::name -person_id $recipient_id]
-	set name $name
+	set name $recipient
     }
     set dotlrn_club_id [lindex \
 			    [application_data_link::get_linked \

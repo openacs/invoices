@@ -6,6 +6,7 @@ ad_page_contract {
 } {
     {format:optional "normal"}
     {orderby:optional ""}
+    {page:optional 1}
     {page_size:optional 25}
     {organization_id:optional ""}
 } -properties {

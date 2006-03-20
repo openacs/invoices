@@ -14,6 +14,7 @@ ad_page_contract {
 set user_id [auth::require_login]
 set page_title "[_ invoices.iv_offer_send]"
 
+# We should clean this to make sure we do not rely on a project for an offer!
 db_1row offer_data {}
 set project_id [lindex [application_data_link::get_linked -from_object_id $offer_id -to_object_type content_item] 0]
 db_1row project_data {}

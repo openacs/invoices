@@ -12,6 +12,7 @@ ad_proc -public iv::offer::new {
     {-title ""}
     {-description ""}
     {-comment ""}
+    {-reservation ""}
     {-offer_nr ""}
     {-organization_id ""}
     {-amount_total ""}
@@ -48,6 +49,7 @@ ad_proc -public iv::offer::new {
 			-description $description \
 			-attributes [list \
 					 [list comment $comment] \
+					 [list reservation $reservation] \
 					 [list offer_nr $offer_nr] \
 					 [list organization_id $organization_id] \
 					 [list amount_total $amount_total] \
@@ -82,6 +84,7 @@ ad_proc -public iv::offer::edit {
     {-title ""}
     {-description ""}
     {-comment ""}
+    {-reservation ""}
     {-offer_nr ""}
     {-organization_id ""}
     {-amount_total ""}
@@ -109,6 +112,7 @@ ad_proc -public iv::offer::edit {
 			    -description $description \
 			    -attributes [list \
 					     [list comment $comment] \
+					     [list reservation $reservation] \
 					     [list offer_nr $offer_nr] \
 					     [list organization_id $organization_id] \
 					     [list amount_total $amount_total] \
@@ -222,6 +226,9 @@ ad_proc -public iv::offer::parse_data {
     set orga_revision_id [content::item::get_best_revision -item_id $data(organization_id)]
     set contact_revision_id [content::item::get_best_revision -item_id $data(contact_id)]
     set rec_client_id [ams::value -attribute_name "client_id" -object_id $orga_revision_id -locale $locale]
+    if {[empty_string_p $data(credit_percent)]} {
+	set data(credit_percent) 0
+    }
 
     # offer contact data
     contact::employee::get -employee_id $data(contact_id) -array contact_data
@@ -251,6 +258,7 @@ ad_proc -public iv::offer::parse_data {
 
     # data of offer items
     db_multirow -local -extend {amount_sum amount_total category} items offer_items {} {
+	set item_units [format "%.2f" [expr $item_units * (1. + ($data(credit_percent) / 100.))]]
 	set amount_sum [format "%.2f" [expr $item_units * $price_per_unit]]
 	set amount_total [lc_numeric [format "%.2f" [expr (1. - ($rebate / 100.)) * $amount_sum]] "" $locale]
 	set amount_sum [lc_numeric $amount_sum "" $locale]
@@ -289,8 +297,8 @@ ad_proc -public iv::offer::parse_data {
     }
 
     # parse offer email text
-    eval [template::adp_compile -string [lang::util::localize $email_text $locale]]
-    set final_content [list $__adp_output]
+    eval [template::adp_compile -string $email_text]
+    set final_content [lang::util::localize [list $__adp_output] $locale]
 
     # get the url to the document template
     set template_path [parameter::get -parameter OfferTemplate]

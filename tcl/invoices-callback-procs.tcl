@@ -109,7 +109,7 @@ ad_proc -public -callback pm::project_links -impl invoices {
 
 	    # check if invoice exists
 	    db_foreach invoices {
-		select cri.item_id as invoice_id, r.title as invoice_title
+		select cri.item_id as invoice_id, r.title as invoice_title, i.invoice_nr
 		from iv_invoice_items ii, iv_offer_items oi, iv_invoices i, cr_items cri,
 		     cr_items cro, cr_revisions r
 		where ii.offer_item_id = oi.offer_item_id
@@ -124,9 +124,9 @@ ad_proc -public -callback pm::project_links -impl invoices {
 				where ci.parent_invoice_id = i.invoice_id
 				and i.cancelled_p = 't'
 				and cri.latest_revision = ci.invoice_id)
-		group by cri.item_id, r.title
+		group by cri.item_id, r.title, i.invoice_nr
 	    } {
-		append project_links "<li> <a href=\"[export_vars -base "${invoice_base_url}invoice-ae" {invoice_id {mode display}}]\">$invoice_title</a></li>"
+		append project_links "<li> <a href=\"[export_vars -base "${invoice_base_url}invoice-ae" {invoice_id {mode display}}]\">\#\invoices.Invoice# $invoice_nr</a></li>"
             }
 
 	} else {

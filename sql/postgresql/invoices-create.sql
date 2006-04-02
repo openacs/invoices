@@ -98,6 +98,7 @@ create table iv_offers (
                                 references organizations,
                                 -- who pays?
         comment                 text,
+        reservation             text,
         amount_total            numeric(12,2),
         amount_sum              numeric(12,2),
         currency                char(3)
@@ -203,7 +204,7 @@ create table iv_invoices (
         vat                     numeric(12,2) default 0,
                                 -- VAT amount
         status                  varchar(10) default 'new',
-                                -- new, cancelled, billed, paid
+                                -- new, sent, cancelled, billed, paid
         cancelled_p             char(1) default 'f'
                                 constraint iv_invoices_cancelled_p
                                 check (cancelled_p in ('t','f'))

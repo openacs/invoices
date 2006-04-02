@@ -70,7 +70,7 @@
 	       to_char(t.due_date, 'YYYY-MM-DD HH24:MI:SS') as invoice_date,
 	       to_char(t.due_date + cast(t.payment_days || ' days' as interval), 'YYYY-MM-DD HH24:MI:SS') as due_date,
 	       t.payment_days, t.currency, t.organization_id, t.recipient_id,
-	       t.contact_id
+	       t.contact_id, t.parent_invoice_id
 	from iv_invoices t, cr_revisions r, cr_items i, acs_objects o,
 	     persons p
 	where r.revision_id = t.invoice_id
@@ -78,6 +78,31 @@
 	and i.item_id = :invoice_id
 	and o.object_id = t.invoice_id
 	and p.person_id = o.creation_user
+
+      </querytext>
+</fullquery>
+
+<fullquery name="iv::invoice::parse_data.payment_method">
+      <querytext>
+
+	select ot.option as payment_method
+	from ams_option_types ot, ams_options o, ams_attribute_values v, ams_attributes a
+	where v.object_id = :rec_orga_revision_id
+	and v.attribute_id = a.attribute_id
+	and a.attribute_name = 'payment_method'
+	and v.value_id = o.value_id
+	and o.option_id = ot.option_id
+
+      </querytext>
+</fullquery>
+
+<fullquery name="iv::invoice::parse_data.parent_data">
+      <querytext>
+
+	    select i.item_id as invoice_id, t.invoice_nr
+	    from cr_items i, iv_invoices t
+	    where i.latest_revision = t.invoice_id
+	    and t.invoice_id = :parent_invoice_id
 
       </querytext>
 </fullquery>
@@ -104,7 +129,7 @@
     and pi.latest_revision = pr.revision_id
     and pr.revision_id = p.project_id
     and o.offer_id = ofi.offer_id
-    order by pr.title, ofi.sort_order
+    order by pr.title, ii.item_nr
 
       </querytext>
 </fullquery>

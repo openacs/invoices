@@ -40,6 +40,7 @@
 			and r.object_id_one = pi.item_id
     			and r.object_id_two = oi.item_id
 	 	  	and p.status_id = :p_closed_id
+	 	  	and p.invoice_p = true
     			and ofi.offer_id = oi.latest_revision
     			and oo.object_id = oi.item_id
     			and oo.package_id = :package_id

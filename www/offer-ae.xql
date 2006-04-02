@@ -136,7 +136,7 @@
 	select t.offer_id as offer_rev_id, r.title, r.description,
 	       t.offer_nr, t.amount_total, t.vat, t.vat_percent, t.comment,
 	       to_char(t.finish_date, 'YYYY-MM-DD HH24:MI:SS') as finish_ansi,
-	       o.creation_user, p.first_names, p.last_name,
+	       o.creation_user, p.first_names, p.last_name, t.reservation,
 	       to_char(o.creation_date, 'YYYY-MM-DD HH24:MI:SS') as creation_ansi,
 	       to_char(t.accepted_date, 'YYYY-MM-DD HH24:MI:SS') as accepted_ansi,
 	       t.amount_sum as amount_sum_, t.payment_days, t.date_comment

@@ -198,6 +198,7 @@ ad_proc -public iv::invoice::parse_data {
     set data(creator_name) "$data(first_names) $data(last_name)"
     set data(amount_diff) [format "%.2f" [expr abs($data(total_amount) - $data(amount_sum))]]
     set total_amount_diff $data(amount_diff)
+    set total_amount $data(total_amount)
     set data(amount_diff) [lc_numeric $data(amount_diff) "" $locale]
     set data(final_amount) [lc_numeric [format "%.2f" [expr $data(total_amount)+$data(vat)]] "" $locale]
     set data(vat) [lc_numeric [format "%.2f" $data(vat)] "" $locale]
@@ -250,6 +251,22 @@ ad_proc -public iv::invoice::parse_data {
 	}
     }
 
+    if {[db_0or1row payment_method {}]} {
+	set data(payment_method) $payment_method
+    } else {
+	set data(payment_method) transfer
+    }
+
+    set multiplier 1
+    if {![empty_string_p $data(parent_invoice_id)]} {
+	# this is a cancellation, so show invoice-items of cancelled invoice
+	set parent_invoice_id $data(parent_invoice_id)
+	db_1row parent_data {} -column_array parent
+	set invoice_id $parent(invoice_id)
+	# show negative amounts
+	set multiplier -1
+    }
+
     # get the invoice item data
     set sum 0.
     set project_sum 0.
@@ -265,7 +282,7 @@ ad_proc -public iv::invoice::parse_data {
 	    set project_sum 0.
 	}
 	set item_units [format "%.2f" [expr $item_units * (1. + ($credit_percent / 100.))]]
-	set amount_sum [format "%.2f" [expr $item_units * $price_per_unit]]
+	set amount_sum [format "%.2f" [expr $multiplier * $item_units * $price_per_unit]]
 	set amount_total [format "%.2f" [expr (1. - ($rebate / 100.)) * $amount_sum]]
 	set sum [expr $sum + $amount_total]
 	set project_sum [expr $project_sum + $amount_total]
@@ -281,10 +298,13 @@ ad_proc -public iv::invoice::parse_data {
 	set contact_name [contact::name -party_id $contact_id]
     }
 
-    # It is possible that you have an invoice without items, e.g. a credit invoice
+   # It is possible that you have an invoice without items, e.g. a credit invoice
     if {$sum ne "0."} {
 	set data(amount_sum) $sum
-	set data(total_amount) [expr $sum - $total_amount_diff]
+	set data(total_amount) $total_amount
+	# set data(total_amount) [expr $sum - $total_amount_diff]
+	set data(amount_diff) [format "%.2f" [expr abs($data(total_amount) - $data(amount_sum))]]
+	set data(amount_diff) [lc_numeric $data(amount_diff) "" $locale]
 	set data(vat) [expr $data(vat_percent) * $data(total_amount) / 100.]
 	set data(final_amount) [lc_numeric [format "%.2f" [expr $data(total_amount)+$data(vat)]] "" $locale]
 	set data(vat) [lc_numeric [format "%.2f" $data(vat)] "" $locale]
@@ -324,8 +344,8 @@ ad_proc -public iv::invoice::parse_data {
     }
 
     # parse invoice email text
-    eval [template::adp_compile -string [lang::util::localize $email_text $contact_locale]]
-    set final_content [list $__adp_output]
+    eval [template::adp_compile -string $email_text]
+    set final_content [lang::util::localize [list $__adp_output] $contact_locale]
 
     # create and parse all invoice documents
     foreach document_type $types {

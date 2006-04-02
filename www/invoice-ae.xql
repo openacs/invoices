@@ -71,7 +71,7 @@
 <fullquery name="contacts">
       <querytext>
 
-    select p.first_names || ' ' || p.last_name, p.person_id
+    select p.person_id
     from persons p, pm_projects pj, cr_items i
     where i.item_id in ([join $project_id ,])
     and i.latest_revision = pj.project_id
@@ -88,6 +88,17 @@
     from pm_projects pj, cr_items i
     where i.item_id in ([join $project_id ,])
     and i.latest_revision = pj.project_id
+
+      </querytext>
+</fullquery>
+
+<fullquery name="invoice_recipients">
+      <querytext>
+
+	select r.object_id_one
+	from acs_rels r
+	where r.object_id_two = :organization_id
+	and r.rel_type = 'contact_rels_ir'
 
       </querytext>
 </fullquery>
@@ -118,12 +129,28 @@
       </querytext>
 </fullquery>
 
+<fullquery name="not_invoiceable_subprojects">
+      <querytext>
+
+		select io.item_id as offer_id, ro.title as offer_title
+		from iv_offers o, cr_items io, cr_revisions ro, acs_data_links r, cr_items ip, pm_projects p
+		where o.offer_id = ro.revision_id
+		and ro.revision_id = io.latest_revision
+		and r.object_id_one = ip.item_id
+		and r.object_id_two = io.item_id
+		and ip.item_id in ([join $subprojects ,])
+		and p.project_id = ip.latest_revision
+		and p.invoice_p = false
+
+      </querytext>
+</fullquery>
+
 <fullquery name="offer_items">
       <querytext>
 
     select cr.title, cr.description, ofi.offer_item_id, ofi.item_units, ofi.offer_id,
            ofi.price_per_unit, ofi.item_nr, pi.item_id as project_id, of.credit_percent,
-           pr.title as project_title, ofi.vat, ofi.rebate, m.category_id
+           pr.title as project_title, ofi.vat, ofi.rebate, m.category_id, oi.item_id as offer_cr_item_id
     from cr_items oi, cr_revisions cr, cr_items pi, cr_revisions pr,
          acs_objects o, acs_data_links r, iv_offers of, iv_offer_items ofi
     left outer join category_object_map m on (m.object_id = ofi.offer_item_id)
@@ -154,7 +181,7 @@
                i.item_units, i.price_per_unit, i.item_nr, ofi.offer_id,
                pi.item_id as project_id, pr.title as project_title,
                i.vat as old_vat, i.rebate, m.category_id, i.offer_item_id,
-               of.credit_percent
+               of.credit_percent, oi.item_id as offer_cr_item_id
 	from cr_items oi, iv_invoice_items i, cr_revisions ir, cr_items pi,
 	     cr_revisions pr, iv_offers of, cr_items vi, cr_items ii, acs_data_links r,
 	     pm_projects p, iv_offer_items ofi

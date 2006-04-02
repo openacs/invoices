@@ -8,6 +8,7 @@ ad_page_contract {
     {organization_id:integer,optional ""}
     {parent_id:integer}
     {__new_p 0}
+    {return_url:optional ""}
 } -properties {
     context:onevalue
     page_title:onevalue
@@ -38,7 +39,7 @@ db_foreach cancellation_recipients {} {
 set recipient_options [lsort -dictionary $recipient_options]
 
 
-ad_form -name iv_invoice_cancel_form -action invoice-cancellation -export {organization_id parent_id} -form {
+ad_form -name iv_invoice_cancel_form -action invoice-cancellation -export {organization_id parent_id return_url} -form {
     {invoice_id:key}
     {organization_name:text(inform) {label "[_ invoices.iv_invoice_organization]"} {value $organization_name} {help_text "[_ invoices.iv_invoice_organization_help]"}}
     {contact_id:integer(select),optional {label "[_ invoices.iv_invoice_contact]"} {options $contact_options} {help_text "[_ invoices.iv_invoice_contact_help]"}}
@@ -122,7 +123,11 @@ ad_form -extend -name iv_invoice_cancel_form -new_request {
 	db_dml mark_cancelled {}
     }
 } -after_submit {
-    ad_returnredirect [export_vars -base invoice-list {organization_id}]
+    if {[empty_string_p $return_url]} {
+	ad_returnredirect [export_vars -base invoice-list {organization_id}]
+    } else {
+	ad_returnredirect $return_url
+    }
     ad_script_abort
 }
 

@@ -33,6 +33,20 @@ foreach optional_unset {organization_id} {
     }
 }
 
+set start_where_clause "1 = 1"
+if {[exists_and_not_null start_date] && $start_date != "YYYY-MM-DD" && [regexp {^([0-9]+)\-([0-9]+)\-([0-9]+)} $start_date match year month day]} {
+    set start_where_clause "o.creation_date >= to_timestamp(:start_date, 'YYYY-MM-DD')"
+} elseif {[info exists start_date]} {
+    unset start_date
+}
+    
+set end_where_clause "1 = 1"
+if {[exists_and_not_null end_date] && $end_date != "YYYY-MM-DD" && [regexp {^([0-9]+)\-([0-9]+)\-([0-9]+)} $end_date match year month day]} {
+    append end_where_clause " and o.creation_date <= to_timestamp(:end_date, 'YYYY-MM-DD')"
+} elseif {[info exists end_date]} {
+    unset end_date
+}
+
 set user_id [ad_conn user_id]
 set timestamp_format "YYYY-MM-DD HH24:MI:SS"
 set bulk_actions [list "[_ invoices.iv_invoice_send]" "${base_url}invoices-view" "[_ invoices.iv_invoice_send]" "[_ invoices.iv_invoice_pay]" "${base_url}invoice-pay" "[_ invoices.iv_invoice_pay]"]
@@ -49,6 +63,8 @@ if { [info exists organization_id] } {
 	set actions [list "[_ invoices.iv_invoice_New]" [export_vars -base invoice-add {organization_id}] "[_ invoices.iv_invoice_New2]" "[_ invoices.iv_offer_2]" [export_vars -base offer-list {organization_id}] "[_ invoices.iv_offer_2]" "[_ invoices.projects]" $pm_base_url "[_ invoices.projects]" "[_ invoices.iv_reports]" [export_vars -base invoice-reports {organization_id}]]
     }
 }
+
+lappend actions "[_ invoices.iv_invoice_url]" $base_url "[_ invoices.iv_invoice_url2]"
 
 if {$invoice_cancel_p} {
     lappend actions "[_ invoices.iv_journal_check]" "${base_url}journal-check" "[_ invoices.iv_journal_check]"
@@ -72,6 +88,7 @@ template::list::create \
         }
         description {
 	    label {[_ invoices.iv_invoice_Description]}
+	    display_template {@iv_invoice.description;noquote@}
         }
         total_amount {
 	    label {[_ invoices.iv_invoice_total_amount]}
@@ -100,7 +117,14 @@ template::list::create \
 	    display_template {[_ invoices.iv_invoice_status_@iv_invoice.status@]}
 	}
         action {
-	    display_template {<if @iv_invoice.status@ eq new><a href="@iv_invoice.edit_link@">#invoices.Edit#</a>&nbsp;</if><else><if @invoice_cancel_p@ true><a href="@iv_invoice.cancel_link@">#invoices.Invoice_Cancel#</a>&nbsp;</if></else><if @iv_invoice.status@ ne billed and @iv_invoice.status@ ne paid><a href="@iv_invoice.delete_link@">#invoices.Delete#</a></if> <a href="@iv_invoice.preview_link@">#invoices.Preview#</a>}
+	    display_template {
+		<if @iv_invoice.status@ eq new><a href="@iv_invoice.edit_link@">#invoices.Edit#</a>&nbsp; </if>
+		<else><if @invoice_cancel_p@ true and @iv_invoice.cancelled_p@ eq f><a href="@iv_invoice.cancel_link@">#invoices.Invoice_Cancel#</a>&nbsp; </if></else>
+		<if @iv_invoice.status@ ne billed and @iv_invoice.status@ ne paid><a href="@iv_invoice.delete_link@">#invoices.Delete#</a>&nbsp; </if>
+		<if @iv_invoice.status@ eq new><a href="@iv_invoice.preview_link@">#invoices.Preview#</a>&nbsp <a href="@iv_invoice.create_link@">#invoices.View_invoice#</a></if>
+		<elseif @iv_invoice.cancelled_p@ ne t><a href="@iv_invoice.copy_link@">#invoices.View_copy#</a></elseif>
+		<elseif @iv_invoice.parent_invoice_id@ not nil><a href="@iv_invoice.copy_link@">#invoices.View_cancel#</a></elseif>
+	    }
         }
     } -actions $actions -sub_class narrow \
 	    -bulk_actions $bulk_actions \
@@ -155,6 +179,7 @@ template::list::create \
     } -orderby_name orderby -html {width 100%} \
     -page_size_variable_p 1 \
     -page_size $page_size \
+    -page_groupsize 10 \
     -page_flush_p 1 \
     -page_query_name iv_invoice_paginated \
     -pass_properties {invoice_cancel_p} \
@@ -163,6 +188,12 @@ template::list::create \
 	    where_clause {t.organization_id = :organization_id}
 	}
 	page_num {}
+	start_date {
+	    where_clause $start_where_clause
+	}
+	end_date {
+	    where_clause $end_where_clause
+	}
     } \
     -formats {
 	normal {
@@ -181,18 +212,22 @@ template::list::create \
 set time_format "[lc_get d_fmt] %X"
 set date_format [lc_get d_fmt]
 set contacts_p [apm_package_installed_p contacts]
+set contacts_package_id [apm_package_id_from_key contacts]
+set return_url "[ad_conn url]?[ad_conn query]"
 
-db_multirow -extend {creator_link edit_link display_link cancel_link delete_link preview_link recipient} iv_invoice iv_invoice {} {
+db_multirow -extend {creator_link edit_link display_link cancel_link delete_link preview_link create_link copy_link recipient} iv_invoice iv_invoice {} {
     # Ugly hack. We should find out which contact package is linked
 
     set creation_date [lc_time_fmt $creation_date $time_format]
     set due_date [lc_time_fmt $due_date $date_format]
 
     set display_link [export_vars -base "${base_url}invoice-ae" {invoice_id {mode display}}]
-    set edit_link [export_vars -base "${base_url}invoice-ae" {invoice_id}]
-    set cancel_link [export_vars -base "${base_url}invoice-cancellation" {{organization_id $orga_id} {parent_id $invoice_rev_id}}]
-    set delete_link [export_vars -base "${base_url}invoice-delete" {invoice_id}]
+    set edit_link [export_vars -base "${base_url}invoice-ae" {invoice_id return_url}]
+    set cancel_link [export_vars -base "${base_url}invoice-cancellation" {{organization_id $orga_id} {parent_id $invoice_rev_id} return_url}]
+    set delete_link [export_vars -base "${base_url}invoice-delete" {invoice_id return_url}]
     set preview_link [export_vars -base "${base_url}invoice-preview" {invoice_id}]
+    set create_link [export_vars -base "${base_url}invoice-send-1" {invoice_id return_url}]
+    set copy_link [export_vars -base "${base_url}invoice-preview" {invoice_id {invoice_p 0}}]
     if {[empty_string_p $total_amount]} {
 	set total_amount 0
     }
@@ -202,9 +237,16 @@ db_multirow -extend {creator_link edit_link display_link cancel_link delete_link
     }
 
     if { $contacts_p } {
-	set recipient "<a href=\"[contact::url -party_id $recipient_id]\">[contact::name -party_id $recipient_id]</a>"
-	set creator_link "[contact::url -party_id $creation_user]"
+	set recipient "<a href=\"[contact::url -package_id $contacts_package_id -party_id $recipient_id]\">[contact::name -party_id $recipient_id]</a>"
+	set creator_link "[contact::url -package_id $contacts_package_id -party_id $creation_user]"
     } else {
 	set recipient [person::name -person_id $recipient_id]
     }
+
+    set desc_list {}
+    foreach project_id [split $description ,] {
+	set project_id [string trim $project_id]
+	lappend desc_list "<a href=\"[export_vars -base "${base_url}project-search" {project_id}]\">$project_id</a>"
+    }
+    set description [join $desc_list ", "]
 }

@@ -74,6 +74,9 @@ if {$no_actions_p} {
     set row_list "checkbox {}\n $row_list"
 }
 
+set normal_actions [list "[_ invoices.iv_invoice_url]" $base_url "[_ invoices.iv_invoice_url2]"]
+
+
 template::list::create \
     -name projects \
     -key project_id \
@@ -113,21 +116,23 @@ template::list::create \
 	}
     } -bulk_actions $actions \
     -bulk_action_export_vars $bulk_id_list \
+    -actions $normal_actions \
     -sub_class narrow \
     -groupby {
 	label "[_ invoices.Group_by]:"
 	type multivar
 	values { {[_ invoices.Customer] { {groupby name } {orderby project_id,asc }}}}
     } -orderby {
-	default_value name
+	default_value project_id
         name {
 	    label {[_ invoices.Customer]}
-	    orderby {name}
+	    orderby {lower(name)}
 	    default_direction asc
         }
 	project_id {
 	    label {[_ invoices.iv_invoice_project_id]}
-	    orderby {r.item_id}
+	    orderby_desc {lower(name) asc, sub.customer_id asc, r.item_id desc}
+	    orderby_asc {lower(name) asc, sub.customer_id asc, r.item_id asc}
 	    default_direction desc
 	}
 	title {
@@ -195,6 +200,7 @@ template::list::create \
 
 set time_format "[lc_get d_fmt] %X"
 set tot_amount_open 0
+set contacts_package_id [apm_package_id_from_key contacts]
 
 db_multirow -extend {project_link recipient currency} projects projects_to_bill {} {
     set amount_open [format "%.2f" $amount_open]
@@ -203,8 +209,8 @@ db_multirow -extend {project_link recipient currency} projects projects_to_bill 
     set creation_date [lc_time_fmt $creation_date $time_format]
 
     if { $contacts_p } {
-	set recipient "<a href=\"[contact::url -party_id $recipient_id]\">[contact::name -party_id $recipient_id]</a>"
-	set name "<a href=\"[contact::url -party_id $org_id]\">[contact::name -party_id $org_id]</a>"
+	set recipient "<a href=\"[contact::url -package_id $contacts_package_id -party_id $recipient_id]\">[contact::name -party_id $recipient_id]</a>"
+	set name "<a href=\"[contact::url -package_id $contacts_package_id -party_id $org_id]\">[contact::name -party_id $org_id]</a>"
     } else {
 	set recipient [person::name -person_id $recipient_id]
 	set name $recipient

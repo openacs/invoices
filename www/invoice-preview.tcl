@@ -20,39 +20,28 @@ set context [list [list [export_vars -base invoice-list {organization_id}] "[_ i
 
 set document_types {}
 
-if {$total_amount > 0} {
+if {$total_amount >= 0} {
     # send invoice
-    set invoice_text "#invoices.iv_invoice_email#"
-    set subject [lang::util::localize "#invoices.iv_invoice_email_subject#" $locale]
     set invoice_title [lang::util::localize "#invoices.file_invoice#_${invoice_nr}.pdf" $locale]
     if {$invoice_p} {
 	set document_types invoice
+    } else {
+	set document_types invoice_copy
     }
 } elseif {[empty_string_p $parent_invoice_id]} {
     # send credit
-    set invoice_text "#invoices.iv_invoice_credit_email#"
-    set subject [lang::util::localize "#invoices.iv_invoice_credit_email_subject#" $locale]
     set invoice_title [lang::util::localize "#invoices.file_invoice_credit#_${invoice_nr}.pdf" $locale]
-    if {$invoice_p} {
-	set document_types credit
-    }
+    set document_types credit
 } else {
     # send cancellation
-    set invoice_text "#invoices.iv_invoice_cancel_email#"
-    set subject [lang::util::localize "#invoices.iv_invoice_cancel_email_subject#" $locale]
     set invoice_title [lang::util::localize "#invoices.file_invoice_cancel#_${invoice_nr}.pdf" $locale]
-    if {$invoice_p} {
-	set document_types cancel
-    }
+    set document_types cancel
 }
 
 # substitute variables in invoice text
 # and return the content of all necessary document files
 # (opening, invoice/credit/cancellation, copy)
-set documents [iv::invoice::parse_data -invoice_id $invoice_id -types $document_types -email_text $invoice_text]
-
-set invoice_text [lindex $documents 0]
-
+set documents [iv::invoice::parse_data -invoice_id $invoice_id -types $document_types -email_text ""]
 set documents [lreplace $documents 0 0]
 
 set file_title $invoice_title

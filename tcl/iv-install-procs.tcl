@@ -45,6 +45,7 @@ ad_proc -public iv::install::create_install {
     content::type::attribute::new -content_type {iv_offer} -attribute_name {offer_nr} -datatype {string} -pretty_name {[_ invoices.Offer_number]} -column_spec {varchar(80)}
     content::type::attribute::new -content_type {iv_offer} -attribute_name {organization_id} -datatype {number} -pretty_name {[_ invoices.Customer]} -column_spec {integer}
     content::type::attribute::new -content_type {iv_offer} -attribute_name {comment} -datatype {text} -pretty_name {[_ invoices.Comment]} -column_spec {text}
+    content::type::attribute::new -content_type {iv_offer} -attribute_name {reservation} -datatype {text} -pretty_name {[_ invoices.Reservation]} -column_spec {text}
     content::type::attribute::new -content_type {iv_offer} -attribute_name {amount_total} -datatype {number} -pretty_name {[_ invoices.Amount_total]} -column_spec {numeric(12,2)}
     content::type::attribute::new -content_type {iv_offer} -attribute_name {amount_sum} -datatype {number} -pretty_name {[_ invoices.Amount_sum]} -column_spec {numeric(12,2)}
     content::type::attribute::new -content_type {iv_offer} -attribute_name {currency} -datatype {string} -pretty_name {[_ invoices.Currency]} -column_spec {char(3)}
@@ -263,6 +264,9 @@ ad_proc -public iv::install::after_upgrade {
 	    }
 	    0.01d21 0.01d22 {
 		content::type::attribute::new -content_type {iv_invoice} -attribute_name {contact_id} -datatype {number} -pretty_name {[_ invoices.Contact]} -column_spec {integer}
+	    }
+	    1.0d2 1.0d3 {
+		content::type::attribute::new -content_type {iv_offer} -attribute_name {reservation} -datatype {text} -pretty_name {[_ invoices.Reservation]} -column_spec {text}
 	    }
 	}
 }

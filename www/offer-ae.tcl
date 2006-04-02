@@ -131,6 +131,7 @@ ad_form -name iv_offer_form -action offer-ae -mode $mode -has_submit $has_submit
     {title:text {label "[_ invoices.iv_offer_Title]"} {html {size 80 maxlength 1000}} {help_text "[_ invoices.iv_offer_Title_help]"}}
     {description:text(textarea),optional {label "[_ invoices.iv_offer_Description]"} {html {rows 5 cols 80}} {help_text "[_ invoices.iv_offer_Description_help]"}}
     {comment:text(textarea),optional {label "[_ invoices.iv_offer_comment]"} {html {rows 5 cols 80}} {help_text "[_ invoices.iv_offer_comment_help]"}}
+    {reservation:text(textarea),optional {label "[_ invoices.iv_offer_reservation]"} {html {rows 5 cols 80}} {help_text "[_ invoices.iv_offer_reservation_help]"}}
 }
 	
 if {![empty_string_p [category_tree::get_mapped_trees $container_objects(offer_id)]]} {
@@ -272,6 +273,13 @@ if {!$has_submit} {
 
 } else {
     # we are just displaying an offer
+
+    if {![empty_string_p $_credit_percent] && $_credit_percent > 0} {
+	set _credit_percent [format "%.1f" $_credit_percent]
+	ad_form -extend -name iv_offer_form -form {
+	    {credit_percent:float {label "[_ invoices.iv_offer_credit_percent]"} {html {size 5 maxlength 10}} {help_text "[_ invoices.iv_offer_credit_percent_help]"} {value $_credit_percent} {after_html {%}}}
+	}
+    }
 
     # display uploaded files
     if {[exists_and_not_null files]} {
@@ -686,6 +694,7 @@ ad_form -extend -name iv_offer_form -new_request {
 				  -title $title \
 				  -description $description  \
 				  -comment $comment  \
+				  -reservation $reservation  \
 				  -offer_nr $offer_nr \
 				  -organization_id $organization_id \
 				  -amount_total $amount_total \
@@ -730,8 +739,9 @@ ad_form -extend -name iv_offer_form -new_request {
 	set new_offer_rev_id [iv::offer::edit \
 				  -offer_id $offer_id \
 				  -title $title \
-				  -description $description  \
+				  -description $description \
 				  -comment $comment  \
+				  -reservation $reservation  \
 				  -offer_nr $offer_nr \
 				  -organization_id $organization_id \
 				  -amount_total $amount_total \

@@ -47,7 +47,7 @@
 	       to_char(o.creation_date, :timestamp_format) as creation_date,
 	       to_char(t.accepted_date, :timestamp_format) as accepted_date,
 	       t.amount_sum as amount_sum_, t.payment_days, t.date_comment,
-	       t.currency, t.organization_id, t.amount_sum
+	       t.currency, t.organization_id, t.amount_sum, t.reservation
 	from iv_offers t, cr_revisions r, cr_items i, acs_objects o,
 	     persons p
 	where r.revision_id = t.offer_id
@@ -72,7 +72,7 @@
 	       to_char(t.accepted_date, 'YYYY-MM-DD HH24:MI:SS') as accepted_date,
 	       t.amount_sum, t.payment_days, t.date_comment, t.currency,
                t.organization_id, pr.title as project_title, ci.item_id as offer_id,
-               pp.project_code, pi.item_id as project_id, pp.contact_id
+               pp.project_code, pi.item_id as project_id, pp.contact_id, t.reservation
 	from iv_offers t, cr_revisions cr, cr_items ci, acs_objects o,
 	     persons p, acs_data_links r, cr_items pi, cr_revisions pr, pm_projects pp
 	where cr.revision_id = t.offer_id

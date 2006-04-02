@@ -68,6 +68,7 @@ if { ![exists_and_not_null invoice_id] } {
     }
 }
 
+set current_url "[ad_conn url]?[ad_conn query]"
 set package_id [ad_conn package_id]
 set user_id [auth::require_login]
 set date_format "YYYY-MM-DD"
@@ -148,13 +149,46 @@ if {[exists_and_not_null parent_invoice_id]} {
     set contact_options $recipient_options
 } else {
     # normal invoice: get recipients from projects
-    # We only want to offer invoice recipients that have actually been assigned in the project
-    # The other query would show all of them.
-    set contact_options [db_list_of_lists contacts {}]
+    # We want to mark invoice recipients that have actually been assigned in the project
+    set project_contacts [db_list contacts {}]
+    set contact_id [lindex $project_contacts 0]
+    set contact_options {}
+
+    # add all invoice-recipients of customer to recipient list
+    # mark project recipients as bold
+    set project_recipients [db_list recipients {}]
+    set recipient_id [lindex $project_recipients 0]
+    set recipients [db_list invoice_recipients {}]
     set recipient_options {}
-    db_foreach recipients {} {
-	lappend recipient_options [list [contact::name -party_id $rec_id -reverse_order] $rec_id]
+
+    foreach recipient $recipients {
+	set recipient_name [contact::name -party_id $recipient -reverse_order]
+	if {[lsearch -exact $project_recipients $recipient] == -1 || $mode == "display"} {
+	    lappend recipient_options [list $recipient_name $recipient]
+	} else {
+	    lappend recipient_options [list "* $recipient_name *" $recipient]
+	}
     }
+
+    # add all employees of customer to recipient-list
+    foreach employee_id [contact::util::get_employees -organization_id $organization_id] {
+	if {[lsearch -exact $recipients $employee_id] == -1} {
+	    set employee_name [contact::name -party_id $employee_id -reverse_order]
+	    if {[lsearch -exact $project_recipients $employee_id] == -1 || $mode == "display"} {
+		lappend recipient_options [list $employee_name $employee_id]
+	    } else {
+		lappend recipient_options [list "* $employee_name *" $employee_id]
+	    }
+	}
+
+	if {[lsearch -exact $project_contacts $employee_id] == -1 || $mode == "display"} {
+	    lappend contact_options [list $employee_name $employee_id]
+	} else {
+	    lappend contact_options [list "* $employee_name *" $employee_id]
+	}
+    }
+
+    set contact_options [lsort -dictionary $contact_options]
     set recipient_options [lsort -dictionary $recipient_options]
 }
 
@@ -170,7 +204,7 @@ ad_form -name iv_invoice_form -action invoice-ae -mode $mode -has_submit $has_su
     {contact_id:integer(select),optional {label "[_ invoices.iv_invoice_contact]"} {options $contact_options} {help_text "[_ invoices.iv_invoice_contact_help]"}}
     {recipient_id:integer(select),optional {label "[_ invoices.iv_invoice_recipient]"} {options $recipient_options} {help_text "[_ invoices.iv_invoice_recipient_help]"}}
     {title:text(inform) {label "[_ invoices.iv_invoice_Title]"} {html {size 80 maxlength 1000}} {help_text "[_ invoices.iv_invoice_Title_help]"}}
-    {description:text(textarea),optional {label "[_ invoices.iv_invoice_Description]"} {html {rows 5 cols 80}} {help_text "[_ invoices.iv_invoice_Description_help]"}}
+    {description:text(inform),optional {label "[_ invoices.iv_invoice_Description]"} {html {rows 5 cols 80}} {help_text "[_ invoices.iv_invoice_Description_help]"}}
 }
 	
 if {![empty_string_p [category_tree::get_mapped_trees $container_objects(invoice_id)]]} {
@@ -238,7 +272,7 @@ if {$has_submit} {
 }
 
 ad_form -extend -name iv_invoice_form -form {
-    {payment_days:integer,optional {label "[_ invoices.iv_invoice_payment_days]"} {html {size 5 maxlength 5}} {help_text "[_ invoices.iv_invoice_payment_days_help]"}}
+    {payment_days:integer(inform),optional {label "[_ invoices.iv_invoice_payment_days]"} {html {size 5 maxlength 5}} {help_text "[_ invoices.iv_invoice_payment_days_help]"}}
 }
 
 if {!$has_submit} {
@@ -261,8 +295,30 @@ if {!$has_submit} {
 if {!$_invoice_id} {
     # adding a new invoice
     if {![empty_string_p $project_id]} {
-	
+
+	# get all subprojects marked for no invoice to display warning
+	foreach main_project_id $project_id {
+	    set subprojects [wieners::process::subprojects -project_id $main_project_id]
+
+	    db_foreach not_invoiceable_subprojects {} {
+		set offer_url [export_vars -base offer-ae {offer_id {mode display}}]
+		lappend no_invoice($main_project_id) "<a href=\"$offer_url\">$offer_title</a>"
+	    }
+	}
+
+	set project_title 0
 	db_foreach offer_items {} -column_array offer {
+
+	    # check if project changed in loop over offer-items
+	    # show warning of subprojects without invoice if necessary
+	    if {$project_title != $offer(project_title) && $project_title != "0" && [exists_and_not_null no_invoice($old_project_id)]} {
+		ad_form -extend -name iv_invoice_form -form \
+		    [list [list "no_invoice.${old_project_id}:text(inform),optional" \
+			       [list label "<font color=red>\#invoices.iv_invoice_no_invoice\#</font>"] \
+			       [list value "<ul><li>[join $no_invoice($old_project_id) "</li><li>"]</li></ul>"] \
+			       [list section "<a href=\"$offer_url\">[_ invoices.iv_invoice_project_title] $project_title</a>"] ] ]
+	    }
+
 	    set offer(price_per_unit) [format "%.2f" $offer(price_per_unit)]
 	    set offer(amount_sum) [format "%.2f" [expr $offer(item_units) * $offer(price_per_unit)]]
 	    set offer(amount) [format "%.2f" [expr (1. - ($offer(rebate) / 100.)) * $offer(amount_sum)]]
@@ -290,13 +346,26 @@ if {!$_invoice_id} {
 	    }
 
 	    set offers($offer(offer_item_id)) [array get offer]
+	    set offer_url [export_vars -base offer-ae {{offer_id $offer(offer_cr_item_id)} {mode display} {return_url $current_url}}]
+	    set project_title $offer(project_title)
+	    set old_project_id $offer(project_id)
 
 	    ad_form -extend -name iv_invoice_form -form \
 		[list [list "offer_item_ids.${offer(offer_item_id)}:text(checkbox),optional" \
 			   [list label "$offer(item_nr), $offer(title)"] \
 			   [list options [list [list "$offer_name" t]]] \
 			   [list values [list t]] \
-			   [list section "[_ invoices.iv_invoice_project_title] $offer(project_title)"] ] ]
+			   [list section "<a href=\"$offer_url\">[_ invoices.iv_invoice_project_title] $project_title</a>"] ] ]
+	}
+
+	# check if project changed in loop over offer-items
+	# show warning of subprojects without invoice if necessary
+	if {[exists_and_not_null offer(project_title)] && [exists_and_not_null no_invoice($old_project_id)]} {
+	    ad_form -extend -name iv_invoice_form -form \
+		[list [list "no_invoice.${old_project_id}:text(inform),optional" \
+			   [list label "<font color=red>\#invoices.iv_invoice_no_invoice\#</font>"] \
+			   [list value "<ul><li>[join $no_invoice($old_project_id) "</li><li>"]</li></ul>"] \
+			   [list section "<a href=\"$offer_url\">[_ invoices.iv_invoice_project_title] $project_title</a>"] ] ]
 	}
     }
 } else {
@@ -329,6 +398,7 @@ if {!$_invoice_id} {
 	}
 
 	set offers($offer(iv_item_id)) [array get offer]
+	set offer_url [export_vars -base offer-ae {{offer_id $offer(offer_cr_item_id)} {mode display} {return_url $current_url}}]
 
 	if {$mode == "edit"} {
 	    # edit: use checkboxes
@@ -337,14 +407,14 @@ if {!$_invoice_id} {
 			   [list label "$offer(item_nr), $offer(title)"] \
 			   [list options [list [list "$offer_name" t]]] \
 			   [list values [list t]] \
-			   [list section "[_ invoices.iv_invoice_project_title] $offer(project_title)"] ] ]
+			   [list section "<a href=\"$offer_url\">[_ invoices.iv_invoice_project_title] $offer(project_title)</a>"] ] ]
 	} else {
 	    # display: no checkboxes
 	    ad_form -extend -name iv_invoice_form -form \
 		[list [list "offer_item_ids.${offer(iv_item_id)}:text(inform)" \
 			   [list label "$offer(title), $offer(item_nr)"] \
 			   [list value "$offer_name"] \
-			   [list section "[_ invoices.iv_invoice_project_title] $offer(project_title)"] ] ]
+			   [list section "<a href=\"$offer_url\">[_ invoices.iv_invoice_project_title] $offer(project_title)</a>"] ] ]
 	}
     }
 }
@@ -364,6 +434,16 @@ ad_form -extend -name iv_invoice_form -new_request {
     db_1row offer_data {}
     set vat_percent [format "%.1f" $vat_percent]
     set invoice_rebate $open_rebate
+
+    set contacts_package_id [lindex [application_link::get_linked -from_package_id $package_id -to_package_key contacts] 0]
+    array set org_data [contacts::get_values \
+			    -group_name "Customers" \
+			    -object_type "organization" \
+			    -party_id $organization_id \
+			    -contacts_package_id $contacts_package_id]
+    if {[info exists org_data(vat_percent)]} {
+	set vat_percent [format "%.1f" $org_data(vat_percent)]
+    }
 } -edit_request {
     db_1row get_data {}
     set creator_name "$first_names $last_name"

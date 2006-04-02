@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="invoices" package_version="1.0d1" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="invoices" package_version="1.0d2" locale="en_US" charset="ISO-8859-1">
 
   <msg key="accepted">Order confirmation</msg>
   <msg key="Accepted_date">Accepted on</msg>
@@ -116,6 +116,8 @@
   <msg key="iv_invoice_cancel_Add">Add invoice cancellation</msg>
   <msg key="iv_invoice_cancel_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Cancellation&lt;/h3&gt;%data.contact_salutation%,&lt;p&gt;see attached invoice cancellation %data.invoice_nr%.&lt;p&gt;Best wishes,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_invoice_cancel_email_subject">Cancellation # %invoice_nr%</msg>
+  <msg key="iv_invoice_cancellation">Canceled by</msg>
+  <msg key="iv_invoice_cancelled_invoice">Cancelled invoice</msg>
   <msg key="iv_invoice_closed_date">Finished on</msg>
   <msg key="iv_invoice_contact">Invoice Contact</msg>
   <msg key="iv_invoice_contact_help">Email recipient of this invoice</msg>
@@ -140,6 +142,7 @@
   <msg key="iv_invoice_edit_error">You are not allowed to edit a paid or cancelled invoice</msg>
   <msg key="iv_invoice_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Invoice&lt;/h3&gt;%data.contact_salutation%,&lt;p&gt;see attached invoice %data.invoice_nr%.&lt;p&gt;Best wishes,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_invoice_email_subject">Invoice # %invoice_nr%</msg>
+  <msg key="iv_invoice_end_date">End date</msg>
   <msg key="iv_invoice_invoice_nr">Invoice number</msg>
   <msg key="iv_invoice_invoice_nr_help">Number of the Invoice. Needs to be unique for accounting purposes.</msg>
   <msg key="iv_invoice_item_1">Invoice Item</msg>
@@ -162,6 +165,7 @@
   <msg key="iv_invoice_item_View">View Invoice Item</msg>
   <msg key="iv_invoice_New">New Invoice</msg>
   <msg key="iv_invoice_New2">Create New Invoice</msg>
+  <msg key="iv_invoice_no_invoice">Subprojects without invoice</msg>
   <msg key="iv_invoice_opening_p">Send Opening Page</msg>
   <msg key="iv_invoice_organization">Customer</msg>
   <msg key="iv_invoice_organization_help">Client for whom to create the invoice</msg>
@@ -185,6 +189,7 @@
   <msg key="iv_invoice_send">Send</msg>
   <msg key="iv_invoice_specialities">Invoice Specialities</msg>
   <msg key="iv_invoice_specialities_help">Invoice specialities to take into account</msg>
+  <msg key="iv_invoice_start_date">Start date</msg>
   <msg key="iv_invoice_status">Status</msg>
   <msg key="iv_invoice_status_billed">Billed</msg>
   <msg key="iv_invoice_status_cancelled">Cancelled</msg>
@@ -193,6 +198,8 @@
   <msg key="iv_invoice_Title">Title</msg>
   <msg key="iv_invoice_Title_help">Title for the invoice</msg>
   <msg key="iv_invoice_total_amount">Total amount</msg>
+  <msg key="iv_invoice_url">Invoices</msg>
+  <msg key="iv_invoice_url2">Rechnungen, Preislisten, Reports</msg>
   <msg key="iv_invoice_vat">VAT</msg>
   <msg key="iv_invoice_vat_percent">%VAT</msg>
   <msg key="iv_invoice_vat_percent_help">Percentage of VAT added in the invoice</msg>
@@ -208,7 +215,7 @@
   <msg key="iv_offer_accept">Accept Offer</msg>
   <msg key="iv_offer_accepted_date">Accepted on</msg>
   <msg key="iv_offer_accepted_date_help">Accepted date</msg>
-  <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;%data.contact_salutation%, &lt;p&gt;thank you for your order! You'll find the details in the attached PDF file.&lt;p&gt;With best regards&lt;p&gt;@am_name@&lt;br&gt;Customer service&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;%data.contact_salutation%, &lt;p&gt;thank you for your order! You'll find the details in the attached PDF file.&lt;p&gt;With best regards&lt;p&gt;%am_name;noquote%&lt;br&gt;Customer service&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_accepted_email_subject">Order confirmation # %offer_nr%</msg>
   <msg key="iv_offer_accepted_thanks">Thank you for accepting our offer. We will contact you as soon as possible.</msg>
   <msg key="iv_offer_Add">Cost Sheet for &quot;%organization_name%&quot;</msg>
@@ -236,10 +243,11 @@
   <msg key="iv_offer_Description_help">Description of the cost sheet</msg>
   <msg key="iv_offer_Edit">Edit Cost Sheet</msg>
   <msg key="iv_offer_edit_error">You are not allowed to edit an accepted or invoiced cost sheet</msg>
-  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;%data.contact_salutation%,&lt;p&gt;you'll find the requested offer in the attached PDF file.&lt;p&gt;To accept this offer, please klick &lt;a href=&quot;%accept_link%&quot;&gt;here&lt;/a&gt;.&lt;p&gt;With best regards&lt;p&gt;%am_name%&lt;br&gt;Kundenberatung&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;%data.contact_salutation%,&lt;p&gt;you'll find the requested offer in the attached PDF file.&lt;p&gt;To accept this offer, please klick &lt;a href=&quot;%accept_link%&quot;&gt;here&lt;/a&gt;.&lt;p&gt;With best regards&lt;p&gt;%am_name;noquote%&lt;br&gt;Kundenberatung&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_email_subject">Offer # %offer_nr%</msg>
   <msg key="iv_offer_file">File upload</msg>
   <msg key="iv_offer_file_delete">Delete Files</msg>
+  <msg key="iv_offer_file_help">File Help</msg>
   <msg key="iv_offer_file_view">Files</msg>
   <msg key="iv_offer_finish_date">Finish on</msg>
   <msg key="iv_offer_finish_date_help">Deadline until which the project has to be delivered to the client</msg>
@@ -297,6 +305,7 @@
   <msg key="iv_offer_payment_days_help">How many days has the customer until the invoice has to be paid</msg>
   <msg key="iv_offer_project">Project</msg>
   <msg key="iv_offer_project_contact">Contact</msg>
+  <msg key="iv_offer_project_customer">Customer</msg>
   <msg key="iv_offer_project_date">Project deadline</msg>
   <msg key="iv_offer_project_date_help">Deadline to finish the project</msg>
   <msg key="iv_offer_project_descr">Description</msg>
@@ -305,6 +314,7 @@
   <msg key="iv_offer_project_title">Title</msg>
   <msg key="iv_offer_send">Send Offer</msg>
   <msg key="iv_offer_send_accepted">Send confirmation</msg>
+  <msg key="iv_offer_subproject_finish_date_help">Interne Deadline des Subprojektes</msg>
   <msg key="iv_offer_template">Template des Angebots</msg>
   <msg key="iv_offer_Title">Title</msg>
   <msg key="iv_offer_Title_help">Title of the offer</msg>
@@ -372,12 +382,14 @@
   <msg key="Offers">Cost Sheets</msg>
   <msg key="offers">Cost Sheets</msg>
   <msg key="Offers_items">Offers Items</msg>
+  <msg key="ok">Ok</msg>
   <msg key="Page_count">Number of pages</msg>
   <msg key="Parent_invoice_item">Parent invoice item</msg>
   <msg key="Parent_offer_item">Parent cost item</msg>
   <msg key="Payment">Payment</msg>
   <msg key="Payment_after__days">Payment after .. days</msg>
   <msg key="Payments">Payments</msg>
+  <msg key="Preview">Preview</msg>
   <msg key="Price">Price</msg>
   <msg key="Price_category">Price category</msg>
   <msg key="Price_List">Price List</msg>
@@ -389,9 +401,16 @@
   <msg key="Rebate">Rebate</msg>
   <msg key="Received_on">Received on</msg>
   <msg key="Recipient">Recipient</msg>
+  <msg key="show_all_offer_projects">All projects</msg>
+  <msg key="show_all_offers">All Offers</msg>
+  <msg key="show_all_offers2">Show all offers</msg>
+  <msg key="show_own_offer_projects">Own projects</msg>
+  <msg key="show_own_offers">My Offers</msg>
+  <msg key="show_own_offers2">Show only my own offers</msg>
   <msg key="Sort_order">Sort order</msg>
   <msg key="Status">Status</msg>
   <msg key="Table">Table</msg>
+  <msg key="template_cancelled_invoice_number">Cancelled invoice</msg>
   <msg key="template_invoice">Invoice</msg>
   <msg key="template_invoice_cancel">Invoice cancellation</msg>
   <msg key="template_invoice_credit">Credit</msg>
@@ -399,12 +418,14 @@
   <msg key="template_offer">Offer</msg>
   <msg key="template_offer_accepted">Order confirmation</msg>
   <msg key="Total">Total</msg>
+  <msg key="Total2">Total</msg>
   <msg key="Total_amount">Total amount</msg>
   <msg key="Total_offers">Total Offers</msg>
   <msg key="units">h</msg>
   <msg key="Unmounted">Unmounted</msg>
   <msg key="VAT">%VAT</msg>
   <msg key="VAT_amount">VAT amount</msg>
+  <msg key="vat_number">VAT number</msg>
   <msg key="year">Year</msg>
   <msg key="yes">Yes</msg>
   <msg key="You_have_selected_more">You have selected more than one customer. This is not allowed (how would you bill two different customers with the same invoice)</msg>

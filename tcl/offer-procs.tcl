@@ -104,6 +104,9 @@ ad_proc -public iv::offer::edit {
 } {
     db_transaction {
 	set status [iv::offer::get_status -offer_id $offer_id]
+	if {[empty_string_p $status]} {
+	    set status new
+	}
 	set old_rev_id [content::item::get_best_revision -item_id $offer_id]
 	set new_rev_id [content::revision::new \
 			    -item_id $offer_id \
@@ -140,7 +143,9 @@ ad_proc -public iv::offer::set_status {
 
     Edit Offer status
 } {
-    db_dml update_status {}
+    if {![empty_string_p $status]} {
+	db_dml update_status {}
+    }
 }
 
 ad_proc -public iv::offer::get_status {

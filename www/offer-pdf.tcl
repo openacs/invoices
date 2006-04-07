@@ -7,6 +7,7 @@ ad_page_contract {
 } {
     offer_id:integer
     file_id:integer
+    {return_url ""}
 }
 
 set user_id [auth::require_login]
@@ -16,9 +17,11 @@ set project_id [lindex [application_data_link::get_linked -from_object_id $offer
 if {![empty_string_p $project_id]} {
     acs_object::get -object_id $project_id -array project
     set pm_url [lindex [site_node::get_url_from_object_id -object_id $project(package_id)] 0]
-    set return_url [export_vars -base "${pm_url}one" {{project_item_id $project_id}}]
+    if {[empty_string_p $return_url]} {
+	set return_url [export_vars -base "${pm_url}one" {{project_item_id $project_id}}]
+    }
     db_1row project_data {}
-} else {
+} elseif {[empty_string_p $return_url]} {
     set return_url [export_vars -base offer-list {organization_id}]
 }
 

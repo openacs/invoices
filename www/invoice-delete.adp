@@ -5,4 +5,3 @@
 <blockquote>
   <formtemplate id="delete_confirm"></formtemplate>
 </blockquote>
-    

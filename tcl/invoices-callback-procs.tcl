@@ -150,6 +150,7 @@ ad_proc -public -callback iv::offer_accept {
 
 ad_proc -public -callback iv::offer_accepted {
     {-offer_id:required}
+    {-comment:required}
 } {
 }
 

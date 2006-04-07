@@ -65,9 +65,7 @@ if {![empty_string_p $document_file]} {
 }
 
 if {[llength $file_ids] > 0} {
-    set return_url [export_vars -base offer-pdf {offer_id {file_id $file_ids}}]
-} else {
-    set return_url ""
+    set return_url [export_vars -base offer-pdf {offer_id {file_id $file_ids} return_url}]
 }
 
 set project_id [lindex [application_data_link::get_linked -from_object_id $offer_id -to_object_type content_item] 0]

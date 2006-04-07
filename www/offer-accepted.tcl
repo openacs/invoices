@@ -5,6 +5,9 @@ ad_page_contract {
     x:notnull
 }
 
+# Retrieving the value of the parameter to know wich include to call
+set template_src [parameter::get -parameter "OfferAccept"]
+
 if {![db_0or1row check_offer_id {}]} {
     ad_return_complaint 1 "This is not the latest offer."
     return
@@ -19,16 +22,12 @@ if {!$valid_x_p} {
     return
 }
 
-set package_id [ad_conn package_id]
+set page_title "[_ invoices.offer_accept]"
 
-if {$valid_x_p} {
+if {$valid_x_p && [empty_string_p $template_src]} {
     db_transaction {
 	iv::offer::accept -offer_id $offer_id
 	callback iv::offer_accept -offer_id $offer_id
-	callback iv::offer_accepted -offer_id $offer_id
+	callback iv::offer_accepted -offer_id $offer_id -comment ""
     }
-} else {
-    ns_log notice "Invalid secret key when accepting offer $offer_id"
 }
-
-ad_return_template

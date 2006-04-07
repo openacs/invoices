@@ -7,7 +7,7 @@
     <initial-install-p>f</initial-install-p>
     <singleton-p>t</singleton-p>
     
-    <version name="1.0d4" url="http://openacs.org/repository/download/apm/invoices-1.0d4.apm">
+    <version name="1.0d5" url="http://openacs.org/repository/download/apm/invoices-1.0d5.apm">
         <owner url="mailto:timo@timohentschel.de">Timo Hentschel</owner>
         <summary>Invoices package that will collect costs to invoice items in invoices and store data about received payment.</summary>
         <release-date>2005-11-15</release-date>
@@ -15,7 +15,7 @@
         <description format="text/plain">Collect costs to invoice items and invoices, store payment information.</description>
         <maturity>0</maturity>
 
-        <provides url="invoices" version="1.0d4"/>
+        <provides url="invoices" version="1.0d5"/>
         <requires url="acs-content-repository" version="5.1.4d3"/>
         <requires url="acs-kernel" version="5.0d13"/>
         <requires url="acs-templating" version="5.1.5d1"/>
@@ -38,6 +38,7 @@
             <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="InvoiceTemplate"  default="/templates/pdf/invoice/" description="Location of the invoice template which is parsed to generate the invoice."/>
             <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="JournalFolderID"  default="" description="Folder_id of the file-storage folder to put the journal files in."/>
             <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="MailSendBoxFileP"  description="Location of the file for prefilling the mail send box."/>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="OfferAccept"  default="" description="Location of the page to be displayed if an external user accepts an offer. Leave empty for default."/>
             <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="OfferTemplate"  default="/templates/pdf/offer/" description="Location of the offer template which is parsed to generate the offer."/>
         </parameters>
 

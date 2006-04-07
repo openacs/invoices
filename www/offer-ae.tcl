@@ -854,7 +854,6 @@ ad_form -extend -name iv_offer_form -new_request {
 	}
     }
 
-    set return_url ""
     if {[empty_string_p $return_url]} {
 	ad_returnredirect [export_vars -base offer-ae {offer_id {mode display}}]
 	ad_script_abort

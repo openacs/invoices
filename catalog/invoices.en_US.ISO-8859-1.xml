@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="invoices" package_version="1.0d3" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="invoices" package_version="1.0d5" locale="en_US" charset="ISO-8859-1">
 
   <msg key="accepted">Order confirmation</msg>
   <msg key="Accepted_date">Accepted on</msg>
@@ -20,6 +20,7 @@
   <msg key="Between">Between</msg>
   <msg key="Billable_Projects">Billable Projects</msg>
   <msg key="Cancel">Cancel</msg>
+  <msg key="cancel_accept">Cancel</msg>
   <msg key="cancel_and_return">Cancel and Return</msg>
   <msg key="Cancelled">Cancelled?</msg>
   <msg key="Categories">Categories</msg>
@@ -384,6 +385,7 @@
   <msg key="None">None</msg>
   <msg key="Number_of_units">Number of units</msg>
   <msg key="Offer">Cost Sheet</msg>
+  <msg key="offer_accept">Accept Offer</msg>
   <msg key="Offer_Item">Offer Item</msg>
   <msg key="Offer_Item_Id">Offer Item ID</msg>
   <msg key="Offer_item_number">Offer item number</msg>

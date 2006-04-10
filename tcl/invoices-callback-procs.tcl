@@ -143,6 +143,12 @@ ad_proc -public -callback pm::project_links -impl invoices {
     }
 }
 
+ad_proc -public -callback iv::offer_send_form {
+    {-offer_id:required}
+    {-project_id:required}
+} {
+}
+
 ad_proc -public -callback iv::offer_accept {
     {-offer_id:required}
 } {

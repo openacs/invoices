@@ -35,6 +35,8 @@ set documents [iv::offer::parse_data -offer_id $offer_id -type accepted -email_t
 
 set offer_text [lindex $documents 0]
 
+callback iv::offer_send_form -offer_id $offer_id -project_id $project_id
+
 set invoice_url [site_node::get_package_url -package_key invoices]
 set cancel_url [export_vars -base "${invoice_url}offer-ae" {offer_id {mode display} return_url}]
 

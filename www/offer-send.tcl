@@ -47,6 +47,8 @@ if {[empty_string_p $accepted_date] || $type == "offer"} {
     set file_title [lang::util::localize "#invoices.file_offer_accepted#_${offer_nr}.pdf" $locale]
 }
 
+callback iv::offer_send_form -offer_id $offer_id -project_id $project_id
+
 set invoice_url [site_node::get_package_url -package_key invoices]
 set cancel_url [export_vars -base "${invoice_url}offer-ae" {offer_id {mode display} return_url}]
 

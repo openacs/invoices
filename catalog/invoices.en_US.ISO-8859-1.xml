@@ -65,6 +65,9 @@
   <msg key="file_offer_accepted">Order confirmation</msg>
   <msg key="Final_Amount">Gross amount</msg>
   <msg key="Finish_date">Deadline</msg>
+  <msg key="first_order_Amount_total">First order amount</msg>
+  <msg key="first_order_Creation_Date">First order at</msg>
+  <msg key="First_Order_Reports">Reports for first orders</msg>
   <msg key="Fixed_cost">Fixed cost?</msg>
   <msg key="folder_iv_accepted">Order confirmation</msg>
   <msg key="folder_iv_invoice">Invoices</msg>

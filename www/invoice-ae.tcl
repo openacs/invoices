@@ -124,7 +124,7 @@ if {[apm_package_installed_p "contacts"]} {
     set invoice_specialities ""
 }
 
-set context [list [list "invoice-list" "[_ invoices.iv_invoice_2]"] [list [export_vars -base invoice-add {organization_id}] "[_ invoices.iv_invoice_Add]"] $page_title]
+set context [list [list "invoice-list" "[_ invoices.iv_invoice_2]"] [list [export_vars -base invoice-list {organization_id}] "[_ invoices.iv_invoice_Add]"] $page_title]
 array set container_objects [iv::util::get_default_objects -package_id $package_id]
 set timestamp_format "$date_format [lc_get formbuilder_time_format]"
 

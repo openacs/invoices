@@ -6,6 +6,7 @@ ad_page_contract {
 } {
     offer_id:integer
     {return_url ""}
+    {type ""}
 } -properties {
     context:onevalue
     page_title:onevalue
@@ -30,7 +31,7 @@ set x [iv::util::get_x_field -offer_id $offer_rev_id]
 set accept_link [export_vars -base "[ad_url][ad_conn package_url]offer-accepted" {x {offer_id $offer_rev_id}}]
 content::item::set_live_revision -revision_id $offer_rev_id
 
-if {[empty_string_p $accepted_date]} {
+if {[empty_string_p $accepted_date] || $type == "offer"} {
     # send pending offer
     set offer_text "#invoices.iv_offer_email#"
     set subject [lang::util::localize "#invoices.iv_offer_email_subject#" $locale]

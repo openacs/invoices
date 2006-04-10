@@ -326,6 +326,7 @@
   <msg key="iv_offer_reservation_help">Offer reservation that will appear only on offer.</msg>
   <msg key="iv_offer_send">Send Offer</msg>
   <msg key="iv_offer_send_accepted">Send confirmation</msg>
+  <msg key="iv_offer_send_again">Send offer again</msg>
   <msg key="iv_offer_subproject_finish_date_help">Interne Deadline des Subprojektes</msg>
   <msg key="iv_offer_template">Template des Angebots</msg>
   <msg key="iv_offer_Title">Title</msg>

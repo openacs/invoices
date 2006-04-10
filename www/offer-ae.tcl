@@ -74,7 +74,7 @@ if {![info exists offer_id] || $__new_p} {
     set cur_vat_percent [format "%.1f" $cur_vat_percent]
     if {$mode == "edit"} {
 	db_1row check_invoices {}
-	if {$invoice_count>0 && ![info exists send]} {
+	if {$invoice_count>0 && ![info exists send] && ![info exists send_accepted]} {
 	    # do not allow to edit an invoiced offer
 	    ad_return_complaint 1 "[_ invoices.iv_offer_edit_error]"
 	}
@@ -98,7 +98,7 @@ if {[info exists accept]} {
     ad_script_abort
 }
 if {[info exists send]} {
-    ad_returnredirect [export_vars -base offer-send {organization_id offer_id return_url}]
+    ad_returnredirect [export_vars -base offer-send {organization_id offer_id return_url {type offer}}]
     ad_script_abort
 }
 if {[info exists send_accepted]} {
@@ -555,6 +555,7 @@ if {$has_submit} {
 	}
     } else {
 	ad_form -extend -name iv_offer_form -form {
+	    {send:text(submit) {label "[_ invoices.iv_offer_send_again]"} {value t}}
 	    {send_accepted:text(submit) {label "[_ invoices.iv_offer_send_accepted]"} {value t}}
 	}
     }

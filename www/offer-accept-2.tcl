@@ -35,6 +35,9 @@ set documents [iv::offer::parse_data -offer_id $offer_id -type accepted -email_t
 
 set offer_text [lindex $documents 0]
 
+set invoice_url [site_node::get_package_url -package_key invoices]
+set cancel_url [export_vars -base "${invoice_url}offer-ae" {offer_id {mode display} return_url}]
+
 set file_ids {}
 set document_file [lindex $documents 1]
 if {![empty_string_p $document_file]} {
@@ -45,18 +48,15 @@ if {![empty_string_p $document_file]} {
     # content::item::set_live_revision -revision_id $file_ids
 
     db_dml set_publish_status {}
-    set return_url [export_vars -base offer-pdf {offer_id {file_id $file_ids}}]
+    set return_url [export_vars -base offer-pdf {offer_id {file_id $file_ids} return_url}]
 }
 
 if {[empty_string_p [cc_email_from_party $contact_id]]} {
     ad_return_error "No Recipient $contact_id" "The recipient does not have a valid e-mail address. Please go back and make sure that you provide an e-mail address first."
 }
 
-set cancel_url [export_vars -base offer-list {organization_id}]
-
 if {[empty_string_p $return_url]} {
-    set invoice_url [site_node::get_package_url -package_key invoices]
-    set return_url [export_vars -base "${invoice_url}offer-ae" {offer_id {mode display}}]
+    set return_url $cancel_url
 }
 set extra_data [list offer_id $offer_id]
 set contacts_package_id [apm_package_id_from_key contacts]

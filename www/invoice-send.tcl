@@ -146,6 +146,8 @@ if {[llength $file_ids] > 0} {
     
 }
 
+set cancel_url [export_vars -base invoice-list {organization_id}]
+
 if {[empty_string_p $return_url]} { 
     set return_url [export_vars -base invoice-list {organization_id}]
 }

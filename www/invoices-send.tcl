@@ -45,6 +45,7 @@ set invoice_nrs [join $invoice_nrs ", "]
 set invoice_text [lang::util::localize "#invoices.iv_invoices_email#" $locale]
 set subject [lang::util::localize "#invoices.iv_invoices_email_subject#" $locale]
 set return_url [export_vars -base invoice-list {organization_id}]
+set cancel_url [export_vars -base invoice-list {organization_id}]
 
 if {[empty_string_p [cc_email_from_party $contact_id]]} {
     ad_return_error "No Contact" "The contact does not have a valid e-mail address. Please go back and make sure that you provide an e-mail address first."

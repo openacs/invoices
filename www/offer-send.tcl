@@ -47,6 +47,9 @@ if {[empty_string_p $accepted_date] || $type == "offer"} {
     set file_title [lang::util::localize "#invoices.file_offer_accepted#_${offer_nr}.pdf" $locale]
 }
 
+set invoice_url [site_node::get_package_url -package_key invoices]
+set cancel_url [export_vars -base "${invoice_url}offer-ae" {offer_id {mode display} return_url}]
+
 # substitute variables in offer text
 # and return the content of the email plus the file-paths to the document file
 set documents [iv::offer::parse_data -offer_id $offer_id -type $document_type -email_text $offer_text -accept_link $accept_link]

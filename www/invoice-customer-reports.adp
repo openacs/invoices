@@ -29,4 +29,8 @@
 	end_date="@end_date@"
         orderby="@orderby@"
         country_code="@country_code@"
+        sector="@sector@"
+        category_id="@category_id@"
+        type="@type@"
+        manager_id="@manager_id@"
 />

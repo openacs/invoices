@@ -1,5 +1,5 @@
 set optional_param_list [list]
-set optional_unset_list [list country_code]
+set optional_unset_list [list country_code type manager_id sector category_id]
 
 foreach optional_unset $optional_unset_list {
     if {[info exists $optional_unset]} {
@@ -16,29 +16,74 @@ foreach optional_param $optional_param_list {
 }
 
 
+set manager_p [group::member_p -group_name "Account Manager"]
+if {$manager_p} {
+    set manager_id [ad_conn user_id]
+}
+
 set return_url [ad_return_url]
 set postal_attribute_id [attribute::id -object_type "organization" -attribute_name "company_address"]
+set sector_attribute_id [attribute::id -object_type "organization" -attribute_name "industrysector"]
 
 set start_date_sql ""
+set start_date_extra_sql ""
 if { $start_date != "YYYY-MM-DD" } {
     # Get all customer invoices starting with start_date
-    set start_date_sql "ao.creation_date > to_timestamp(:start_date, 'YYYY-MM-DD')"
+    set start_date_sql [db_map start_date]
+    set start_date_extra_sql [db_map start_date_new_customer]
 }
 
 set end_date_sql ""
+set end_date_extra_sql ""
 if { $end_date != "YYYY-MM-DD" } {
     # Get all customer invoices up to and including end_date
-    set end_date_sql "ao.creation_date < to_timestamp(:end_date, 'YYYY-MM-DD') + interval '1 day'"
+    set end_date_sql [db_map end_date]
+    set end_date_extra_sql [db_map end_date_new_customer]
 }
 
-set country_where_clause ""
+set extra_sql ""
 set sql_query_name all_customer_orders
 if { [exists_and_not_null country_code] } {
-    set country_where_clause "p.country_code in ('[join $country_code "', '"]')"
-    set sql_query_name all_customer_orders_of_country
+    append extra_sql [db_map customers_of_country]
+}
+
+if { [exists_and_not_null sector] } {
+    append extra_sql [db_map customers_of_sector]
+}
+
+if { [exists_and_not_null manager_id] } {
+    append extra_sql [db_map customers_of_account_manager]
+}
+
+if { [exists_and_not_null category_id] } {
+    set sql_query_name category_customer_orders
+}
+
+if { [exists_and_not_null type] } {
+    set first_date "2006-02-01"
+    append extra_sql [db_map new_customers]
 }
 
 set country_options [util::address::country_options]
+set sector_options [ams::widget_options -attribute_id $sector_attribute_id]
+set type_options [list [list "[_ invoices.report_new_customer]" new]]
+
+set manager_group_id [group::get_id -group_name "Account Manager"]
+set manager_options {}
+foreach member_id [group::get_members -group_id $manager_group_id] {
+    lappend manager_options [list [contact::name -party_id $member_id -reverse_order] $member_id]
+}
+set manager_options [lsort -dictionary $manager_options]
+
+set category_options {}
+set package_id [ad_conn package_id]
+array set container_objects [iv::util::get_default_objects -package_id $package_id]
+set tree_id [lindex [lindex [category_tree::get_mapped_trees $container_objects(offer_item_id)] 0] 0]
+set category_tree_name [category_tree::get_name $tree_id]
+foreach cat [category_tree::get_tree $tree_id] {
+    util_unlist $cat cat_id cat_name
+    lappend category_options [list [lang::util::localize $cat_name] $cat_id]
+}
 
 template::list::create \
     -name reports \
@@ -61,6 +106,8 @@ template::list::create \
 	}
 	invoice_count {
 	    label "[_ invoices.Invoice_count]"
+	    aggregate sum
+	    aggregate_label "[_ invoices.Total]:"
 	}
     } -orderby {
 	default_value amount_total
@@ -80,11 +127,29 @@ template::list::create \
 	    default_direction desc
         }
     } -filters {
+	type {
+	    label "[_ invoices.report_customer_type]"
+	    values $type_options
+	}
 	country_code {
 	    label "[_ ams.country]"
 	    type multival
 	    values $country_options
-	    where_clause $country_where_clause
+	}
+	sector {
+	    label "[_ acs-translations.ams_attribute_${sector_attribute_id}_pretty_name]"
+	    type multival
+	    values $sector_options
+	}
+	manager_id {
+	    label "[_ acs-translations.group_title_${manager_group_id}]"
+	    values $manager_options
+	    hide_p $manager_p
+	}
+	category_id {
+	    label $category_tree_name
+	    type multival
+	    values $category_options
 	}
 	start_date {
 	    where_clause $start_date_sql

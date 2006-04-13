@@ -16,6 +16,7 @@ foreach optional_param $optional_param_list {
 }
 
 
+set first_date "2006-02-01"
 set start_date_sql ""
 if { $start_date != "YYYY-MM-DD" } {
     # Get all customer invoices starting with start_date

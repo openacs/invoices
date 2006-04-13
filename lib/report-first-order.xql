@@ -17,7 +17,7 @@
     and o.offer_id = i.latest_revision
     and o.organization_id = sub.organization_id
     and o.offer_id = sub.offer_id
-    $extra_query
+    [template::list::filter_where_clauses -and -name "reports"]
     [template::list::orderby_clause -name reports -orderby]
     </querytext>
 </fullquery>

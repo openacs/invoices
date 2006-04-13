@@ -1,5 +1,5 @@
 set optional_param_list [list]
-set optional_unset_list [list category_f]
+set optional_unset_list [list]
 
 foreach optional_unset $optional_unset_list {
     if {[info exists $optional_unset]} {
@@ -16,31 +16,16 @@ foreach optional_param $optional_param_list {
 }
 
 
-# Procedure that manages the date filter
-set date_filter [iv::invoice::year_month_day_filter \
-		     -base $base_url \
-		     -year $year \
-		     -month $month \
-		     -day $day \
-		     -last_years $last_years \
-		     -extra_vars ""]
-
-set return_url [ad_return_url]
-set extra_query ""
-
-if { [exists_and_not_null year] } {
-    # We get the projects for this year
-    append extra_query " and to_char(ao.creation_date, 'YYYY') = :year"
+set start_date_sql ""
+if { $start_date != "YYYY-MM-DD" } {
+    # Get all customer invoices starting with start_date
+    set start_date_sql "ao.creation_date > to_timestamp(:start_date, 'YYYY-MM-DD')"
 }
 
-if { [exists_and_not_null month] } {
-    # We get the projects for this specific month
-    append extra_query " and to_char(ao.creation_date, 'MM') = :month"
-}
-
-if { [exists_and_not_null day] } {
-    # We get the projects for this specific day
-    append extra_query " and to_char(ao.creation_date, 'DD') = :day"
+set end_date_sql ""
+if { $end_date != "YYYY-MM-DD" } {
+    # Get all customer invoices up to and including end_date
+    set end_date_sql "ao.creation_date < to_timestamp(:end_date, 'YYYY-MM-DD') + interval '1 day'"
 }
 
 
@@ -83,6 +68,13 @@ template::list::create \
 	    orderby {o.amount_total}
 	    default_direction desc
         }
+    } -filters {
+	start_date {
+	    where_clause $start_date_sql
+	}
+	end_date {
+	    where_clause $end_date_sql
+	}
     }
 
 

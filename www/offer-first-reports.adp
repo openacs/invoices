@@ -10,8 +10,8 @@
   @export_vars;noquote@
   <table>
     <tr>
-      <td>#invoices.iv_invoice_start_date# <input type=text name="start_date" size=12 value="@start_date@"></td>
-      <td>#invoices.iv_invoice_end_date# <input type=text name="end_date" size=12 value="@end_date@"</td>
+      <td>#invoices.iv_invoice_start_date# <input type=text name="start_date" size=12 value="@start_date@" id=sel1><input type='reset' value=' ... ' onclick="return showCalendar('sel1', 'y-m-d');"></td>
+      <td>#invoices.iv_invoice_end_date# <input type=text name="end_date" size=12 value="@end_date@" id=sel2><input type='reset' value=' ... ' onclick="return showCalendar('sel2', 'y-m-d');"></td></td>
       <td><input type=submit name="submit" value="#invoices.ok#"></td>
     </tr>
     <if @clear_p@ eq 1>

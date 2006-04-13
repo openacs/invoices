@@ -47,6 +47,7 @@
   <msg key="Currency">Currency</msg>
   <msg key="Currency_paid">Currency paid</msg>
   <msg key="Customer">Customer</msg>
+  <msg key="Customer_Invoices_Reports">Customer invoices report</msg>
   <msg key="Date_Range">Date Range:</msg>
   <msg key="day">Day</msg>
   <msg key="Delete">Delete</msg>
@@ -75,6 +76,7 @@
   <msg key="Group_by">Group By</msg>
   <msg key="Invoice">Invoice</msg>
   <msg key="Invoice_Cancel">Cancel</msg>
+  <msg key="Invoice_count">Invoice count</msg>
   <msg key="Invoice_Item">Invoice Item</msg>
   <msg key="Invoice_item_number">Invoice item number</msg>
   <msg key="Invoice_Item_title">Invoice Item Title</msg>

@@ -10,7 +10,8 @@
   <table>
     <tr>
       <td>#invoices.iv_invoice_start_date# <input type=text name="start_date" size=12 value="@start_date@" id=sel1><input type='reset' value=' ... ' onclick="return showCalendar('sel1', 'y-m-d');"></td>
-      <td>#invoices.iv_invoice_end_date# <input type=text name="end_date" size=12 value="@end_date@" id=sel2><input type='reset' value=' ... ' onclick="return showCalendar('sel2', 'y-m-d');"></td></td>
+      <td>#invoices.iv_invoice_end_date# <input type=text name="end_date" size=12 value="@end_date@" id=sel2><input type='reset' value=' ... ' onclick="return showCalendar('sel2', 'y-m-d');"></td>
+      <td>#invoices.iv_invoice_amount_limit# <input type=text name="amount_limit" size=6 value="@amount_limit@"></td>
       <td><input type=submit name="submit" value="#invoices.ok#"></td>
     </tr>
     <if @clear_p@ eq 1>
@@ -32,5 +33,6 @@
         sector="@sector@"
         category_id="@category_id@"
         type="@type@"
+        amount_limit="@amount_limit@"
         manager_id="@manager_id@"
 />

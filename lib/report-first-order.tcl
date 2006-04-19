@@ -17,6 +17,7 @@ foreach optional_param $optional_param_list {
 
 
 set first_date "2006-02-01"
+set customer_group_id [group::get_id -group_name "Customers"]
 set start_date_sql ""
 if { $start_date != "YYYY-MM-DD" } {
     # Get all customer invoices starting with start_date

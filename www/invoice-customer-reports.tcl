@@ -12,6 +12,7 @@ ad_page_contract {
     {category_id:multiple ""}
     {manager_id ""}
     {type ""}
+    {amount_limit ""}
 }
 
 set user_id [auth::require_login]

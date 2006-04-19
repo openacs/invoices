@@ -58,7 +58,8 @@
     <querytext>
 	and oo.organization_id in (
 				   select oo.organization_id
-				   from organizations oo, iv_offers o, cr_items i, acs_objects ao, acs_objects oao,
+				   from organizations oo, iv_offers o, cr_items i, acs_objects ao, acs_objects oar,
+				        group_member_map m,
 				        (select min(o2.offer_id) as offer_id, o2.organization_id
 					 from iv_offers o2, cr_items i2
 					 where o2.offer_id = i2.latest_revision
@@ -70,8 +71,10 @@
 				   and o.offer_id = i.latest_revision
 				   and o.organization_id = sub.organization_id
 				   and o.offer_id = sub.offer_id
-				   and oao.object_id = oo.organization_id
-				   and oao.creation_date > to_timestamp(:first_date, 'YYYY-MM-DD')
+				   and m.member_id = oo.organization_id
+				   and m.container_id = :customer_group_id
+				   and oar.object_id = m.rel_id
+				   and oar.creation_date > to_timestamp(:first_date, 'YYYY-MM-DD')
 				   $start_date_extra_sql
 				   $end_date_extra_sql )
     </querytext>
@@ -98,6 +101,18 @@ ao.creation_date < to_timestamp(:end_date, 'YYYY-MM-DD') + interval '1 day'
 <partialquery name="end_date_new_customer">
     <querytext>
 and ao.creation_date < to_timestamp(:end_date, 'YYYY-MM-DD') + interval '1 day'
+    </querytext>
+</partialquery>
+
+<partialquery name="amount_above_limit">
+    <querytext>
+and i.total_amount >= :amount_limit
+    </querytext>
+</partialquery>
+
+<partialquery name="category_amount_above_limit">
+    <querytext>
+and ii.amount_total >= :amount_limit
     </querytext>
 </partialquery>
 

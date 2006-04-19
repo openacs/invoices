@@ -1,5 +1,5 @@
 set optional_param_list [list]
-set optional_unset_list [list country_code type manager_id sector category_id]
+set optional_unset_list [list country_code type manager_id sector category_id amount_limit]
 
 foreach optional_unset $optional_unset_list {
     if {[info exists $optional_unset]} {
@@ -59,8 +59,17 @@ if { [exists_and_not_null category_id] } {
     set sql_query_name category_customer_orders
 }
 
+if { [exists_and_not_null amount_limit] } {
+    if { [exists_and_not_null category_id] } {
+	append extra_sql [db_map category_amount_above_limit]
+    } else {
+	append extra_sql [db_map amount_above_limit]
+    }
+}
+
 if { [exists_and_not_null type] } {
     set first_date "2006-02-01"
+    set customer_group_id [group::get_id -group_name "Customers"]
     append extra_sql [db_map new_customers]
 }
 
@@ -157,6 +166,7 @@ template::list::create \
 	end_date {
 	    where_clause $end_date_sql
 	}
+	amount_limit {}
     }
 
 

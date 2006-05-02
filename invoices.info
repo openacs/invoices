@@ -7,7 +7,7 @@
     <initial-install-p>f</initial-install-p>
     <singleton-p>t</singleton-p>
     
-    <version name="1.0d5" url="http://openacs.org/repository/download/apm/invoices-1.0d5.apm">
+    <version name="1.0d6" url="http://openacs.org/repository/download/apm/invoices-1.0d6.apm">
         <owner url="mailto:timo@timohentschel.de">Timo Hentschel</owner>
         <summary>Invoices package that will collect costs to invoice items in invoices and store data about received payment.</summary>
         <release-date>2005-11-15</release-date>
@@ -15,7 +15,7 @@
         <description format="text/plain">Collect costs to invoice items and invoices, store payment information.</description>
         <maturity>0</maturity>
 
-        <provides url="invoices" version="1.0d5"/>
+        <provides url="invoices" version="1.0d6"/>
         <requires url="acs-content-repository" version="5.1.4d3"/>
         <requires url="acs-kernel" version="5.0d13"/>
         <requires url="acs-templating" version="5.1.5d1"/>
@@ -32,6 +32,7 @@
             <callback type="after-upgrade"  proc="iv::install::after_upgrade"/>
         </callbacks>
         <parameters>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="CreditCategory"  default="" description="Offer item category to be used for credit offer items"/>
             <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="DefaultCurrency"  default="EUR" description="Default currency code"/>
             <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="DefaultPortletLayout"  default="/packages/invoices/lib/portlet" description="The src for the layout of the portlets." section_name="Portlet"/>
             <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="InvoiceOpeningTemplate"  default="/templates/pdf/opening/" description="Location of the invoice opening letter template which is parsed to generate the invoice."/>

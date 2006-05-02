@@ -221,6 +221,8 @@ ad_proc -public iv::offer::parse_data {
     db_1row get_data {} -column_array data
     set locale [lang::user::site_wide_locale -user_id $data(contact_id)]
     set contact_locale $locale
+    set total_amount $data(amount_total)
+    set vat_percent $data(vat_percent)
     set data(creator_name) "$data(first_names) $data(last_name)"
     set data(amount_diff) [lc_numeric [format "%.2f" [expr $data(amount_total) - $data(amount_sum)]] "" $locale]
     set data(final_amount) [lc_numeric [format "%.2f" [expr $data(amount_total)+$data(vat)]] "" $locale]
@@ -262,15 +264,35 @@ ad_proc -public iv::offer::parse_data {
     set rec_organization_id [contact::util::get_employee_organization -employee_id $data(contact_id)]
 
     # data of offer items
+    set sum 0.
     db_multirow -local -extend {amount_sum amount_total category} items offer_items {} {
-	set item_units [format "%.2f" [expr $item_units * (1. + ($data(credit_percent) / 100.))]]
+	if {$price_per_unit > 1} {
+	    set item_units [format "%.1f" [expr $item_units * (1. + ($data(credit_percent) / 100.))]]
+	} else {
+	    set item_units [format "%.1f" $item_units]
+	}
 	set amount_sum [format "%.2f" [expr $item_units * $price_per_unit]]
-	set amount_total [lc_numeric [format "%.2f" [expr (1. - ($rebate / 100.)) * $amount_sum]] "" $locale]
+	set amount_total [format "%.2f" [expr (1. - ($rebate / 100.)) * $amount_sum]]
+	set sum [expr $sum + $amount_total]
 	set amount_sum [lc_numeric $amount_sum "" $locale]
+	set amount_total [lc_numeric $amount_total "" $locale]
 	set price_per_unit [lc_numeric [format "%.2f" $price_per_unit] "" $locale]
 	set item_units [lc_numeric [format "%.2f" $item_units] "" $locale]
 	set rebate [lc_numeric [format "%.1f" $rebate] "" $locale]
 	set category [lang::util::localize [category::get_name $category_id] $locale]
+    }
+
+    # It is possible that you have an invoice without items, e.g. a credit invoice
+    if {$data(credit_percent) > 0 && $sum ne "0."} {
+	set data(amount_sum) $sum
+	set data(total_amount) $sum
+	set data(amount_diff) [format "%.2f" [expr abs($data(total_amount) - $data(amount_sum))]]
+	set data(amount_diff) [lc_numeric $data(amount_diff) "" $locale]
+	set data(vat) [expr $vat_percent * $data(total_amount) / 100.]
+	set data(final_amount) [lc_numeric [format "%.2f" [expr $data(total_amount)+$data(vat)]] "" $locale]
+	set data(vat) [lc_numeric [format "%.2f" $data(vat)] "" $locale]
+	set data(amount_sum) [lc_numeric [format "%.2f" $data(amount_sum)] "" $locale]
+	set data(total_amount) [lc_numeric [format "%.2f" $data(total_amount)] "" $locale]
     }
 
     # Get the account manager information for the organization.
@@ -452,6 +474,7 @@ ad_proc -public iv::offer::new_credit {
 				-package_id $pm_package_id]
 
 	set project_id [pm::project::get_project_item_id -project_id $project_rev_id]
+	db_dml set_invoice_p {}
 
 	# grant employees read access to project
 	set employees_group_id [group::get_id -group_name "Employees"]

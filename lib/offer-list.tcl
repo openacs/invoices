@@ -1,6 +1,6 @@
 set required_param_list [list]
-set optional_param_list [list orderby elements base_url package_id page_num party_id]
-set optional_unset_list [list organization_id]
+set optional_param_list [list orderby elements base_url package_id page_num]
+set optional_unset_list [list organization_id party_id]
 
 foreach required_param $required_param_list {
     if {![info exists $required_param]} {
@@ -38,6 +38,12 @@ if {![info exists show_filter_p]} {
     set show_filter_p 0
 }
 
+if {[exists_and_not_null party_id]} {
+    set party_id_where_clause "pi.item_id in ([join [pm::util::assigned_projects -party_id $party_id] ","])"
+} else {
+    set party_id_where_clause ""
+}
+
 if {[empty_string_p $package_id]} {
     set package_id [apm_package_id_from_key "invoices"]
 }
@@ -50,15 +56,11 @@ set project_where_clause "1 = 1"
 if {[exists_and_not_null project_id]} {
     set project_ids $project_id
 }
+
 if {[exists_and_not_null project_ids]} {
     set project_where_clause "pi.item_id in ([join $project_ids ,])"
 }
 
-if {[exists_and_not_null party_id]} {
-    set party_where_clause "o.creation_user = :party_id"
-} else {
-    set party_where_clause ""
-}
 
 foreach element $elements {
     append row_list "$element {}\n"
@@ -122,7 +124,7 @@ template::list::create \
 	}
 	project_contact {
 	    label {[_ invoices.iv_offer_project_contact]}
-	    display_template {<a href="@iv_offer.contact_link@">@iv_offer.contact_first_names@ @iv_offer.contact_last_name@</a>}
+	    display_template {<a href="@iv_offer.contact_link@">@iv_offer.contact_first_names@ @iv_offer.contact_last_name@</a><br>@iv_offer.contact_phone;noquote@}
 	}
         amount_total {
 	    label {[_ invoices.iv_offer_amount_total]}
@@ -220,7 +222,7 @@ template::list::create \
             where_clause {pp.status_id = :status_id}
         }
 	party_id {
-	    where_clause {$party_where_clause}
+	    where_clause {$party_id_where_clause}
 	}
 	page_num {}
     } \
@@ -240,7 +242,7 @@ template::list::create \
 
 set time_format "[lc_get d_fmt] %X"
 
-db_multirow -extend {creator_link contact_link edit_link delete_link title_link project_link customer_name customer_link} iv_offer iv_offer {} {
+db_multirow -extend {creator_link contact_link edit_link delete_link title_link project_link customer_name customer_link contact_phone} iv_offer iv_offer {} {
 
     # Ugly hack. We should find out which contact package is linked
     # aso. asf.
@@ -264,4 +266,9 @@ db_multirow -extend {creator_link contact_link edit_link delete_link title_link 
     set creation_date [lc_time_fmt $creation_date $time_format]
     set accepted_date [lc_time_fmt $accepted_date $time_format]
     set finish_date [lc_time_fmt $finish_date $time_format]
+}
+
+multirow foreach iv_offer {
+    contact::employee::get -employee_id $contact_id -array contact_data -use_cache
+    set contact_phone $contact_data(directphoneno)
 }

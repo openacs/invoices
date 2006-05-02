@@ -23,6 +23,12 @@ set project_id [lindex [application_data_link::get_linked -from_object_id $offer
 db_1row project_data {}
 set locale [lang::user::site_wide_locale -user_id $contact_id]
 
+set cc_emails [split $cc_emails ,]
+foreach cc_id $cc_contact_ids {
+    lappend cc_emails [party::email -party_id $cc_id]
+}
+set cc_emails [join $cc_emails ", "]
+
 set context [list [list [export_vars -base offer-list {organization_id}] "[_ invoices.iv_offer_2]"] [list [export_vars -base offer-ae {offer_id}] "[_ invoices.iv_offer_View]"] $page_title]
 
 set offer_text "#invoices.iv_offer_accepted_email#"

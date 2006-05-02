@@ -150,4 +150,12 @@
       </querytext>
 </fullquery>
 
+<fullquery name="iv::offer::new_credit.set_invoice_p">
+      <querytext>
+	    update pm_projects
+	    set invoice_p = true
+	    where project_id = :project_rev_id
+      </querytext>
+</fullquery>
+
 </queryset>

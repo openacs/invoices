@@ -281,7 +281,11 @@ ad_proc -public iv::invoice::parse_data {
 	    incr project_count
 	    set project_sum 0.
 	}
-	set item_units [format "%.2f" [expr $item_units * (1. + ($credit_percent / 100.))]]
+	if {$price_per_unit > 1} {
+	    set item_units [format "%.1f" [expr $item_units * (1. + ($credit_percent / 100.))]]
+	} else {
+	    set item_units [format "%.1f" $item_units]
+	}
 	set amount_sum [format "%.2f" [expr $multiplier * $item_units * $price_per_unit]]
 	set amount_total [format "%.2f" [expr (1. - ($rebate / 100.)) * $amount_sum]]
 	set sum [expr $sum + $amount_total]
@@ -298,7 +302,7 @@ ad_proc -public iv::invoice::parse_data {
 	set contact_name [contact::name -party_id $contact_id]
     }
 
-   # It is possible that you have an invoice without items, e.g. a credit invoice
+    # It is possible that you have an invoice without items, e.g. a credit invoice
     if {$sum ne "0."} {
 	set data(amount_sum) $sum
 	set data(total_amount) $total_amount

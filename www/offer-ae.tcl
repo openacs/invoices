@@ -151,7 +151,7 @@ if {[exists_and_not_null _project_id]} {
     set project_date [lc_time_fmt $project_date_ansi "%x %X"]
     set dotlrn_club_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type "dotlrn_club"] 0]
     set pm_base_url [apm_package_url_from_id [dotlrn_community::get_package_id_from_package_key -package_key "project-manager" -community_id $dotlrn_club_id]]
-    set project_name "<a href=\"[export_vars -base "${pm_base_url}one" {{project_item_id $item_id}}]\">$project_name</a>"
+    set project_name "<a href=\"[export_vars -base "${pm_base_url}one" {{project_item_id $item_id}}]\">[lang::util::localize $project_name]</a>"
 
     ad_form -extend -name iv_offer_form -form {
 	{project:text(inform),optional {label "[_ invoices.iv_offer_project]"} {value $project_name} {help_text "[_ invoices.iv_offer_project_help]"}}
@@ -445,7 +445,9 @@ if {!$has_submit} {
 	set start $i
     }
 
-    for {set i $start} {$i < [expr $start + 2] } {incr i} {
+    set finish [expr $start + 2 > 6 ? $start + 2 : 6]
+
+    for {set i $start} {$i < $finish } {incr i} {
 	ad_form -extend -name iv_offer_form -form \
 	    [list [list "item_nr.${i}:text,optional" \
 		       [list label "[_ invoices.iv_offer_item_nr]"] \
@@ -576,6 +578,7 @@ ad_form -extend -name iv_offer_form -new_request {
     if {[exists_and_not_null project_title]} {
 	set title "[_ invoices.iv_offer_1] $project_title"
 	set offer_nr $project_title
+	regexp {^([0-9\-]+)} $offer_nr match offer_nr
     } else {
 	set title "[_ invoices.iv_offer_1] $organization_name $today"
     }
@@ -603,6 +606,8 @@ ad_form -extend -name iv_offer_form -new_request {
     }
 } -edit_request {
     db_1row get_data {}
+    set title [lang::util::localize $title]
+    set description [lang::util::localize $description]
     set creator_name "$first_names $last_name"
     set vat_percent [format "%.1f" $vat_percent]
     set vat [format "%.2f" $vat]

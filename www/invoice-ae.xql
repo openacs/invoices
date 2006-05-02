@@ -312,6 +312,7 @@
 		update iv_offers
 		set status = :status
 		where offer_id = :offer_id
+		and status <> 'credit'
       </querytext>
 </fullquery>
 

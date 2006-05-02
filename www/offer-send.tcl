@@ -20,6 +20,12 @@ db_1row offer_data {}
 set project_id [lindex [application_data_link::get_linked -from_object_id $offer_id -to_object_type content_item] 0]
 db_1row project_data {}
 
+set cc_emails [split $cc_emails ,]
+foreach cc_id $cc_contact_ids {
+    lappend cc_emails [party::email -party_id $cc_id]
+}
+set cc_emails [join $cc_emails ", "]
+
 # We don't want to use a seperate offer number but use the project_title
 set offer_nr $project_title
 
@@ -32,6 +38,7 @@ set accept_link [export_vars -base "[ad_url][ad_conn package_url]offer-accepted"
 content::item::set_live_revision -revision_id $offer_rev_id
 
 if {[empty_string_p $accepted_date] || $type == "offer"} {
+
     # send pending offer
     set offer_text "#invoices.iv_offer_email#"
     set subject [lang::util::localize "#invoices.iv_offer_email_subject#" $locale]
@@ -54,9 +61,11 @@ set cancel_url [export_vars -base "${invoice_url}offer-ae" {offer_id {mode displ
 
 # substitute variables in offer text
 # and return the content of the email plus the file-paths to the document file
+
 set documents [iv::offer::parse_data -offer_id $offer_id -type $document_type -email_text $offer_text -accept_link $accept_link]
 
 set offer_text [lindex $documents 0]
+
 
 set file_ids {}
 set document_file [lindex $documents 1]

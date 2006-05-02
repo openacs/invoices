@@ -163,21 +163,28 @@ if {[exists_and_not_null parent_invoice_id]} {
 
     foreach recipient $recipients {
 	set recipient_name [contact::name -party_id $recipient -reverse_order]
+	contact::employee::get -employee_id $recipient -array recipient_data
+	if {![info exists recipient_data(first_names)]} {
+	    # if recipient is company, add client_id to name
+	    append recipient_name " ($recipient_data(client_id))"
+	}
 	if {[lsearch -exact $project_recipients $recipient] == -1 || $mode == "display"} {
 	    lappend recipient_options [list $recipient_name $recipient]
 	} else {
 	    lappend recipient_options [list "* $recipient_name *" $recipient]
 	}
     }
+    set recipient_options [lsort -dictionary $recipient_options]
 
+    set recipient_options2 {}
     # add all employees of customer to recipient-list
     foreach employee_id [contact::util::get_employees -organization_id $organization_id] {
 	if {[lsearch -exact $recipients $employee_id] == -1} {
 	    set employee_name [contact::name -party_id $employee_id -reverse_order]
 	    if {[lsearch -exact $project_recipients $employee_id] == -1 || $mode == "display"} {
-		lappend recipient_options [list $employee_name $employee_id]
+		lappend recipient_options2 [list $employee_name $employee_id]
 	    } else {
-		lappend recipient_options [list "* $employee_name *" $employee_id]
+		lappend recipient_options2 [list "* $employee_name *" $employee_id]
 	    }
 	}
 
@@ -189,7 +196,7 @@ if {[exists_and_not_null parent_invoice_id]} {
     }
 
     set contact_options [lsort -dictionary $contact_options]
-    set recipient_options [lsort -dictionary $recipient_options]
+    set recipient_options [concat $recipient_options [lsort -dictionary $recipient_options2]]
 }
 
 # Get the recipient_organization_id
@@ -328,7 +335,12 @@ if {!$_invoice_id} {
 	    if {[empty_string_p $offer(credit_percent)]} {
 		set offer(credit_percent) 0.
 	    }
-	    set offer(credit) [format "%.1f" [expr $offer(item_units) * (($offer(credit_percent) + 100.) / 100.)]]
+	    if {$offer(price_per_unit) > 1.} {
+		set offer(credit) [format "%.1f" [expr $offer(item_units) * (($offer(credit_percent) + 100.) / 100.)]]
+	    } else {
+		# do not add credit to items with price of 1 or less
+		set offer(credit) [format "%.1f" $offer(item_units)]
+	    }
 	    set offer(credit) [format "%.2f" [expr $offer(credit) * $offer(price_per_unit)]]
 	    set offer(credit) [format "%.2f" [expr (1. - ($offer(rebate) / 100.)) * $offer(credit)]]
 	    set offer(credit) [format "%.2f" [expr $offer(credit) - $offer(amount)]]
@@ -380,11 +392,16 @@ if {!$_invoice_id} {
 	if {[empty_string_p $offer(credit_percent)]} {
 	    set offer(credit_percent) 0.
 	}
-	set offer(credit) [format "%.1f" [expr $offer(item_units) * (($offer(credit_percent) + 100.) / 100.)]]
+	if {$offer(price_per_unit) > 1.} {
+	    set offer(credit) [format "%.1f" [expr $offer(item_units) * (($offer(credit_percent) + 100.) / 100.)]]
+	} else {
+	    # do not add credit to items with price of 1 or less
+	    set offer(credit) [format "%.1f" $offer(item_units)]
+	}
 	set offer(credit) [format "%.2f" [expr $offer(credit) * $offer(price_per_unit)]]
 	set offer(credit) [format "%.2f" [expr (1. - ($offer(rebate) / 100.)) * $offer(credit)]]
 	set offer(credit) [format "%.2f" [expr $offer(credit) - $offer(amount)]]
-	
+
 	set offer_name ""
 	if {![empty_string_p $offer(category)]} {
 	    set offer_name "$offer(category): "
@@ -461,9 +478,10 @@ ad_form -extend -name iv_invoice_form -new_request {
     set total_credit 0.
     foreach offer_item_id [array names offer_item_ids] {
 	array set offer $offers($offer_item_id)
-	set total_amount [expr $total_amount + $offer(amount)]
+	set total_amount [expr $total_amount + $offer(amount) + $offer(credit)]
 	set total_credit [expr $total_credit + $offer(credit)]
     }
+    set credit_category_id [parameter::get -parameter "CreditCategory"]
     set total_amount [format "%.2f" $total_amount]
     set amount_sum $total_amount
     if {[exists_and_not_null invoice_rebate]} {
@@ -532,11 +550,13 @@ ad_form -extend -name iv_invoice_form -new_request {
 				       -description $description \
 				       -comment "" \
 				       -item_nr $invoice_id \
-				       -item_units 1 \
-				       -price_per_unit $total_credit \
+				       -item_units -$total_credit \
+				       -price_per_unit 1 \
 				       -rebate 0 \
 				       -sort_order $invoice_id \
 				       -vat $vat_credit]
+
+	    category::map_object -object_id $offer_item_rev_id $credit_category_id
 	}
     }
 } -edit_data {
@@ -595,11 +615,13 @@ ad_form -extend -name iv_invoice_form -new_request {
 				       -description $description \
 				       -comment "" \
 				       -item_nr $invoice_id \
-				       -item_units 1 \
-				       -price_per_unit $total_credit \
+				       -item_units -$total_credit \
+				       -price_per_unit 1 \
 				       -rebate 0 \
 				       -sort_order $invoice_id \
 				       -vat $vat_credit]
+
+	    category::map_object -object_id $offer_item_rev_id $credit_category_id
 	}
     }
 } -after_submit {

@@ -122,8 +122,9 @@ template::list::create \
 		<else><if @invoice_cancel_p@ true and @iv_invoice.cancelled_p@ eq f><a href="@iv_invoice.cancel_link@">#invoices.Invoice_Cancel#</a>&nbsp; </if></else>
 		<if @iv_invoice.status@ ne billed and @iv_invoice.status@ ne paid><a href="@iv_invoice.delete_link@">#invoices.Delete#</a>&nbsp; </if>
 		<if @iv_invoice.status@ eq new><a href="@iv_invoice.preview_link@">#invoices.Preview#</a>&nbsp <a href="@iv_invoice.create_link@">#invoices.View_invoice#</a></if>
-		<elseif @iv_invoice.cancelled_p@ ne t><a href="@iv_invoice.copy_link@">#invoices.View_copy#</a></elseif>
+		<elseif @iv_invoice.cancelled_p@ ne t and @iv_invoice.total_amount@ gt 0><a href="@iv_invoice.copy_link@">#invoices.View_copy#</a></elseif>
 		<elseif @iv_invoice.parent_invoice_id@ not nil><a href="@iv_invoice.copy_link@">#invoices.View_cancel#</a></elseif>
+		<else><a href="@iv_invoice.copy_link@">#invoices.View_credit#</a></else>
 	    }
         }
     } -actions $actions -sub_class narrow \
@@ -133,7 +134,8 @@ template::list::create \
 	default_value invoice_nr
 	invoice_nr {
 	    label {[_ invoices.iv_invoice_invoice_nr]}
-	    orderby {t.invoice_nr}
+	    orderby_desc {t.invoice_nr desc, lower(cr.title) asc}
+	    orderby_asc {t.invoice_nr asc, lower(cr.title) asc}
 	    default_direction desc
 	}
 	title {

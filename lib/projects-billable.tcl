@@ -48,7 +48,7 @@ set row_list ""
 set org_p 1
 if { ![exists_and_not_null organization_id] } {
     set org_p 0
-    append row_list "name {}\n"
+    # append row_list "name {}\n"
     set groupby "name"
 }
 
@@ -131,8 +131,8 @@ template::list::create \
         }
 	project_id {
 	    label {[_ invoices.iv_invoice_project_id]}
-	    orderby_desc {lower(name) asc, sub.customer_id asc, r.item_id desc}
-	    orderby_asc {lower(name) asc, sub.customer_id asc, r.item_id asc}
+	    orderby_desc {lower(name) asc, sub.customer_id asc, sub.project_id desc}
+	    orderby_asc {lower(name) asc, sub.customer_id asc, sub.project_id asc}
 	    default_direction desc
 	}
 	title {
@@ -159,24 +159,16 @@ template::list::create \
 	    orderby_asc {sub.amount_open asc, r.item_id}
 	    default_direction desc
         }
-	count_total {
-	    label {[_ invoices.iv_invoice_count_total]}
-	    orderby_desc {total.count_total desc, r.item_id}
-	    orderby_asc {total.count_total asc, r.item_id}
-	    default_direction desc
-	}
-	count_billed {
-	    label {[_ invoices.iv_invoice_count_billed]}
-	    orderby_desc {billed.count_billed desc, total.count_total desc, r.item_id}
-	    orderby_asc {billed.count_billed asc, total.count_total asc, r.item_id}
-	    default_direction desc
-	}
 	creation_date {
 	    label {[_ invoices.iv_invoice_closed_date]}
 	    orderby {sub.creation_date}
 	    default_direction desc
 	}
     } -orderby_name orderby -html {width 100%} \
+    -page_size_variable_p 1 \
+    -page_size 1000 \
+    -page_flush_p 1 \
+    -page_query_name projects_to_bill_paginated \
     -filters {
 	page_num {}
         organization_id {
@@ -202,7 +194,7 @@ set time_format "[lc_get d_fmt] %X"
 set tot_amount_open 0
 set contacts_package_id [apm_package_id_from_key contacts]
 
-db_multirow -extend {project_link recipient currency} projects projects_to_bill {} {
+db_multirow -extend {project_link recipient currency} projects projects_to_bill2 {} {
     set amount_open [format "%.2f" $amount_open]
     set tot_amount_open [expr $tot_amount_open + $amount_open]
     set currency [iv::price_list::get_currency -organization_id $org_id]

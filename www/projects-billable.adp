@@ -6,7 +6,7 @@
    <td>
 	<include src="/packages/invoices/lib/projects-billable" 
 		organization_id="@organization_id@" 
-		elements="title recipient amount_open creation_date" 
+		elements="recipient title description creation_date amount_open count_total count_billed"
 		package_id="@iv_package_id@" 
 		base_url="@iv_base_url@"
 		format=""

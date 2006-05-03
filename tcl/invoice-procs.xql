@@ -13,6 +13,20 @@
       </querytext>
 </fullquery>
 
+<fullquery name="iv::invoice::set_pdf_status.update_status">
+      <querytext>
+
+	update iv_invoices
+	set pdf_status = :status,
+	    pdf_file_id = :file_id
+	where invoice_id = (select latest_revision
+                          from cr_items
+                          where item_id = :invoice_id)
+	and pdf_status in ('new', 'created')
+
+      </querytext>
+</fullquery>
+
 <fullquery name="iv::invoice::data.get_data">
       <querytext>
 

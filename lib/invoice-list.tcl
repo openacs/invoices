@@ -49,7 +49,7 @@ if {[exists_and_not_null end_date] && $end_date != "YYYY-MM-DD" && [regexp {^([0
 
 set user_id [ad_conn user_id]
 set timestamp_format "YYYY-MM-DD HH24:MI:SS"
-set bulk_actions [list "[_ invoices.iv_invoice_send]" "${base_url}invoices-view" "[_ invoices.iv_invoice_send]" "[_ invoices.iv_invoice_pay]" "${base_url}invoice-pay" "[_ invoices.iv_invoice_pay]"]
+set bulk_actions [list "[_ invoices.iv_invoice_pay]" "${base_url}invoice-pay" "[_ invoices.iv_invoice_pay]"]
 set invoice_cancel_p [permission::permission_p -party_id $user_id -object_id $package_id -privilege invoice_cancel]
 set return_url [ad_return_url]
 
@@ -67,7 +67,7 @@ if { [info exists organization_id] } {
 lappend actions "[_ invoices.iv_invoice_url]" $base_url "[_ invoices.iv_invoice_url2]"
 
 if {$invoice_cancel_p} {
-    lappend actions "[_ invoices.iv_journal_check]" "${base_url}journal-check" "[_ invoices.iv_journal_check]"
+    lappend actions "[_ invoices.iv_journal_check]" "${base_url}journal-check" "[_ invoices.iv_journal_check]" "[_ invoices.iv_join_invoice]" "${base_url}invoice-join" "[_ invoices.iv_join_invoice]"
 }
 
 # If the sum was paid, the total_amount should appear green.

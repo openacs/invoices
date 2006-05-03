@@ -88,6 +88,8 @@ ad_proc -public iv::install::create_install {
     content::type::attribute::new -content_type {iv_invoice} -attribute_name {vat} -datatype {number} -pretty_name {[_ invoices.VAT_amount]} -column_spec {numeric(12,2)}
     content::type::attribute::new -content_type {iv_invoice} -attribute_name {status} -datatype {string} -pretty_name {[_ invoices.Status]} -column_spec {varchar(10)}
     content::type::attribute::new -content_type {iv_invoice} -attribute_name {cancelled_p} -datatype {boolean} -pretty_name {[_ invoices.Cancelled]} -column_spec {char(1)}
+    content::type::attribute::new -content_type {iv_invoice} -attribute_name {pdf_status} -datatype {string} -pretty_name {[_ invoices.PDF_Status]} -column_spec {varchar(10)}
+    content::type::attribute::new -content_type {iv_invoice} -attribute_name {pdf_file_id} -datatype {number} -pretty_name {[_ invoices.PDF_File]} -column_spec {integer}
 
     # Invoice Item
     content::type::attribute::new -content_type {iv_invoice_item} -attribute_name {item_nr} -datatype {string} -pretty_name {[_ invoices.Invoice_item_number]} -column_spec {varchar(200)}
@@ -267,6 +269,10 @@ ad_proc -public iv::install::after_upgrade {
 	    }
 	    1.0d2 1.0d3 {
 		content::type::attribute::new -content_type {iv_offer} -attribute_name {reservation} -datatype {text} -pretty_name {[_ invoices.Reservation]} -column_spec {text}
+	    }
+	    1.0d6 1.0d7 {
+		content::type::attribute::new -content_type {iv_invoice} -attribute_name {pdf_status} -datatype {string} -pretty_name {[_ invoices.PDF_Status]} -column_spec {varchar(10)}
+		content::type::attribute::new -content_type {iv_invoice} -attribute_name {pdf_file_id} -datatype {number} -pretty_name {[_ invoices.PDF_File]} -column_spec {integer}
 	    }
 	}
 }

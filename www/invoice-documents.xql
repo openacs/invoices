@@ -30,7 +30,7 @@
     update cr_items
     set publish_status = 'live',
         parent_id = :invoice_folder_id
-    where item_id = :one_file
+    where item_id = :file_id
 
       </querytext>
 </fullquery>
@@ -40,7 +40,7 @@
 
     update acs_objects
     set context_id = :invoice_folder_id
-    where object_id = :one_file
+    where object_id = :file_id
 
       </querytext>
 </fullquery>

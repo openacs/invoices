@@ -64,6 +64,7 @@ ad_proc -public iv::invoice::new {
 					 [list vat_percent $vat_percent] \
 					 [list vat $vat] \
 					 [list status new] \
+					 [list pdf_status new] \
 					 [list cancelled_p f] ] ]
     }
 
@@ -116,6 +117,7 @@ ad_proc -public iv::invoice::edit {
 					     [list vat_percent $vat_percent] \
 					     [list vat $vat] \
 					     [list status new] \
+					     [list pdf_status new] \
 					     [list cancelled_p f] ] ]
     }
 
@@ -130,6 +132,19 @@ ad_proc -public iv::invoice::set_status {
     @creation-date 2005-10-04
 
     Edit Invoice status
+} {
+    db_dml update_status {}
+}
+
+ad_proc -public iv::invoice::set_pdf_status {
+    -invoice_id:required
+    {-status "created"}
+    {-file_id ""}
+} {
+    @author Timo Hentschel (timo@timohentschel.de)
+    @creation-date 2006-05-02
+
+    Edit Invoice pdf status
 } {
     db_dml update_status {}
 }

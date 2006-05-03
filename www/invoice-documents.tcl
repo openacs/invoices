@@ -10,6 +10,7 @@ ad_page_contract {
     {copy_p 0}
     {file_ids ""}
     {return_url:optional ""}
+    {display_p 1}
 } -properties {
     context:onevalue
     page_title:onevalue
@@ -65,7 +66,7 @@ if {$copy_p} {
 set documents [iv::invoice::parse_data -invoice_id $invoice_id -types $document_types -email_text ""]
 
 multirow create documents file_id file_title file_url
-set file_ids {}
+set files {}
 set documents [lreplace $documents 0 0]
 foreach document_file $documents type $document_types {
     switch $type {
@@ -80,11 +81,18 @@ foreach document_file $documents type $document_types {
 
     if {![empty_string_p $document_file]} {
 	set file_size [file size $document_file]
-	set file_id [contact::oo::import_oo_pdf -oo_file $document_file -printer_name "pdfconv" -title $file_title -parent_id $invoice_id]
+	util_unlist [contact::oo::import_oo_pdf -oo_file $document_file -printer_name "pdfconv" -title $file_title -parent_id $invoice_id -no_import] file_mime_type file_name
 
-	multirow append documents $file_id $file_title [export_vars -base "/tracking/download/$file_title" {file_id}]
-	lappend file_ids $file_id
+	lappend files $file_name
     }
+}
+
+set file_id [contact::oo::join_pdf -filenames $files -title $invoice_title -parent_id $invoice_id]
+multirow append documents $file_id $invoice_title [export_vars -base "/tracking/download/$invoice_title" {file_id}]
+
+# delete old files
+foreach one_file $files {
+    ns_unlink $one_file
 }
 
 if {[multirow size documents] > 0} {
@@ -101,11 +109,10 @@ if {[multirow size documents] > 0} {
 
     db_transaction {
 	# move files to invoice_folder
-	foreach one_file $file_ids {
-	    application_data_link::new -this_object_id $invoice_id -target_object_id $one_file
-	    db_dml set_publish_status_and_parent {}
-	    db_dml set_context_id {}
-	}
+	application_data_link::new -this_object_id $invoice_id -target_object_id $file_id
+	db_dml set_publish_status_and_parent {}
+	db_dml set_context_id {}
+
 	if {$status == "new" || [empty_string_p $status]} {
 	    iv::invoice::set_status -invoice_id $invoice_id -status "billed"
 	}
@@ -115,6 +122,19 @@ if {[multirow size documents] > 0} {
 if {[empty_string_p $return_url]} { 
     set return_url [export_vars -base invoice-list {organization_id}]
 }
+
+if {$display_p} {
+    # mark displayed pdf as sent
+    iv::invoice::set_pdf_status -invoice_id $invoice_id -status "sent"
+} else {
+    # if no display requested, mark pdf-file for joining
+    # and redirect to return_url
+    iv::invoice::set_pdf_status -invoice_id $invoice_id -status "created" -file_id $file_id
+
+    ad_returnredirect $return_url
+    ad_script_abort
+}
+
 
 set actions [list "[_ invoices.ok]" $return_url "[_ invoices.ok]"]
 

@@ -207,8 +207,13 @@ create table iv_invoices (
                                 -- new, sent, cancelled, billed, paid
         cancelled_p             char(1) default 'f'
                                 constraint iv_invoices_cancelled_p
-                                check (cancelled_p in ('t','f'))
+                                check (cancelled_p in ('t','f')),
                                 -- is this invoice already cancelled?
+        pdf_status              varchar(10) default 'new',
+                                -- new, created, sent
+        pdf_file_id             integer
+                                constraint iv_invoices_pdf_file_fk
+                                references cr_items
 );
 
 create index iv_invoices_parent_idx on iv_invoices(parent_invoice_id);
@@ -326,6 +331,17 @@ create table iv_journals (
                                 constraint iv_journals_date_nn
                                 not null
 );
+
+create table iv_joined_invoices (
+        file_id                 integer
+                                constraint iv_joined_invoices_pk
+                                primary key,
+        creation_date           timestamptz
+                                constraint iv_joined_invoices_date_nn
+                                not null
+);
+
+insert into iv_joined_invoices (file_id, creation_date) values (0, now());
 
 create table iv_journal_country_codes (
         iso_code                char(2)

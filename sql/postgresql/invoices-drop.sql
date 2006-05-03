@@ -6,6 +6,7 @@
 --
 
 
+drop table iv_joined_invoices;
 drop table iv_journal_country_codes;
 drop table iv_journals;
 drop table iv_default_objects;

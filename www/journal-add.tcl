@@ -18,8 +18,6 @@ db_1row today {}
 set date_format [lc_get d_fmt]
 set today_pretty [lc_time_fmt $today_pretty $date_format]
 
-# set last_checkout "2006-02-28 18:27:00"
-
 db_foreach country_codes {} {
     set country_codes($iso_code) $journal_code
 }
@@ -31,11 +29,26 @@ db_foreach country_codes {} {
 set customer_group_id [group::get_id -group_name "Customers"]
 set new_customers [db_list_of_lists new_customers {}]
 
+set orga_ids {}
 set customer_text ""
-foreach customer $new_customers {
+foreach recipient_id $new_customers {
 
-    util_unlist $customer organization_id orga_revision_id email
+    if {[person::person_p -party_id $recipient_id]} {
+	# recipient is person, so get employer organization
+	set organization_id [lindex [lindex [contact::util::get_employers -employee_id $recipient_id] 0] 0]
+    } else {
+	# recipient is organization
+	set organization_id $recipient_id
+    }
 
+    if {[lsearch -exact $orga_ids $organization_id] > -1} {
+	continue
+    } else {
+	lappend orga_ids $organization_id
+    }
+
+    set email [party::email -party_id $organization_id]
+    set orga_revision_id [content::item::get_best_revision -item_id $organization_id]
     contacts::postal_address::get -attribute_name "company_address" -party_id $organization_id -array address_array
 
     if {[exists_and_not_null address_array(postal_code)]} {

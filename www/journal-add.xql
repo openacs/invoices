@@ -30,18 +30,12 @@
 <fullquery name="new_customers">
       <querytext>
 
-    select o.organization_id, oi.latest_revision as orga_revision_id, p.email
-    from organizations o, cr_items oi, parties p, group_member_map g
-    where oi.item_id = o.organization_id
-    and p.party_id = o.organization_id
-    and g.member_id = o.organization_id
-    and g.group_id = :customer_group_id
-    and o.organization_id in (select distinct i.recipient_id
-			      from iv_invoices i, cr_items ii, acs_objects o
-			      where i.invoice_id = ii.latest_revision
-			      and o.object_id = ii.item_id
-			      and i.status in ('billed', 'cancelled', 'paid')
-			      and o.creation_date > to_timestamp(:last_checkout, 'YYYY-MM-DD HH24:MI:SS'))
+    select distinct i.recipient_id
+       from iv_invoices i, cr_items ii, acs_objects o
+      where i.invoice_id = ii.latest_revision
+      and o.object_id = ii.item_id
+      and i.status in ('billed', 'cancelled', 'paid')
+      and o.creation_date > to_timestamp(:last_checkout, 'YYYY-MM-DD HH24:MI:SS')
 
       </querytext>
 </fullquery>

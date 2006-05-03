@@ -62,6 +62,7 @@
   <msg key="file_invoice_copy">Invoice copy</msg>
   <msg key="file_invoice_credit">Credit</msg>
   <msg key="file_invoice_opening">Covering letter for invoice</msg>
+  <msg key="file_joined_invoice">invoices</msg>
   <msg key="file_offer">Offer</msg>
   <msg key="file_offer_accepted">Order confirmation</msg>
   <msg key="Final_Amount">Gross amount</msg>
@@ -77,6 +78,9 @@
   <msg key="Invoice">Invoice</msg>
   <msg key="Invoice_Cancel">Cancel</msg>
   <msg key="Invoice_count">Invoice count</msg>
+  <msg key="invoice_display">Display documents</msg>
+  <msg key="invoice_email">Email</msg>
+  <msg key="invoice_for_join">Mark for later download</msg>
   <msg key="Invoice_Item">Invoice Item</msg>
   <msg key="Invoice_item_number">Invoice item number</msg>
   <msg key="Invoice_Item_title">Invoice Item Title</msg>
@@ -218,6 +222,7 @@
   <msg key="iv_invoice_view">View Invoices</msg>
   <msg key="iv_invoices_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Invoices&lt;/h3&gt;%contact.salutation%,&lt;p&gt;see attached invoices %invoice_nrs%.&lt;p&gt;Best wishes,&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_invoices_email_subject">Invoices # %invoice_nrs%</msg>
+  <msg key="iv_join_invoice">Load prepared invoices</msg>
   <msg key="iv_journal">Invoice journal</msg>
   <msg key="iv_journal_check">Export Journal</msg>
   <msg key="iv_of_month_year">Invoices of %long_month% %year%:</msg>
@@ -422,6 +427,8 @@
   <msg key="Rebate">Rebate</msg>
   <msg key="Received_on">Received on</msg>
   <msg key="Recipient">Recipient</msg>
+  <msg key="report_customer_type">Customer type</msg>
+  <msg key="report_new_customer">New customer</msg>
   <msg key="show_all_offer_projects">All projects</msg>
   <msg key="show_all_offers">All Offers</msg>
   <msg key="show_all_offers2">Show all offers</msg>
@@ -449,6 +456,7 @@
   <msg key="vat_number">VAT number</msg>
   <msg key="View_cancel">Cancellation</msg>
   <msg key="View_copy">Invoice copy</msg>
+  <msg key="View_credit">Credit</msg>
   <msg key="View_invoice">Send invoice</msg>
   <msg key="year">Year</msg>
   <msg key="yes">Yes</msg>

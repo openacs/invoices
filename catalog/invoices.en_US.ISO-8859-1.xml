@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="invoices" package_version="1.0d5" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="invoices" package_version="1.0d7" locale="en_US" charset="ISO-8859-1">
 
   <msg key="accepted">Order confirmation</msg>
   <msg key="Accepted_date">Accepted on</msg>
@@ -122,6 +122,7 @@
   <msg key="iv_invoice_Add">Invoice &quot;%organization_name%&quot;</msg>
   <msg key="iv_invoice_Add2">Add Invoice</msg>
   <msg key="iv_invoice_amount_diff">Rebate</msg>
+  <msg key="iv_invoice_amount_limit">Amount limit</msg>
   <msg key="iv_invoice_amount_open">Open amount</msg>
   <msg key="iv_invoice_amount_sum">Amount sum</msg>
   <msg key="iv_invoice_cancel_1">Cancellation</msg>

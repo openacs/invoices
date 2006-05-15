@@ -263,7 +263,7 @@
   <msg key="iv_offer_Description_help">Description of the cost sheet</msg>
   <msg key="iv_offer_Edit">Edit Cost Sheet</msg>
   <msg key="iv_offer_edit_error">You are not allowed to edit an accepted or invoiced cost sheet</msg>
-  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;%data.contact_salutation%,&lt;p&gt;you'll find the requested offer in the attached PDF file.&lt;p&gt;To accept this offer, please klick &lt;a href=&quot;%accept_link%&quot;&gt;here&lt;/a&gt;.&lt;p&gt;With best regards&lt;p&gt;%am_name;noquote%&lt;br&gt;Kundenberatung&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;%data.contact_salutation%,&lt;p&gt;you'll find the requested offer in the attached PDF file.&lt;p&gt;To accept this offer, please klick &lt;a href=&quot;%accept_link;noquote%&quot;&gt;here&lt;/a&gt;.&lt;p&gt;With best regards&lt;p&gt;%am_name;noquote%&lt;br&gt;Kundenberatung&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_email_subject">Offer # %offer_nr%</msg>
   <msg key="iv_offer_file">File upload</msg>
   <msg key="iv_offer_file_delete">Delete Files</msg>

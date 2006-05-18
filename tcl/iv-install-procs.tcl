@@ -57,6 +57,7 @@ ad_proc -public iv::install::create_install {
     content::type::attribute::new -content_type {iv_offer} -attribute_name {credit_percent} -datatype {number} -pretty_name {[_ invoices.Credit]} -column_spec {numeric(12,5)}
     content::type::attribute::new -content_type {iv_offer} -attribute_name {status} -datatype {string} -pretty_name {[_ invoices.Status]} -column_spec {varchar(10)}
     content::type::attribute::new -content_type {iv_offer} -attribute_name {accepted_date} -datatype {date} -pretty_name {[_ invoices.Accepted_date]} -column_spec {timestamptz}
+    content::type::attribute::new -content_type {iv_offer} -attribute_name {show_sum_p} -datatype {boolean} -pretty_name {[_ invoices.Show_Sum]} -column_spec {char(1)}
 
     # Offer Item
     content::type::attribute::new -content_type {iv_offer_item} -attribute_name {item_nr} -datatype {string} -pretty_name {[_ invoices.Offer_item_number]} -column_spec {varchar(200)}
@@ -273,6 +274,9 @@ ad_proc -public iv::install::after_upgrade {
 	    1.0d6 1.0d7 {
 		content::type::attribute::new -content_type {iv_invoice} -attribute_name {pdf_status} -datatype {string} -pretty_name {[_ invoices.PDF_Status]} -column_spec {varchar(10)}
 		content::type::attribute::new -content_type {iv_invoice} -attribute_name {pdf_file_id} -datatype {number} -pretty_name {[_ invoices.PDF_File]} -column_spec {integer}
+	    }
+	    1.0d7 1.0d8 {
+		content::type::attribute::new -content_type {iv_offer} -attribute_name {show_sum_p} -datatype {boolean} -pretty_name {[_ invoices.Show_Sum]} -column_spec {char(1)}
 	    }
 	}
 }

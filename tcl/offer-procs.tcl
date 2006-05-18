@@ -21,6 +21,7 @@ ad_proc -public iv::offer::new {
     {-finish_date ""}
     {-date_comment ""}
     {-payment_days ""}
+    {-show_sum_p ""}
     {-vat_percent ""}
     {-vat ""}
     {-credit_percent 0}
@@ -58,6 +59,7 @@ ad_proc -public iv::offer::new {
 					 [list finish_date $finish_date] \
 					 [list date_comment $date_comment] \
 					 [list payment_days $payment_days] \
+					 [list show_sum_p $show_sum_p] \
 					 [list vat_percent $vat_percent] \
 					 [list vat $vat] \
 					 [list status new] \
@@ -93,6 +95,7 @@ ad_proc -public iv::offer::edit {
     {-finish_date ""}
     {-date_comment ""}
     {-payment_days ""}
+    {-show_sum_p ""}
     {-vat_percent ""}
     {-vat ""}
     {-credit_percent 0}
@@ -124,6 +127,7 @@ ad_proc -public iv::offer::edit {
 					     [list finish_date $finish_date] \
 					     [list date_comment $date_comment] \
 					     [list payment_days $payment_days] \
+					     [list show_sum_p $show_sum_p] \
 					     [list status $status] \
 					     [list vat_percent $vat_percent] \
 					     [list vat $vat] \

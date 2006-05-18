@@ -118,6 +118,7 @@ set context [list [list "[export_vars -base "offer-list" {organization_id}]" "[_
 set package_id [ad_conn package_id]
 array set container_objects [iv::util::get_default_objects -package_id $package_id]
 set timestamp_format "$date_format [lc_get formbuilder_time_format]"
+set boolean_options [list [list "[_ invoices.yes]" t] [list "[_ invoices.no]" f]]
 
 set language [lang::conn::language]
 set currency_options [db_list_of_lists currencies {}]
@@ -232,6 +233,7 @@ if {$has_submit} {
 
 ad_form -extend -name iv_offer_form -form {
     {payment_days:integer,optional {mode display} {label "[_ invoices.iv_offer_payment_days]"} {html {size 5 maxlength 5}} {help_text "[_ invoices.iv_offer_payment_days_help]"}}
+    {show_sum_p:text(select),optional {label "[_ invoices.iv_offer_show_sum_p]"} {options $boolean_options} {help_text "[_ invoices.iv_offer_show_sum_p_help]"}}
 }
 
 if {!$has_submit} {
@@ -572,6 +574,7 @@ ad_form -extend -name iv_offer_form -new_request {
     } else {
 	set comment ""
     }
+    set show_sum_p t
     set today [db_string today {}]
     set finish_date ""
     set finish_time ""
@@ -693,6 +696,13 @@ ad_form -extend -name iv_offer_form -new_request {
     set item_sum [format "%.2f" $item_sum]
 
 } -new_data {
+    set old_offer_id [lindex [application_data_link::get_linked_content -from_object_id $project_id -to_content_type iv_offer] 0]
+    if {![empty_string_p $old_offer_id]} {
+	# offer already created, redirect to offer
+	ad_returnredirect [export_vars -base offer-ae {{offer_id $old_offer_id} project_id return_url}]
+	ad_script_abort
+    }
+
     db_transaction {
 	if {[empty_string_p $amount_total]} {
 	    set amount_total $amount_sum
@@ -710,6 +720,7 @@ ad_form -extend -name iv_offer_form -new_request {
 				  -finish_date $finish_date \
 				  -date_comment $date_comment \
 				  -payment_days $payment_days \
+				  -show_sum_p $show_sum_p \
 				  -vat_percent $vat_percent \
 				  -vat $vat \
 				  -credit_percent $credit_percent]
@@ -757,6 +768,7 @@ ad_form -extend -name iv_offer_form -new_request {
 				  -finish_date $finish_date \
 				  -date_comment $date_comment \
 				  -payment_days $payment_days \
+				  -show_sum_p $show_sum_p \
 				  -vat_percent $vat_percent \
 				  -vat $vat \
 				  -credit_percent $credit_percent]

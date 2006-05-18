@@ -139,7 +139,7 @@
 	       o.creation_user, p.first_names, p.last_name, t.reservation,
 	       to_char(o.creation_date, 'YYYY-MM-DD HH24:MI:SS') as creation_ansi,
 	       to_char(t.accepted_date, 'YYYY-MM-DD HH24:MI:SS') as accepted_ansi,
-	       t.amount_sum as amount_sum_, t.payment_days, t.date_comment
+	       t.amount_sum as amount_sum_, t.payment_days, t.date_comment, t.show_sum_p
 	from iv_offers t, cr_revisions r, cr_items i, acs_objects o,
 	     persons p
 	where r.revision_id = t.offer_id

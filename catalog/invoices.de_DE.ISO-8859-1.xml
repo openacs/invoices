@@ -340,6 +340,8 @@ Durchwahl: %am_directphoneno%&lt;br&gt;&lt;b&gt;WIENERS+WIENERS GmbH&lt;/b&gt;&l
   <msg key="iv_offer_send">Angebot schicken</msg>
   <msg key="iv_offer_send_accepted">Auftragsbestätigung schicken</msg>
   <msg key="iv_offer_send_again">Angebot erneut schicken</msg>
+  <msg key="iv_offer_show_sum_p">Gesamtsumme im Angebot</msg>
+  <msg key="iv_offer_show_sum_p_help">Soll die Gesamtsumme im Angebots-PDF angezeigt werden</msg>
   <msg key="iv_offer_subproject_finish_date_help">Interne Deadline des Subprojektes</msg>
   <msg key="iv_offer_template">Angebotsvorlage</msg>
   <msg key="iv_offer_Title">Titel</msg>

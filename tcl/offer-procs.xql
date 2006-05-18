@@ -43,7 +43,7 @@
 	       t.offer_nr, t.amount_total, t.vat, t.vat_percent, t.comment,
 	       to_char(t.finish_date, 'YYYY-MM-DD HH24:MI:SS') as finish_ansi,
 	       to_char(t.finish_date, :timestamp_format) as finish_date,
-	       o.creation_user, p.first_names, p.last_name,
+	       o.creation_user, p.first_names, p.last_name, t.show_sum_p,
 	       to_char(o.creation_date, :timestamp_format) as creation_date,
 	       to_char(t.accepted_date, :timestamp_format) as accepted_date,
 	       t.amount_sum as amount_sum_, t.payment_days, t.date_comment,
@@ -70,7 +70,7 @@
 	       to_char(o.creation_date, 'YYYY-MM-DD HH24:MI:SS') as creation_date,
 	       to_char(now(), 'YYYY-MM-DD HH24:MI:SS') as current_date,
 	       to_char(t.accepted_date, 'YYYY-MM-DD HH24:MI:SS') as accepted_date,
-	       t.amount_sum, t.payment_days, t.date_comment, t.currency,
+	       t.amount_sum, t.payment_days, t.date_comment, t.currency, t.show_sum_p,
                t.organization_id, pr.title as project_title, ci.item_id as offer_id,
                pp.project_code, pi.item_id as project_id, pp.contact_id, t.reservation
 	from iv_offers t, cr_revisions cr, cr_items ci, acs_objects o,

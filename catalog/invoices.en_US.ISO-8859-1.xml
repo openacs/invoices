@@ -338,6 +338,8 @@
   <msg key="iv_offer_send">Send Offer</msg>
   <msg key="iv_offer_send_accepted">Send confirmation</msg>
   <msg key="iv_offer_send_again">Send offer again</msg>
+  <msg key="iv_offer_show_sum_p">Total sum in offer</msg>
+  <msg key="iv_offer_show_sum_p_help">Display the total offer sum in offer-pdf</msg>
   <msg key="iv_offer_subproject_finish_date_help">Interne Deadline des Subprojektes</msg>
   <msg key="iv_offer_template">Template des Angebots</msg>
   <msg key="iv_offer_Title">Title</msg>

@@ -115,8 +115,12 @@ create table iv_offers (
                                 -- %credit
         status                  varchar(10) default 'new',
                                 -- new, accepted, billed, credit
-        accepted_date           timestamptz
+        accepted_date           timestamptz,
                                 -- offer accepted by customer?
+        show_sum_p              char(1) default 't'
+                                constraint iv_offers_show_sum_p
+                                check (show_sum_p in ('t','f'))
+                                -- show sum when creating offer pdf?
 );
 
 -- offers are linked to a project via cr_items.parent_id

@@ -65,6 +65,12 @@ foreach element $elements {
     append row_list "$element {}\n"
 }
 
+if {[lsearch $elements "count_total"] > -1 || [lsearch $elements "count_billed"] > -1} {
+    set query "projects_to_bill2"
+} else {
+    set query "projects_to_bill"
+}
+
 if {$no_actions_p} {
     set actions ""
     set bulk_id_list ""
@@ -194,7 +200,7 @@ set time_format "[lc_get d_fmt] %X"
 set tot_amount_open 0
 set contacts_package_id [apm_package_id_from_key contacts]
 
-db_multirow -extend {project_link recipient currency} projects projects_to_bill2 {} {
+db_multirow -extend {project_link recipient currency} projects $query {} {
     set amount_open [format "%.2f" $amount_open]
     set tot_amount_open [expr $tot_amount_open + $amount_open]
     set currency [iv::price_list::get_currency -organization_id $org_id]

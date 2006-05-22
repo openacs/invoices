@@ -85,7 +85,7 @@ function calculateTotalAmount() {
     var form = document.forms.iv_offer_form;
     var total = 0.;
 
-    for (i=1; i<2+@start@; i++) {
+    for (i=1; i<@finish@; i++) {
       units = form["item_units."+i].value
       price = form["item_price."+i].value
       item_amount = form["amount_sum."+i].value

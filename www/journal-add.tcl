@@ -99,7 +99,7 @@ foreach recipient_id $new_customers {
     set email [string range $email 0 49]
     array unset address_array
 
-    set new_line "S;0;D;$client_id;;$company_name;$zip_and_municipality;$ust_id_nr;1200;;;;0;;;;;;0;;;;;;;;$company_name;$company_name_ext;;$address;$zip_code;$municipality;;;;$company_phone;$company_fax;;;;;;;;;;;;$email;;$country_code"
+    set new_line "S;0;D;$client_id;;$company_name;$zip_and_municipality;$ust_id_nr;1200;;;;0;;;$payment_days Tage netto;;;0;;;;;;;;$company_name;$company_name_ext;;$address;$zip_code;$municipality;;;;$company_phone;$company_fax;;;;;;;;;;;;$email;;$country_code"
 
     set new_line [string map {{&amp;} {&} {\n} {} {\x0a} {}} $new_line]
 

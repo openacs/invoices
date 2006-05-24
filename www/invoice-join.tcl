@@ -4,6 +4,7 @@ ad_page_contract {
     @author Timo Hentschel (timo@timohentschel.de)
     @creation-date 2006-05-02
 } {
+    return_url
 } -properties {
     context:onevalue
     page_title:onevalue
@@ -32,17 +33,37 @@ db_transaction {
 	lappend files "${tmpdir}/[file tail $content].pdf"
     }
 
-    set file_id [contact::oo::join_pdf -filenames $files -title $invoice_title -parent_id $root_folder_id]
-    db_1row get_file_location {}
+    if {[llength $files] > 0} {
+	set file_id [contact::oo::join_pdf -filenames $files -title $invoice_title -parent_id $root_folder_id]
+	db_1row get_file_location {}
 
-    db_dml mark_join_creation {}
-    db_dml mark_invoices_billed {}
+	db_dml mark_join_creation {}
+	db_dml mark_invoices_billed {}
 
-    # delete old files
-    foreach one_file $files {
-	ns_unlink $one_file
+	# delete old files
+	foreach one_file $files {
+	    ns_unlink $one_file
+	}
     }
     ns_rmdir $tmpdir
 }
 
-ns_returnfile 200 "application/pdf" "${root_dir}$file_location"
+set actions [list "[_ invoices.ok]" $return_url "[_ invoices.ok]"]
+multirow create documents file_id file_title file_url
+
+if {[llength $files] > 0} {
+    multirow append documents $file_id $invoice_title [export_vars -base "/tracking/download/$invoice_title" {file_id}]
+}
+
+template::list::create \
+    -name documents \
+    -key file_id \
+    -no_data "[_ invoices.None]" \
+    -elements {
+	file_id {
+	    label {[_ invoices.iv_invoice_file]}
+	    display_template {<a href="@documents.file_url@">@documents.file_title@</a>}
+	}
+    } -actions $actions -sub_class narrow
+
+ad_return_template

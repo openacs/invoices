@@ -615,7 +615,9 @@ ad_form -extend -name iv_offer_form -new_request {
     set creator_name "$first_names $last_name"
     set customer_percent [ams::value -object_id [content::item::get_best_revision -item_id $organization_id] -attribute_name "vat_percent"]
 #    set vat_percent [format "%.1f" $vat_percent]
-    set vat_percent  [format "%.1f" $customer_percent]
+    if {![string eq "" $customer_percent]} {
+	set vat_percent  [format "%.1f" $customer_percent]
+    } 
     set vat [format "%.2f" $vat]
     if {$amount_total == 0} {
 	set amount_total $amount_sum

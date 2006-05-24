@@ -6,6 +6,6 @@ Zur Zeit nicht funktionierend...
 
 <p>
 
-<include src="/packages/invoices/lib/offer-list-portlet-2"
+<include src="/packages/invoices/lib/offer-list"
  organization_id="@organization_id@" row_list="@row_list@" page="@page@"
  orderby="@orderby@" format="@format@" page_size="@page_size@">

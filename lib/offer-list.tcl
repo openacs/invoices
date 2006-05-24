@@ -38,10 +38,12 @@ if {![info exists show_filter_p]} {
     set show_filter_p 0
 }
 
+set party_id_where_clause ""
 if {[exists_and_not_null party_id]} {
-    set party_id_where_clause "pi.item_id in ([join [pm::util::assigned_projects -party_id $party_id] ","])"
-} else {
-    set party_id_where_clause ""
+    set assigned_projects [pm::util::assigned_projects -party_id $party_id]
+    lappend assigned_projects 0
+
+    set party_id_where_clause "pi.item_id in ([join $assigned_projects ","])"
 }
 
 if {[empty_string_p $package_id]} {
@@ -124,7 +126,7 @@ template::list::create \
 	}
 	project_contact {
 	    label {[_ invoices.iv_offer_project_contact]}
-	    display_template {<a href="@iv_offer.contact_link@">@iv_offer.contact_first_names@ @iv_offer.contact_last_name@</a><br>@iv_offer.contact_phone;noquote@}
+	    display_template {<a href="@iv_offer.contact_link@">@iv_offer.contact_first_names@ @iv_offer.contact_last_name@</a>&nbsp;<if @iv_offer.contact_phone@ not nil><a href="phone:@iv_offer.contact_phone@"><img src="/resources/wieners/telephone.png" border=0 alt="@iv_offer.contact_phone;noquote@"></a></if>}
 	}
         amount_total {
 	    label {[_ invoices.iv_offer_amount_total]}
@@ -270,5 +272,5 @@ db_multirow -extend {creator_link contact_link edit_link delete_link title_link 
 
 multirow foreach iv_offer {
     contact::employee::get -employee_id $contact_id -array contact_data -use_cache
-    set contact_phone $contact_data(directphoneno)
+    set contact_phone [ad_html_to_text -no_format $contact_data(directphoneno)]
 }

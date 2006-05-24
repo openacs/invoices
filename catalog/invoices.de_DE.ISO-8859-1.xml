@@ -179,6 +179,7 @@
   <msg key="iv_invoice_item_Title">Titel</msg>
   <msg key="iv_invoice_item_vat">Mehrwertsteuer</msg>
   <msg key="iv_invoice_item_View">Rechnungsposition ansehen</msg>
+  <msg key="iv_invoice_join">Vorbereitete Rechnungen</msg>
   <msg key="iv_invoice_New">Neue Rechnung</msg>
   <msg key="iv_invoice_New2">Neue Rechnung erstellen</msg>
   <msg key="iv_invoice_no_invoice">Nicht abzurechnende Subprojekte</msg>
@@ -234,7 +235,7 @@
   <msg key="iv_offer_accepted_date">Auftragsdatum</msg>
   <msg key="iv_offer_accepted_date_help">Datum der Annahme</msg>
   <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;%data.contact_salutation%, &lt;p&gt;vielen Dank für Ihren Auftrag!&lt;p&gt;
-Die Details entnehmen Sie bitte der angehängten PDF-Datei.&lt;p&gt;Mit freundlichen Gr&amp;uuml;&amp;szlig;en&lt;p&gt;%am_name;noquote%&lt;br&gt;Kundenberatung&lt;/html&gt;&lt;/body&gt;</msg>
+Die Details entnehmen Sie bitte der angehängten PDF-Datei.&lt;p&gt;Viele Gr&amp;uuml;&amp;szlig;e&lt;p&gt;%am_name;noquote%&lt;br&gt;Kundenberatung&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_accepted_email_subject">Auftragsbestätigung # %offer_nr%</msg>
   <msg key="iv_offer_accepted_thanks">Vielen Dank für die Annahme unseres Angebots. Wir werden Sie so schnell wie möglich diesbezüglich kontaktieren.</msg>
   <msg key="iv_offer_Add">Kostenaufstellung für &quot;%organization_name%&quot;</msg>
@@ -264,7 +265,11 @@ Die Details entnehmen Sie bitte der angehängten PDF-Datei.&lt;p&gt;Mit freundlic
   <msg key="iv_offer_Description_help">Beschreibung der Kostenaufstellung</msg>
   <msg key="iv_offer_Edit">Projektaufstellung ändern</msg>
   <msg key="iv_offer_edit_error">Sie dürfen keine akzeptierte oder berechnete Kostenaufstellung ändern.</msg>
+<<<<<<< invoices.de_DE.ISO-8859-1.xml
+  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;%data.contact_salutation%,&lt;p&gt;anbei erhalten Sie das gewünschte Angebot als PDF-Datei.&lt;p&gt;Um das Angebot freizugeben, klicken Sie bitte &lt;a href=&quot;%accept_link%&quot;&gt;hier&lt;/a&gt;.&lt;p&gt;Viele Gr&uuml;&szlig;e&lt;p&gt;%am_name;noquote%&lt;br&gt;Kundenberatung&lt;br/&gt;
+=======
   <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;%data.contact_salutation%,&lt;p&gt;anbei erhalten Sie das gewünschte Angebot als PDF-Datei.&lt;p&gt;Um das Angebot freizugeben, klicken Sie bitte &lt;a href=&quot;%accept_link;noquote%&quot;&gt;hier&lt;/a&gt;.&lt;p&gt;Mit freundlichen Grüßen&lt;p&gt;%am_name;noquote%&lt;br&gt;Kundenberatung&lt;br/&gt;
+>>>>>>> 1.33
 Durchwahl: %am_directphoneno%&lt;br&gt;&lt;b&gt;WIENERS+WIENERS GmbH&lt;/b&gt;&lt;/body&gt;&lt;/html&gt;</msg>
   <msg key="iv_offer_email_subject">Angebot # %offer_nr%</msg>
   <msg key="iv_offer_file">Datei anhängen</msg>

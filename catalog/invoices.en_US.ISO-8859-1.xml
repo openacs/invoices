@@ -179,6 +179,7 @@
   <msg key="iv_invoice_item_Title">Title</msg>
   <msg key="iv_invoice_item_vat">VAT</msg>
   <msg key="iv_invoice_item_View">View Invoice Item</msg>
+  <msg key="iv_invoice_join">Prepared invoices</msg>
   <msg key="iv_invoice_New">New Invoice</msg>
   <msg key="iv_invoice_New2">Create New Invoice</msg>
   <msg key="iv_invoice_no_invoice">Subprojects without invoice</msg>

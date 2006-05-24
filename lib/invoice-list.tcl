@@ -67,7 +67,7 @@ if { [info exists organization_id] } {
 lappend actions "[_ invoices.iv_invoice_url]" $base_url "[_ invoices.iv_invoice_url2]"
 
 if {$invoice_cancel_p} {
-    lappend actions "[_ invoices.iv_journal_check]" "${base_url}journal-check" "[_ invoices.iv_journal_check]" "[_ invoices.iv_join_invoice]" "${base_url}invoice-join" "[_ invoices.iv_join_invoice]"
+    lappend actions "[_ invoices.iv_journal_check]" "${base_url}journal-check" "[_ invoices.iv_journal_check]" "[_ invoices.iv_join_invoice]" [export_vars -base "${base_url}invoice-join" {return_url}] "[_ invoices.iv_join_invoice]"
 }
 
 # If the sum was paid, the total_amount should appear green.
@@ -217,14 +217,30 @@ set contacts_p [apm_package_installed_p contacts]
 set contacts_package_id [apm_package_id_from_key contacts]
 set return_url "[ad_conn url]?[ad_conn query]"
 
-db_multirow -extend {creator_link edit_link display_link cancel_link delete_link preview_link create_link copy_link recipient} iv_invoice iv_invoice {} {
+db_multirow -extend {creator_link edit_link display_link cancel_link delete_link preview_link create_link copy_link recipient invoice_type} iv_invoice iv_invoice {} {
     # Ugly hack. We should find out which contact package is linked
 
+
+    if {$total_amount >= 0} {
+	# send invoice
+	set invoice_type "invoice"
+    } elseif {[empty_string_p $parent_invoice_id]} {
+	# A credit has a negative total amount and no parent_id
+	set invoice_type "credit"
+    } else {
+	# A cancellation invoice has a negative amount and the parent_id set to the 
+	# Invoice it is cancelling.
+	set invoice_type "cancellation"
+    }
     set creation_date [lc_time_fmt $creation_date $time_format]
     set due_date [lc_time_fmt $due_date $date_format]
 
     set display_link [export_vars -base "${base_url}invoice-ae" {invoice_id {mode display}}]
-    set edit_link [export_vars -base "${base_url}invoice-ae" {invoice_id return_url}]
+    if {$invoice_type eq "credit"} {
+	set edit_link [export_vars -base "${base_url}invoice-credit" {invoice_id organization_id return_url}]
+    } else {
+	set edit_link [export_vars -base "${base_url}invoice-ae" {invoice_id return_url}]
+    }
     set cancel_link [export_vars -base "${base_url}invoice-cancellation" {{organization_id $orga_id} {parent_id $invoice_rev_id} return_url}]
     set delete_link [export_vars -base "${base_url}invoice-delete" {invoice_id return_url}]
     set preview_link [export_vars -base "${base_url}invoice-preview" {invoice_id}]

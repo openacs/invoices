@@ -85,7 +85,6 @@ if {![info exists invoice_id] || $__new_p} {
     set currency [iv::price_list::get_currency -organization_id $organization_id]
 } else {
     db_1row get_organization_and_currencies {}
-    set cur_vat_percent [format "%.1f" $cur_vat_percent]
     set cur_invoice_rebate [expr $cur_amount_sum - $cur_total_amount]
     if {$cancelled_p == "t"} {
 	set has_edit 1
@@ -285,7 +284,7 @@ ad_form -extend -name iv_invoice_form -form {
 if {!$has_submit} {
     # we are adding/editing data
     ad_form -extend -name iv_invoice_form -form {
-	{vat_percent:float {label "[_ invoices.iv_invoice_vat_percent]"} {html {size 5 maxlength 10}} {help_text "[_ invoices.iv_invoice_vat_percent_help]"} {after_html {%}}}
+	{vat_percent:float {mode display} {label "[_ invoices.iv_invoice_vat_percent]"} {html {size 5 maxlength 10}} {help_text "[_ invoices.iv_invoice_vat_percent_help]"} {after_html {%}}}
     }
 
     if {![empty_string_p $project_id]} {
@@ -464,17 +463,32 @@ ad_form -extend -name iv_invoice_form -new_request {
     set title "[_ invoices.iv_invoice_1] $organization_name $due_date"
 
     db_1row offer_data {}
-    set vat_percent [format "%.1f" $vat_percent]
     set invoice_rebate $open_rebate
 
     set contacts_package_id [lindex [application_link::get_linked -from_package_id $package_id -to_package_key contacts] 0]
+
+    set project_recipients [db_list recipients {}]
+    set recipient_id [lindex $project_recipients 0]
+
+    if {$recipient_id eq ""} {
+	set rec_organization_id $organization_id
+    } else {
+	if {[person::person_p -party_id $recipient_id]} {
+	    set rec_organization_id [contact::util::get_employee_organization -employee_id $recipient_id]
+	} else {
+	    set rec_organization_id $recipient_id
+	}
+    }
+
     array set org_data [contacts::get_values \
 			    -group_name "Customers" \
 			    -object_type "organization" \
-			    -party_id $organization_id \
+			    -party_id $rec_organization_id \
 			    -contacts_package_id $contacts_package_id]
     if {[info exists org_data(vat_percent)]} {
 	set vat_percent [format "%.1f" $org_data(vat_percent)]
+    } else {
+	set vat_percent [format "%.1f" 0]
     }
 } -edit_request {
     db_1row get_data {}
@@ -503,15 +517,28 @@ ad_form -extend -name iv_invoice_form -new_request {
 	set total_amount [expr $total_amount - $invoice_rebate]
     }
     set total_amount [format "%.2f" $total_amount]
-    set vat [format "%.2f" [expr $total_amount * $vat_percent / 100.]]
 
+
+    # Get the VAT percent from the recieving company
     if {[person::person_p -party_id $recipient_id]} {
 	set rec_organization_id [contact::util::get_employee_organization -employee_id $recipient_id]
     } else {
 	set rec_organization_id $recipient_id
     }
 
+    set rec_orga_rev_id [content::item::get_best_revision -item_id $rec_organization_id]
+    set vat_percent [ams::value -object_id $rec_orga_rev_id -attribute_name vat_percent]
+
+    if {$vat_percent eq ""} {
+	set vat_percent [format "%.1f" 0]
+    } else {
+	set vat_percent [format "%.1f" $vat_percent]
+    }
+
+    set vat [format "%.2f" [expr $total_amount * $vat_percent / 100.]]
+
 } -new_data {
+
     db_transaction {
 	set new_invoice_rev_id [iv::invoice::new  \
 				    -title $title \

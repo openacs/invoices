@@ -758,6 +758,7 @@ ad_form -extend -name iv_offer_form -new_request {
 	set offer_id [content::revision::item_id -revision_id $new_offer_rev_id]
     }
 } -edit_data {
+
     db_transaction {
 	set new_offer_rev_id [iv::offer::edit \
 				  -offer_id $offer_id \

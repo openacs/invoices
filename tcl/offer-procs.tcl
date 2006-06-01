@@ -105,36 +105,33 @@ ad_proc -public iv::offer::edit {
 
     Edit Offer
 } {
-    db_transaction {
-	set status [iv::offer::get_status -offer_id $offer_id]
-	if {[empty_string_p $status]} {
-	    set status new
-	}
-	set old_rev_id [content::item::get_best_revision -item_id $offer_id]
-	set new_rev_id [content::revision::new \
-			    -item_id $offer_id \
-			    -content_type {iv_offer} \
-			    -title $title \
-			    -description $description \
-			    -attributes [list \
-					     [list comment $comment] \
-					     [list reservation $reservation] \
-					     [list offer_nr $offer_nr] \
-					     [list organization_id $organization_id] \
-					     [list amount_total $amount_total] \
-					     [list amount_sum $amount_sum] \
-					     [list currency $currency] \
-					     [list finish_date $finish_date] \
-					     [list date_comment $date_comment] \
-					     [list payment_days $payment_days] \
-					     [list show_sum_p $show_sum_p] \
-					     [list status $status] \
-					     [list vat_percent $vat_percent] \
-					     [list vat $vat] \
-					     [list credit_percent $credit_percent] ] ]
-	db_dml set_accepted_date {}
+    set status [iv::offer::get_status -offer_id $offer_id]
+    if {[empty_string_p $status]} {
+	set status new
     }
-
+    set old_rev_id [content::item::get_best_revision -item_id $offer_id]
+    set new_rev_id [content::revision::new \
+			-item_id $offer_id \
+			-content_type {iv_offer} \
+			-title $title \
+			-description $description \
+			-attributes [list \
+					 [list comment $comment] \
+					 [list reservation $reservation] \
+					 [list offer_nr $offer_nr] \
+					 [list organization_id $organization_id] \
+					 [list amount_total $amount_total] \
+					 [list amount_sum $amount_sum] \
+					 [list currency $currency] \
+					 [list finish_date $finish_date] \
+					 [list date_comment $date_comment] \
+					 [list payment_days $payment_days] \
+					 [list show_sum_p $show_sum_p] \
+					 [list status $status] \
+					 [list vat_percent $vat_percent] \
+					 [list vat $vat] \
+					 [list credit_percent $credit_percent] ] ]
+    db_dml set_accepted_date {}
     return $new_rev_id
 }
     

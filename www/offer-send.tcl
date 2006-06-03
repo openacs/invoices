@@ -5,11 +5,22 @@ ad_page_contract {
     @creation-date 2005-06-21
 } {
     offer_id:integer
+    {project_id ""}
     {return_url ""}
     {type ""}
 } -properties {
     context:onevalue
     page_title:onevalue
+}
+
+# Get the offer_id if we only have the project_id
+if {$offer_id eq ""} {
+    #try to find the offer from the project link
+    set offer_id [lindex [application_data_link::get_linked -from_object_id $project_id -to_object_type content_item] 0]
+}
+
+if {$offer_id eq ""} {
+    ad_return_error "[_ invoices.missing_offer_list]" "[_ invoices.missing_offer_list_text]"
 }
 
 set user_id [auth::require_login]

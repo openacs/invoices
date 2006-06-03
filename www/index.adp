@@ -15,8 +15,8 @@
   <li><a href="projects-billable">#invoices.Billable_Projects#</a></li>
   <li><a href="invoice-items">#invoices.Invoices_items#</a></li>
   <li><a href="offer-items">#invoices.Offers_items#</a></li>
-  <li><a href="offer-items-reports">#invoices.Offer_Items_Reports#</a></li>
-  <li><a href="invoice-items-reports">#invoices.Invoice_Items_Reports#</a></li>
+<!--  <li><a href="offer-items-reports">#invoices.Offer_Items_Reports#</a></li>
+  <li><a href="invoice-items-reports">#invoices.Invoice_Items_Reports#</a></li> -->
   <li><a href="offer-first-reports">#invoices.First_Order_Reports#</a></li>
 </if>
 <li><a href="invoice-customer-reports">#invoices.Customer_Invoices_Reports#</a></li>

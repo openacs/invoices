@@ -305,6 +305,9 @@ if {$_offer_id} {
 	if {[empty_string_p $item(item_units)]} {
 	    set item(item_units) 0
 	}
+	
+	regsub {\[} $item(comment) {\(} item(comment)
+	regsub {\[} $item(description) {\(} item(description)
 	set item(price_per_unit) [format "%.2f" $item(price_per_unit)]
 	set item(amount_sum) [format "%.2f" [expr $item(item_units) * $item(price_per_unit)]]
 	set item(amount_total) [format "%.2f" [expr (1. - ($item(rebate) / 100.)) * $item(amount_sum)]]
@@ -610,6 +613,8 @@ ad_form -extend -name iv_offer_form -new_request {
     }
 } -edit_request {
     db_1row get_data {}
+    
+    regsub -all {\[} $comment {\(} comment
     set title [lang::util::localize $title]
     set description [lang::util::localize $description]
     set creator_name "$first_names $last_name"

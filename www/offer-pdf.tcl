@@ -37,7 +37,12 @@ if {$status == "new"} {
 
 db_transaction {
     # move file to offer /accepted offer folder
-    content::item::move -item_id $file_id -target_folder_id $offer_folder_id
+    if {![string eq "" $offer_folder_id]} {
+	content::item::move -item_id $file_id -target_folder_id $offer_folder_id
+    } else {
+	ns_log Error "No folder for status $status for customer $organization_id in root_folder $root_folder_id"
+    }
+
     application_data_link::new -this_object_id $offer_id -target_object_id $file_id
     db_dml set_publish_status {}
     db_dml set_context_id {}

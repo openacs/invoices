@@ -126,7 +126,7 @@ template::list::create \
 	}
 	project_contact {
 	    label {[_ invoices.iv_offer_project_contact]}
-	    display_template {<a href="@iv_offer.contact_link@">@iv_offer.contact_first_names@ @iv_offer.contact_last_name@</a>&nbsp;<if @iv_offer.contact_phone@ not nil><a href="phone:@iv_offer.contact_phone@"><img src="/resources/wieners/telephone.png" border=0 alt="@iv_offer.contact_phone;noquote@"></a></if>}
+	    display_template {<a href="@iv_offer.contact_link@">@iv_offer.contact_first_names@ @iv_offer.contact_last_name@</a>&nbsp;<if @iv_offer.contact_phone@ not nil><a href="phone:@iv_offer.contact_phone@"><img src="/resources/invoices/telephone.png" border=0 alt="@iv_offer.contact_phone;noquote@"></a></if>}
 	}
         amount_total {
 	    label {[_ invoices.iv_offer_amount_total]}

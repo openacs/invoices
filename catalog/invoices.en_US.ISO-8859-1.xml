@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="invoices" package_version="1.0d7" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="invoices" package_version="1.0d8" locale="en_US" charset="ISO-8859-1">
 
   <msg key="accepted">Order confirmation</msg>
   <msg key="Accepted_date">Accepted on</msg>
@@ -115,6 +115,14 @@
   <msg key="iv_cost_Title">Title</msg>
   <msg key="iv_cost_variable_cost_p">Fixed cost?</msg>
   <msg key="iv_cost_View">View Cost</msg>
+  <msg key="iv_credit_amount">Gutschriftsbetrag</msg>
+  <msg key="iv_credit_amount_help">Betrag der dem Kunden gutgeschrieben wird. Cent Beträge getrennt durch Punkt, nicht Komma. &lt;br&gt;&lt;font color=&quot;red&quot;&gt;Keinen negativen Betrag eingeben&lt;/font&gt;&lt;/br&gt;</msg>
+  <msg key="iv_credit_due_date">Credit date</msg>
+  <msg key="iv_credit_due_date_help">Date when the credit is issued.</msg>
+  <msg key="iv_credit_invoice_nr">Gutschriftsnummer</msg>
+  <msg key="iv_credit_invoice_nr_help">Credit invoice number. Taken from the invoice number cycle.</msg>
+  <msg key="iv_credit_recipient">Credit Recipient</msg>
+  <msg key="iv_credit_recipient_help">Recipient of the credit</msg>
   <msg key="iv_display_price_list">Display price list</msg>
   <msg key="iv_from_last_years">Invoices from the last %last_years% years:</msg>
   <msg key="iv_invoice_1">Invoice</msg>
@@ -215,6 +223,7 @@
   <msg key="iv_invoice_Title">Title</msg>
   <msg key="iv_invoice_Title_help">Title for the invoice</msg>
   <msg key="iv_invoice_total_amount">Total amount</msg>
+  <msg key="iv_invoice_total_amount_help">Betrag der dem Kunden gutgeschrieben wird. Cent Beträge getrennt durch Punkt, nicht Komma. &lt;br&gt;&lt;font color=&quot;red&quot;&gt;Keinen negativen Betrag eingeben&lt;/font&gt;&lt;/br&gt;</msg>
   <msg key="iv_invoice_url">Invoices</msg>
   <msg key="iv_invoice_url2">Rechnungen, Preislisten, Reports</msg>
   <msg key="iv_invoice_vat">VAT</msg>

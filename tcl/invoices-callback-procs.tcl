@@ -160,6 +160,16 @@ ad_proc -public -callback iv::offer_accepted {
 } {
 }
 
+ad_proc -public -callback iv::offer_create_items {
+    {-project_item_id:required}
+    {-organization_id:required}
+    {-offer_id:required}
+} {
+    Callback to be executed for actually filling the offer items to the offer.
+    As this is usually very custom specific we need a callback here
+    This callback is hooked into /www/offer-create
+} -
+
 ad_proc -public -callback contacts::populate::organization::customer_attributes -impl invoices {
     {-list_id:required}
 } {

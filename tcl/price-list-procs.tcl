@@ -109,3 +109,25 @@ ad_proc -public iv::price_list::get_list_id {
 	return ""
     }
 }
+
+ad_proc -public iv::price_list::get_price {
+    -organization_id:required
+    -category_id:required
+    {-package_id ""}
+} {
+    @author Timo Hentschel (timo@timohentschel.de)
+    @creation-date 2005-07-01
+
+    Get id of customer price for a certain category
+} {
+    if {[empty_string_p $package_id]} {
+	set package_id [ad_conn package_id]
+    }
+
+    set list_id [iv::price_list::get_list_id -organization_id $organization_id -package_id $package_id]
+    if {$list_id eq ""} {
+	return ""
+    } else {
+	return [db_string get_price "select amount from iv_prices p, cr_items i where i.latest_revision = p.price_id and p.list_id = :list_id and category_id = :category_id" -default ""]
+    } 
+}

@@ -125,6 +125,7 @@
 		and iv.invoice_id = ii.invoice_id
 		and ii.offer_item_id = com.object_id
 		and com.category_id = :c_id
+		[template::list::filter_where_clauses -and -name "iv_items"]
     </querytext>
 </fullquery>
 

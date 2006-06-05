@@ -173,5 +173,5 @@ template::list::create \
 set contacts_url [apm_package_url_from_key contacts]
 
 db_multirow -extend {customer_url} reports $sql_query_name {} {
-    set customer_url "${contacts_url}$customer_id"
+    set customer_url [export_vars -base "invoice-items" -url {customer_id {groupby "cat_name"} {orderby "cat_name"}}]
 }

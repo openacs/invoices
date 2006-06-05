@@ -109,29 +109,6 @@ if { $categories_p } {
     }
 }
 
-set aggregate_amount ""
-if { [exists_and_not_null groupby] } {
-    append aggregate_amount "<ul><table border=0><tr><td><b>Aggregate Amount:</b></td><td>&nbsp;</td></tr>"
-    foreach cat $categories_filter {
-	set c_name [lindex $cat 0]
-	set c_id   [lindex $cat 1]
-	if { [exists_and_not_null category_id] } {
-	    if { [string equal $c_id $category_id] } {
-		append aggregate_amount "<tr><td><li>$c_name:</td>"
-		set amount [db_string get_amount { }]
-		append aggregate_amount "<td align=right>$amount</td>"
-		append aggregate_amount "</tr>"
-	    }
-	} else {
-	    append aggregate_amount "<tr><td><li>$c_name:</td>"
-	    set amount [db_string get_amount { }]
-	    append aggregate_amount "<td align=right>$amount</td>"
-	    append aggregate_amount "</tr>"
-	}
-    }
-append aggregate_amount "</ul>"
-}
-
 
 lappend elements item_title [list label "[_ invoices.Invoice_Item_title]"] \
     final_amount [list label "[_ invoices.Final_Amount]"] \
@@ -270,4 +247,27 @@ db_multirow -extend $multirow_extend iv_items iv_items { } {
 	    continue
 	}
     }
+}
+
+set aggregate_amount ""
+if { [exists_and_not_null groupby] } {
+    append aggregate_amount "<ul><table border=0><tr><td><b>Aggregate Amount:</b></td><td>&nbsp;</td></tr>"
+    foreach cat $categories_filter {
+	set c_name [lindex $cat 0]
+	set c_id   [lindex $cat 1]
+	if { [exists_and_not_null category_id] } {
+	    if { [string equal $c_id $category_id] } {
+		append aggregate_amount "<tr><td><li>$c_name:</td>"
+		set amount [db_string get_amount { }]
+		append aggregate_amount "<td align=right>$amount</td>"
+		append aggregate_amount "</tr>"
+	    }
+	} else {
+	    append aggregate_amount "<tr><td><li>$c_name:</td>"
+	    set amount [db_string get_amount { }]
+	    append aggregate_amount "<td align=right>$amount</td>"
+	    append aggregate_amount "</tr>"
+	}
+    }
+append aggregate_amount "</ul>"
 }

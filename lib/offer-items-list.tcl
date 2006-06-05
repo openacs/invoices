@@ -108,44 +108,6 @@ if { $categories_p } {
     }
 }
 
-set aggregate_amount ""
-if { [exists_and_not_null groupby] } {
-    append aggregate_amount "<ul><table border=0><tr><td><b>Aggregate Amount:</b></td><td>&nbsp;</td></tr>"
-    foreach cat $categories_filter {
-        set c_name [lindex $cat 0]
-        set c_id   [lindex $cat 1]
-	set amount_values [db_list_of_lists get_amount_values { }]
-	set total_amount "0.00"
-	foreach val $amount_values {
-	    set ppu [lindex $val 0]
-	    set iu  [lindex $val 1]
-	    set r   [lindex $val 2]
-	    set amount [expr $ppu * $iu]
-	    if { [string equal $r "0.00"] } {
-		set amount [format %.2f $amount]
-	    } else {
-		set amount [format %.2f [expr $amount - [expr [expr $r / 100] * $amount]]]
-	    }
-	    set total_amount [expr $total_amount + $amount]
-	}
-
-        if { [exists_and_not_null category_id] } {
-	    foreach cat_id $category_id {
-		if { [string equal $c_id $cat_id] } {
-		    append aggregate_amount "<tr><td><li>$c_name:</td>"
-		    append aggregate_amount "<td align=right>$total_amount</td>"
-		    append aggregate_amount "</tr>"
-		}
-	    }
-        } else {
-            append aggregate_amount "<tr><td><li>$c_name:</td>"
-            append aggregate_amount "<td align=right>$total_amount</td>"
-            append aggregate_amount "</tr>"
-        }
-    }
-append aggregate_amount "</ul>"
-}
-
 lappend elements item_title [list label "[_ invoices.Offer_Item_Title]"] \
     final_amount [list label "[_ invoices.Final_Amount]"] \
     offer_title [list label "[_ invoices.Offer_Title]" \
@@ -194,11 +156,20 @@ if { [apm_package_installed_p "project-manager"] } {
     }
 }
 
-set project_status_p 0
-if { [exists_and_not_null project_status_id] } {
-    set project_status_p 1
+# If the project_status_id filter is set, then
+# Limit it in the pagination query
+if {[exists_and_not_null project_status_id]} {
+    set project_pag_query "and i.item_id in (select object_id_one
+from acs_data_links r, cr_items i 
+where r.object_id_one = i.item_id 
+and i.content_type = 'iv_offer' 
+and object_id_two in (select item_id 
+   from cr_items pi, pm_projects p 
+   where p.status_id = :project_status_id 
+   and pi.latest_revision = p.project_id))"
+} else {
+    set project_pag_query ""
 }
-
 
 set groupby_values {
     { "#invoices.Customer#" { { groupby org_name } { offer_items_orderby org_name,asc } } }
@@ -226,14 +197,10 @@ template::list::create \
 	    orderby_desc { lower(o.title) desc }
 	    orderby_asc { lower(o.title) asc }
 	}
-	org_name {
-	    label { [_ invoices.Customer] }
-	    orderby_asc { org.name asc }
-	}
-	cat_name {
-	    label { [_ invoices.Category] }
-	    orderby_asc { ob.title asc }
-	}
+        cat_name {
+            label { [_ invoices.Category] }
+            orderby_asc { ob.title asc }
+        }
 	month {
 	    label { [_ invoices.Month] }
 	    orderby_asc { to_char(oi.creation_date,'mm') asc }
@@ -271,23 +238,43 @@ db_multirow -extend $multirow_extend offer_items offer_items { } {
 	set tree_id [category::get_tree $cat_id]
 	set tree_$tree_id $cat_name
     }
-    set project_item_id [lindex [application_data_link::get_linked -from_object_id $item_id -to_object_type content_item] 0]
-    if { $project_status_p } {
-	if { [exists_and_not_null project_item_id] } {
-	    switch $project_status_id {
-		"1" {
-		    if { ![pm::project::open_p -project_item_id $project_item_id] } {
-			continue
-		    }
-		}
-		"2" {
-		    if { [pm::project::open_p -project_item_id $project_item_id] } {
-			continue
-		    }
+}
+
+set aggregate_amount ""
+if { [exists_and_not_null groupby] } {
+    append aggregate_amount "<ul><table border=0><tr><td><b>Aggregate Amount:</b></td><td>&nbsp;</td></tr>"
+    foreach cat $categories_filter {
+        set c_name [lindex $cat 0]
+        set c_id   [lindex $cat 1]
+	set amount_values [db_list_of_lists get_amount_values { }]
+	set total_amount "0.00"
+	foreach val $amount_values {
+	    set ppu [lindex $val 0]
+	    set iu  [lindex $val 1]
+	    set r   [lindex $val 2]
+	    set amount [expr $ppu * $iu]
+	    if { [string equal $r "0.00"] } {
+		set amount [format %.2f $amount]
+	    } else {
+		set amount [format %.2f [expr $amount - [expr [expr $r / 100] * $amount]]]
+	    }
+	    set total_amount [expr $total_amount + $amount]
+	}
+
+        if { [exists_and_not_null category_id] } {
+	    foreach cat_id $category_id {
+		if { [string equal $c_id $cat_id] } {
+		    append aggregate_amount "<tr><td><li>$c_name:</td>"
+		    append aggregate_amount "<td align=right>$total_amount</td>"
+		    append aggregate_amount "</tr>"
 		}
 	    }
-	} else {
-	    continue
-	}
+        } else {
+            append aggregate_amount "<tr><td><li>$c_name:</td>"
+            append aggregate_amount "<td align=right>$total_amount</td>"
+            append aggregate_amount "</tr>"
+        }
     }
+append aggregate_amount "</ul>"
 }
+

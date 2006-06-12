@@ -106,6 +106,7 @@ template::list::create \
 	}
         description {
 	    label {[_ invoices.iv_invoice_project_descr]}
+	    display_template {@projects.description;noquote@}
         }
         amount_open {
 	    label {[_ invoices.iv_invoice_amount_open]}

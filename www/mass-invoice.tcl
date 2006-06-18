@@ -37,6 +37,8 @@ set timestamp_format "$date_format [lc_get formbuilder_time_format]"
 
 set language [lang::conn::language]
 
+ad_progress_bar_begin -title [_ invoices.Create_mass_invoices] -message_1 "[_ invoices.Create_mass_invoices2]"
+
 foreach project_item_id $project_id {
 
     # We need to make sure the whole process runs through smoothly for invoice
@@ -89,7 +91,7 @@ foreach project_item_id $project_id {
     
     # If an invoice exists with this description 
     
-    if {[db_string existing_invoice "select 1 from iv_invoicesx where description = :description" -default 0]} {
+    if {[db_string existing_invoice "select 1 from iv_invoicesx where description = :description and status = 'new' limit 1" -default 0]} {
 	continue
 	}
     
@@ -340,3 +342,5 @@ if {$file_p} {
 	-body [_ invoices.mass_invoice_email_body] \
 	-mime_type "text/html" 
 }
+
+ad_progress_bar_end -url $return_url

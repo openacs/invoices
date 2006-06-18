@@ -11,6 +11,7 @@
     <tr>
       <td>#invoices.iv_invoice_start_date# <input type=text name="start_date" size=12 value="@start_date@" id=sel1><input type='reset' value=' ... ' onclick="return showCalendar('sel1', 'y-m-d');"></td>
       <td>#invoices.iv_invoice_end_date# <input type=text name="end_date" size=12 value="@end_date@" id=sel2><input type='reset' value=' ... ' onclick="return showCalendar('sel2', 'y-m-d');"></td></td>
+      &nbsp;
       <td><input type=submit name="submit" value="#invoices.ok#"></td>
     </tr>
     <if @clear_p@ eq 1>
@@ -38,4 +39,4 @@
 <include src="/packages/invoices/lib/invoice-list"
  organization_id="@organization_id@" row_list="@row_list@" page="@page@"
  orderby="@orderby@" format="@format@" page_size="@page_size@"
- start_date="@start_date@" end_date="@end_date@">
+ start_date="@start_date@" end_date="@end_date@" status="@status@">

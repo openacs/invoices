@@ -1,5 +1,5 @@
 set required_param_list [list]
-set optional_param_list [list orderby elements base_url package_id page_num]
+set optional_param_list [list orderby elements base_url package_id page_num subproject_p]
 set optional_unset_list [list organization_id party_id]
 
 foreach required_param $required_param_list {
@@ -38,9 +38,17 @@ if {![info exists show_filter_p]} {
     set show_filter_p 0
 }
 
+if {$subproject_p == "f"} {
+    set subproject_where_clause "cf2.folder_id = pi.parent_id"
+    set subproject_from ", cr_folders cf2"
+} else {
+    set subproject_where_clause ""
+    set subproject_from ""
+}
+
 set party_id_where_clause ""
 if {[exists_and_not_null party_id]} {
-    set assigned_projects [pm::util::assigned_projects -party_id $party_id]
+    set assigned_projects [pm::util::assigned_projects -party_id $party_id -status_id $status_id]
     lappend assigned_projects 0
 
     set party_id_where_clause "pi.item_id in ([join $assigned_projects ","])"
@@ -62,7 +70,6 @@ if {[exists_and_not_null project_id]} {
 if {[exists_and_not_null project_ids]} {
     set project_where_clause "pi.item_id in ([join $project_ids ,])"
 }
-
 
 foreach element $elements {
     append row_list "$element {}\n"
@@ -112,9 +119,11 @@ template::list::create \
         }
         description {
 	    label {[_ invoices.iv_offer_Description]}
+	    display_template {@iv_offer.description;noquote@}
         }
         comment {
 	    label {[_ invoices.iv_offer_comment]}
+	    display_template {@iv_offer.comment;noquote@}
         }
         project_id {
 	    label {[_ invoices.iv_offer_project]}
@@ -226,6 +235,9 @@ template::list::create \
 	party_id {
 	    where_clause {$party_id_where_clause}
 	}
+	subproject_p {
+	    where_clause {$subproject_where_clause}
+	}
 	page_num {}
     } \
     -formats {
@@ -268,9 +280,10 @@ db_multirow -extend {creator_link contact_link edit_link delete_link title_link 
     set creation_date [lc_time_fmt $creation_date $time_format]
     set accepted_date [lc_time_fmt $accepted_date $time_format]
     set finish_date [lc_time_fmt $finish_date $time_format]
+
 }
 
+# If we call this in the db_multirow we run out of database pools...
 multirow foreach iv_offer {
-    contact::employee::get -employee_id $contact_id -array contact_data -use_cache
-    set contact_phone [ad_html_to_text -no_format $contact_data(directphoneno)]
+    set contact_phone [contact::employee::direct_phone -employee_id $contact_id -format "text"]
 }

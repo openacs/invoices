@@ -33,6 +33,18 @@ foreach optional_unset {organization_id} {
     }
 }
 
+# Status filter
+set status_options_list [list [list "" ""]]
+db_foreach status {select distinct status as option from iv_invoices} {
+    lappend status_options_list [list [_ invoices.iv_invoice_status_$option] $option]
+}
+
+if {[exists_and_not_null status]} {
+    set status_where_clause "t.status = :status"
+} else {
+    set status_where_clause ""
+}
+
 set start_where_clause "1 = 1"
 if {[exists_and_not_null start_date] && $start_date != "YYYY-MM-DD" && [regexp {^([0-9]+)\-([0-9]+)\-([0-9]+)} $start_date match year month day]} {
     set start_where_clause "o.creation_date >= to_timestamp(:start_date, 'YYYY-MM-DD')"
@@ -46,6 +58,7 @@ if {[exists_and_not_null end_date] && $end_date != "YYYY-MM-DD" && [regexp {^([0
 } elseif {[info exists end_date]} {
     unset end_date
 }
+
 
 set user_id [ad_conn user_id]
 set timestamp_format "YYYY-MM-DD HH24:MI:SS"
@@ -195,6 +208,11 @@ template::list::create \
 	}
 	end_date {
 	    where_clause $end_where_clause
+	}
+	status {
+	    label {[_ invoices.iv_invoice_status]}
+	    values $status_options_list
+	    where_clause $status_where_clause
 	}
     } \
     -formats {

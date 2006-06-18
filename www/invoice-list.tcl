@@ -11,6 +11,7 @@ ad_page_contract {
     {organization_id ""}
     {start_date "YYYY-MM-DD"}
     {end_date "YYYY-MM-DD"}
+    {status ""}
 } -properties {
     context:onevalue
     page_title:onevalue

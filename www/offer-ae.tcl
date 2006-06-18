@@ -713,7 +713,7 @@ ad_form -extend -name iv_offer_form -new_request {
 	ad_script_abort
     }
 
-    db_transaction {
+#    db_transaction {
 	if {[empty_string_p $amount_total]} {
 	    set amount_total $amount_sum
 	}
@@ -761,10 +761,10 @@ ad_form -extend -name iv_offer_form -new_request {
 	    category::map_object -object_id $new_item_rev_id $item(category)
 	}
 	set offer_id [content::revision::item_id -revision_id $new_offer_rev_id]
-    }
+#   }
 } -edit_data {
 
-    db_transaction {
+#    db_transaction {
 	set new_offer_rev_id [iv::offer::edit \
 				  -offer_id $offer_id \
 				  -title $title \
@@ -828,7 +828,7 @@ ad_form -extend -name iv_offer_form -new_request {
 
 	    category::map_object -object_id $new_item_rev_id $item(category)
 	}
-    }
+#    }
 } -after_submit {
     # upload new file
     if {![empty_string_p $upload_file]} {

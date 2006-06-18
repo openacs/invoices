@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="invoices" package_version="1.0d9" locale="de_DE" charset="ISO-8859-1">
+<message_catalog package_key="invoices" package_version="1.0a1" locale="de_DE" charset="ISO-8859-1">
 
   <msg key="accepted">Auftragsbestätigungen</msg>
   <msg key="Accepted_date">Akzeptiert am</msg>
@@ -37,6 +37,8 @@
   <msg key="Cost_number">Kostennummer</msg>
   <msg key="Costs">Kosten</msg>
   <msg key="count">Zählung</msg>
+  <msg key="Create_mass_invoices">Generierung der Rechnungen in Stapelverarbeitung</msg>
+  <msg key="Create_mass_invoices2">Wir generieren eine Rechnung für jedes der markierten Projekte. Bitte warten Sie bis das System fertig ist (nicht das Browserfenster schliessen). Sie bekommen eine E-Mail mit einem PDF zum Ausdruck sobald alle Rechnungen fertig sind.</msg>
   <msg key="Create_new_pricelist_for_customer">Neue Preisliste für Kunden</msg>
   <msg key="Creation_Date">Erstellungsdatum</msg>
   <msg key="credit_offer_desc">Gutschrift welche von den Projekten gewährt wurde</msg>

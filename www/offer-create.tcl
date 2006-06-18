@@ -2,7 +2,7 @@ ad_page_contract {
     Page to automatically create an offer from a given project.
 
     @author Malte Sussdorff (malte.sussdorff@cognovis.de)
-    @creation-date 2005-06-06
+    @creation-date 2006-06-06
 } {
     organization_id:integer
     project_item_id:integer

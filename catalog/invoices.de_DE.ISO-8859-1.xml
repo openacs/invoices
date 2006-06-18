@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="invoices" package_version="1.0d8" locale="de_DE" charset="ISO-8859-1">
+<message_catalog package_key="invoices" package_version="1.0d9" locale="de_DE" charset="ISO-8859-1">
 
   <msg key="accepted">Auftragsbestätigungen</msg>
   <msg key="Accepted_date">Akzeptiert am</msg>
@@ -51,6 +51,7 @@
   <msg key="Date_Range">Zeitraum:</msg>
   <msg key="day">Tag</msg>
   <msg key="Delete">Löschen</msg>
+  <msg key="delivered_projects">Ausgelieferte Projekte</msg>
   <msg key="Due">Fällig</msg>
   <msg key="Due_date">Fälligkeit</msg>
   <msg key="Edit">Ändern</msg>
@@ -78,6 +79,7 @@
   <msg key="Invoice">Rechnung</msg>
   <msg key="Invoice_Cancel">Stornieren</msg>
   <msg key="Invoice_count">Anzahl Rechnungen</msg>
+  <msg key="invoice_creation_user_help">Benutzer der die Rechnung erstellt hat</msg>
   <msg key="invoice_display">Dokumente zum Drucken anzeigen</msg>
   <msg key="invoice_email">Email</msg>
   <msg key="invoice_for_join">Zum späteren Laden markieren</msg>
@@ -146,6 +148,7 @@
   <msg key="iv_invoice_count_billed">berechnete Positonen</msg>
   <msg key="iv_invoice_count_total">Anzahl Positionen</msg>
   <msg key="iv_invoice_creation_date">erstellt am</msg>
+  <msg key="iv_invoice_creation_date_help">Datum an dem die Rechnung angelegt wurde</msg>
   <msg key="iv_invoice_creation_user">erstellt von</msg>
   <msg key="iv_invoice_credit_1">Gutschrift</msg>
   <msg key="iv_invoice_credit_Add">Gutschrift erstellen</msg>
@@ -227,6 +230,7 @@
   <msg key="iv_invoice_url">Invoices</msg>
   <msg key="iv_invoice_url2">Rechnungen, Preislisten, Reports</msg>
   <msg key="iv_invoice_vat">Mehrwertsteuer</msg>
+  <msg key="iv_invoice_vat_help">MwST (Mehrwertsteuer)</msg>
   <msg key="iv_invoice_vat_percent">Mehrwertsteuersatz</msg>
   <msg key="iv_invoice_vat_percent_help">Mehrwertsteuersatz welcher der Rechnung hinzugefügt wird</msg>
   <msg key="iv_invoice_View">Rechnung ansehen</msg>
@@ -236,6 +240,8 @@
   <msg key="iv_join_invoice">Vorbereitete Rechnungen laden</msg>
   <msg key="iv_journal">Rechnungsbuch</msg>
   <msg key="iv_journal_check">Rechnungsbuch erstellen</msg>
+  <msg key="iv_mass_invoice_New">Stapelrechnung</msg>
+  <msg key="iv_mass_invoice_New2">Anlegen einer einzelnen Rechnung pro project</msg>
   <msg key="iv_of_month_year">Rechnungen von %long_month% %year%:</msg>
   <msg key="iv_of_year">Rechnungen des Jahres %year%:</msg>
   <msg key="iv_offer_1">PA</msg>
@@ -257,6 +263,7 @@ Die Details entnehmen Sie bitte der angehängten PDF-Datei.&lt;p&gt;Viele Gr&amp;
   <msg key="iv_offer_comment">&lt;b&gt;Interner Kommentar&lt;/b&gt;</msg>
   <msg key="iv_offer_comment_help">Interner Kommentar der nicht dem Kunden gezeigt wird.</msg>
   <msg key="iv_offer_count_total">Anzahl Positionen</msg>
+  <msg key="iv_offer_create_New">&lt;font color=green&gt;Vorausgefüllte Projektaufstellung hinzufügen&lt;/font&gt;</msg>
   <msg key="iv_offer_creation_date">erstellt am</msg>
   <msg key="iv_offer_creation_date_help">Erstelldatum</msg>
   <msg key="iv_offer_creation_user">Kundenberater</msg>
@@ -350,6 +357,8 @@ Durchwahl: %am_directphoneno%&lt;br&gt;&lt;b&gt;WIENERS+WIENERS GmbH&lt;/b&gt;&l
   <msg key="iv_offer_send">Angebot schicken</msg>
   <msg key="iv_offer_send_accepted">Auftragsbestätigung schicken</msg>
   <msg key="iv_offer_send_again">Angebot erneut schicken</msg>
+  <msg key="iv_offer_show_sum_p">Gesamtsumme im Angebot</msg>
+  <msg key="iv_offer_show_sum_p_help">Zeige die gesamte Summe im Angebots PDF</msg>
   <msg key="iv_offer_subproject_finish_date_help">Interne Deadline des Subprojektes</msg>
   <msg key="iv_offer_template">Angebotsvorlage</msg>
   <msg key="iv_offer_Title">Titel</msg>
@@ -359,6 +368,7 @@ Durchwahl: %am_directphoneno%&lt;br&gt;&lt;b&gt;WIENERS+WIENERS GmbH&lt;/b&gt;&l
   <msg key="iv_offer_vat_percent">Mehrwertsteuersatz</msg>
   <msg key="iv_offer_vat_percent_help">Wie hoch ist die MwSt, die dem Kunden berechnet wird</msg>
   <msg key="iv_offer_View">Projektaufstellung ansehen</msg>
+  <msg key="iv_parent_offer_View">Projektaufstellung des Hauptprojektes</msg>
   <msg key="iv_payment_1">Zahlung</msg>
   <msg key="iv_payment_2">Zahlungen</msg>
   <msg key="iv_payment_Add">Zahlung hinzufügen</msg>
@@ -399,6 +409,11 @@ Durchwahl: %am_directphoneno%&lt;br&gt;&lt;b&gt;WIENERS+WIENERS GmbH&lt;/b&gt;&l
   <msg key="Link_instances">Anwendungen verlinken</msg>
   <msg key="lt_no_such_invoice_no">Leider können wir die von Ihnen angeforderte Rechnungsnummer nicht in unserem System finden. Bitte überprüfen Sie ob die Nummer richtig ist.</msg>
   <msg key="Mapped">Verbunden</msg>
+  <msg key="mass_invoice_email_body">Die Stapelverarbeitung der Rechungen ist abschlossen. &lt;p&gt; %failed_projects_html%</msg>
+  <msg key="mass_invoice_email_subject">Stapelverarbeitung der Rechnungserstellung abgeschlossen.</msg>
+  <msg key="mass_invoice_error">Leider gab es ein paar Probleme. Bitte legen Sie für die folgenden Projekte die Rechnung manuell an:</msg>
+  <msg key="missing_offer_list">Fehlende Projektaufstellung</msg>
+  <msg key="missing_offer_list_text">Es existiert noch keine Projektaufstellung zu diesem Projekt. Bitte legen Sie diese an.</msg>
   <msg key="Month">Monat</msg>
   <msg key="month">Monat</msg>
   <msg key="More_than_one_customer">Mehr als ein Kunde</msg>
@@ -422,6 +437,7 @@ Durchwahl: %am_directphoneno%&lt;br&gt;&lt;b&gt;WIENERS+WIENERS GmbH&lt;/b&gt;&l
   <msg key="offers">Angebote</msg>
   <msg key="Offers_items">Kostenpositionen</msg>
   <msg key="ok">Ok</msg>
+  <msg key="open_projects">Offene Projekte</msg>
   <msg key="Page_count">Seitenyahl</msg>
   <msg key="Parent_invoice_item">Bezug auf Rechnungsposition</msg>
   <msg key="Parent_offer_item">Bezug auf Kostenposition</msg>

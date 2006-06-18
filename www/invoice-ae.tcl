@@ -314,7 +314,7 @@ if {!$_invoice_id} {
 
 	# get all subprojects marked for no invoice to display warning
 	foreach main_project_id $project_id {
-	    set subprojects [pm::project:subprojects -project_id $main_project_id]
+	    set subprojects [pm::project::subprojects -project_item_id $main_project_id]
 
 	    db_foreach not_invoiceable_subprojects {} {
 		set offer_url [export_vars -base offer-ae {offer_id {mode display}}]

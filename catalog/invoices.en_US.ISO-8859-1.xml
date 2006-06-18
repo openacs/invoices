@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="invoices" package_version="1.0d8" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="invoices" package_version="1.0d9" locale="en_US" charset="ISO-8859-1">
 
   <msg key="accepted">Order confirmation</msg>
   <msg key="Accepted_date">Accepted on</msg>
@@ -51,6 +51,7 @@
   <msg key="Date_Range">Date Range:</msg>
   <msg key="day">Day</msg>
   <msg key="Delete">Delete</msg>
+  <msg key="delivered_projects">Delivered Projects</msg>
   <msg key="Due">Due</msg>
   <msg key="Due_date">Due date</msg>
   <msg key="Edit">Edit</msg>
@@ -78,6 +79,7 @@
   <msg key="Invoice">Invoice</msg>
   <msg key="Invoice_Cancel">Cancel</msg>
   <msg key="Invoice_count">Invoice count</msg>
+  <msg key="invoice_creation_user_help">User who created the invoice</msg>
   <msg key="invoice_display">Display documents</msg>
   <msg key="invoice_email">Email</msg>
   <msg key="invoice_for_join">Mark for later download</msg>
@@ -146,6 +148,7 @@
   <msg key="iv_invoice_count_billed">Billed items</msg>
   <msg key="iv_invoice_count_total">Total items</msg>
   <msg key="iv_invoice_creation_date">Created on</msg>
+  <msg key="iv_invoice_creation_date_help">Date the invoice was created</msg>
   <msg key="iv_invoice_creation_user">Created by</msg>
   <msg key="iv_invoice_credit_1">Credit</msg>
   <msg key="iv_invoice_credit_Add">Add invoice credit</msg>
@@ -227,6 +230,7 @@
   <msg key="iv_invoice_url">Invoices</msg>
   <msg key="iv_invoice_url2">Rechnungen, Preislisten, Reports</msg>
   <msg key="iv_invoice_vat">VAT</msg>
+  <msg key="iv_invoice_vat_help">VAT (value added tax)</msg>
   <msg key="iv_invoice_vat_percent">%VAT</msg>
   <msg key="iv_invoice_vat_percent_help">Percentage of VAT added in the invoice</msg>
   <msg key="iv_invoice_View">View Invoice</msg>
@@ -236,6 +240,8 @@
   <msg key="iv_join_invoice">Load prepared invoices</msg>
   <msg key="iv_journal">Invoice journal</msg>
   <msg key="iv_journal_check">Export Journal</msg>
+  <msg key="iv_mass_invoice_New">Mass invoice</msg>
+  <msg key="iv_mass_invoice_New2">Mass create invoices for the selected projects</msg>
   <msg key="iv_of_month_year">Invoices of %long_month% %year%:</msg>
   <msg key="iv_of_year">Invoices of year %year%:</msg>
   <msg key="iv_offer_1">Cost Sheet</msg>
@@ -256,6 +262,7 @@
   <msg key="iv_offer_comment">Comment</msg>
   <msg key="iv_offer_comment_help">Internal comment not shown to the customer</msg>
   <msg key="iv_offer_count_total">Total items</msg>
+  <msg key="iv_offer_create_New">Create prefilled offer</msg>
   <msg key="iv_offer_creation_date">Created on</msg>
   <msg key="iv_offer_creation_date_help">Creation Date</msg>
   <msg key="iv_offer_creation_user">Created by</msg>
@@ -359,6 +366,7 @@
   <msg key="iv_offer_vat_percent">%VAT</msg>
   <msg key="iv_offer_vat_percent_help">What is the VAT charged for the customer</msg>
   <msg key="iv_offer_View">View Cost Sheet</msg>
+  <msg key="iv_parent_offer_View">View offer from parent project</msg>
   <msg key="iv_payment_1">Payment</msg>
   <msg key="iv_payment_2">Payments</msg>
   <msg key="iv_payment_Add">Add Payment</msg>
@@ -399,6 +407,11 @@
   <msg key="Link_instances">Link package instances</msg>
   <msg key="lt_no_such_invoice_no">We are sorry but the invoice number you are searching for does not exist in our system.</msg>
   <msg key="Mapped">Mapped</msg>
+  <msg key="mass_invoice_email_body">The mass generation of invoices is finished.&lt;p&gt; %failed_projects_html%</msg>
+  <msg key="mass_invoice_email_subject">Invoice mass generation finished.</msg>
+  <msg key="mass_invoice_error">Sadly there have been some errors. Please create invoices for the following projects manually:</msg>
+  <msg key="missing_offer_list">Missing Offer List</msg>
+  <msg key="missing_offer_list_text">You did not provide an offer list. Please create one first.</msg>
   <msg key="Month">Month</msg>
   <msg key="month">Month</msg>
   <msg key="More_than_one_customer">More than one customer</msg>
@@ -422,6 +435,7 @@
   <msg key="offers">Cost Sheets</msg>
   <msg key="Offers_items">Offers Items</msg>
   <msg key="ok">Ok</msg>
+  <msg key="open_projects">Open Projects</msg>
   <msg key="Page_count">Number of pages</msg>
   <msg key="Parent_invoice_item">Parent invoice item</msg>
   <msg key="Parent_offer_item">Parent cost item</msg>

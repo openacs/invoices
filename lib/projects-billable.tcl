@@ -75,7 +75,8 @@ if {$no_actions_p} {
     set actions ""
     set bulk_id_list ""
 } else {
-    set actions [list "[_ invoices.iv_invoice_New]" "${base_url}invoice-ae" "[_ invoices.iv_invoice_New2]" ]
+    set actions  [list "[_ invoices.iv_invoice_New]" "${base_url}invoice-ae" "[_ invoices.iv_invoice_New2]" "[_ invoices.iv_mass_invoice_New]" "${base_url}mass-invoice" "[_ invoices.iv_mass_invoice_New2]" ]
+
     set bulk_id_list [list organization_id return_url]
     set row_list "checkbox {}\n $row_list"
 }

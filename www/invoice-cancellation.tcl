@@ -72,6 +72,15 @@ ad_form -extend -name iv_invoice_cancel_form -new_request {
 } -on_submit {
     set category_ids [category::ad_form::get_categories -container_object_id $container_objects(invoice_id)]
 } -new_data {
+
+    set credit_offer_rev_id [db_string get_credit_offer {} -default ""]
+    if {$credit_offer_rev_id eq ""} {
+	# The invoice recipient is not a customer and therefore does not have the project and folders
+	# This is changed by triggering the callback here
+	set group_id [group::get_id -group_name "Customers"]
+	callback contact::organization_new_group -organization_id $organization_id -group_id $group_id
+    }
+
     db_transaction {
 	set total_amount [format "%.2f" [expr -1. * $total_amount]]
 	set vat [expr $total_amount * $vat_percent / 100.]
@@ -94,7 +103,6 @@ ad_form -extend -name iv_invoice_cancel_form -new_request {
 
 	# add credit offer entry
 	set parent_item_id [content::revision::item_id -revision_id $parent_id]
-	db_1row get_credit_offer {}
 
 	if {[db_0or1row get_old_credit {}] && $old_credit < 0.} {
 	    # cancelled invoice has credit

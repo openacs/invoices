@@ -23,6 +23,7 @@ set has_edit 0
 set offer_ids [list]
 set files [list]
 set failed_project_ids [list]
+set failed_project_id2 [list]
 
 if {$__new_p} {
     set project_id [string trim $project_id "{}"]
@@ -39,7 +40,9 @@ set language [lang::conn::language]
 
 ad_progress_bar_begin -title [_ invoices.Create_mass_invoices] -message_1 "[_ invoices.Create_mass_invoices2]"
 
-foreach project_item_id $project_id {
+# We need to catch this so the joined PDF is generated and send.
+catch {
+    foreach project_item_id $project_id {
 
     # We need to make sure the whole process runs through smoothly for invoice
     # generation. Therefore we put this in transaction. If the transaction fails
@@ -278,13 +281,17 @@ foreach project_item_id $project_id {
 	
 	# move files to invoice_folder
 	application_data_link::new -this_object_id $invoice_id -target_object_id $file_item_id
-	db_dml set_publish_status_and_parent {}
-	db_dml set_context_id {}
 	
-	#  Finally mark invoice as "Billed" in the system.
-	
+	db_transaction {
+	    db_dml set_publish_status_and_parent {}
+	    db_dml set_context_id {}
+	} on_error {
+	    lappend failed_project_id2 $project_item_id
+	    continue
+	}
 	iv::invoice::set_status -invoice_id $invoice_id -status "billed"
     }
+}
 }
     
 # foreach offer_id: check if there's an item that's not billed -> status new, else status billed
@@ -322,6 +329,14 @@ if {[exists_and_not_null failed_project_ids]} {
     append failed_projects_html "</ul>"
 } else {
     set failed_projects_html ""
+}
+
+if {[exists_and_not_null failed_projectid2]} {
+    append failed_projects_html "[_ invoices.mass_invoice_error]<ul>"
+    foreach failed_project_id $failed_projectid2 {
+	append failed_projects_html "<li><a href=\"[export_vars -base "[apm_package_url_from_id $package_id]/invoice-ae" -url {{project_id $failed_project_id}}]\">[pm::project::name -project_item_id $failed_project_id]</a></li>"
+    }
+    append failed_projects_html "</ul>"
 }
 
 # and send out the e-mail

@@ -858,10 +858,11 @@ ad_form -extend -name iv_offer_form -new_request {
 
     # link offer to project
     if {[exists_and_not_null project_id]} {
-	catch {
+	# Check if offer is already linked
+	if {![db_string check_link "select 1 from acs_data_links where object_id_one = :offer_id and object_id_two =:project_id" -default 0]} {
 	    application_data_link::new -this_object_id $offer_id -target_object_id $project_id
-	    set _project_id $project_id
 	}
+	set _project_id $project_id
     }
 
     # set acceptance date if necessary

@@ -31,7 +31,7 @@ ad_proc -public iv::cost::new {
     set folder_id [content::folder::get_folder_from_package -package_id $package_id]
 
     db_transaction {
-	set item_id [db_nextval acs_object_id_seq]
+	set item_id [db_nextval t_acs_object_id_seq]
 	if {[empty_string_p $name]} {
 	    set name "iv_cost_$item_id"
 	}

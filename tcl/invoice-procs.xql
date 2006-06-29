@@ -127,10 +127,10 @@
     select cr.title, cr.description, cr.item_id, ii.offer_item_id,
            ii.item_units, ii.price_per_unit, ii.item_nr,
            ii.rebate, ii.vat, m.category_id, ofi.file_count,
-           ofi.page_count, pr.title as project_title, p.project_code, p.last_modified, p.contact_id,
+           ofi.page_count, pr.title as project_title, p.project_code, pr.publish_date as last_modified, p.contact_id,
            pi.item_id as project_id, o.credit_percent
     from cr_items ci, cr_revisions cr, iv_invoice_items ii, cr_revisions oor,
-         acs_data_links r, cr_items pi, cr_revisions pr, pm_projectsx p, iv_offers o,
+         acs_data_links r, cr_items pi, cr_revisions pr, pm_projects p, iv_offers o,
          iv_offer_items ofi
     left outer join category_object_map m on (m.object_id = ofi.offer_item_id)
     where ci.latest_revision = ii.invoice_id

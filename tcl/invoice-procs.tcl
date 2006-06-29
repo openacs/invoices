@@ -36,8 +36,9 @@ ad_proc -public iv::invoice::new {
     }
     set folder_id [content::folder::get_folder_from_package -package_id $package_id]
 
+    set item_id [db_nextval t_acs_object_id_seq]
+
     db_transaction {
-	set item_id [db_nextval acs_object_id_seq]
 	if {[empty_string_p $name]} {
 	    set name "iv_invoice_$item_id"
 	}

@@ -35,9 +35,11 @@ ad_proc -public iv::offer::new {
 	set package_id [ad_conn package_id]
     }
     set folder_id [content::folder::get_folder_from_package -package_id $package_id]
-
+    
+    # Always set the sequence outside the transaction
+    set item_id [db_nextval t_acs_object_id_seq]
+    set revision_id [db_nextval t_acs_object_id_seq]
     db_transaction {
-	set item_id [db_nextval acs_object_id_seq]
 	if {[empty_string_p $name]} {
 	    set name "iv_offer_$item_id"
 	}
@@ -45,6 +47,7 @@ ad_proc -public iv::offer::new {
 
 	set new_id [content::revision::new \
 			-item_id $item_id \
+			-revision_id $revision_id \
 			-content_type {iv_offer} \
 			-title $title \
 			-description $description \
@@ -110,8 +113,10 @@ ad_proc -public iv::offer::edit {
 	set status new
     }
     set old_rev_id [content::item::get_best_revision -item_id $offer_id]
-    set new_rev_id [content::revision::new \
+    set new_rev_id [db_nextval t_acs_object_id_seq]
+    if {[catch {content::revision::new \
 			-item_id $offer_id \
+			-revision_id $new_rev_id \
 			-content_type {iv_offer} \
 			-title $title \
 			-description $description \
@@ -130,7 +135,35 @@ ad_proc -public iv::offer::edit {
 					 [list status $status] \
 					 [list vat_percent $vat_percent] \
 					 [list vat $vat] \
-					 [list credit_percent $credit_percent] ] ]
+					 [list credit_percent $credit_percent] ]} ]
+    } {
+	set new_rev_id [db_nextval t_acs_object_id_seq]
+	set new_rev_id [content::revision::new \
+			    -item_id $offer_id \
+			    -revision_id $new_rev_id \
+			    -content_type {iv_offer} \
+			    -title $title \
+			    -description $description \
+			    -attributes [list \
+					     [list comment $comment] \
+					     [list reservation $reservation] \
+					     [list offer_nr $offer_nr] \
+					     [list organization_id $organization_id] \
+					     [list amount_total $amount_total] \
+					     [list amount_sum $amount_sum] \
+					     [list currency $currency] \
+					     [list finish_date $finish_date] \
+					     [list date_comment $date_comment] \
+					     [list payment_days $payment_days] \
+					     [list show_sum_p $show_sum_p] \
+					     [list status $status] \
+					     [list vat_percent $vat_percent] \
+					     [list vat $vat] \
+					     [list credit_percent $credit_percent] 
+					]
+			]
+    }
+
     db_dml set_accepted_date {}
     return $new_rev_id
 }

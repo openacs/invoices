@@ -1,8 +1,12 @@
 ad_page_contract {
     Accepts offer by customer
 } {
-    offer_id:integer,notnull
-    x:notnull
+    {offer_id:integer ""}
+    {x ""}
+}
+
+if {$offer_id eq "" || $x eq ""} {
+    ad_return_complaint 1 [_ invoices.lt_empty_offer_id]
 }
 
 # Retrieving the value of the parameter to know wich include to call

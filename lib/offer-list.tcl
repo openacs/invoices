@@ -1,5 +1,5 @@
 set required_param_list [list]
-set optional_param_list [list orderby elements base_url package_id page_num subproject_p]
+set optional_param_list [list orderby elements base_url package_id page_num subproject_p export_vars status_ids]
 set optional_unset_list [list organization_id party_id]
 
 foreach required_param $required_param_list {
@@ -26,6 +26,13 @@ foreach optional_unset $optional_unset_list {
 # db_1row get_offer_status_id {}
 if {![info exists status_id]} {
     db_1row get_offer_status_id {}
+}
+
+if {$status_ids eq ""} {
+    set status_ids_where_clause ""
+} else {
+    set status_ids_where_clause "pp.status_id in ([join $status_ids ","])"
+    unset status_id
 }
 
 if {![info exists format]} {
@@ -104,6 +111,33 @@ if {[exists_and_not_null organization_id]} {
     set actions ""
 }
 
+set filters {
+    organization_id {
+	where_clause {t.organization_id = :organization_id}
+    }
+    project_ids {
+	where_clause {$project_where_clause}
+    }
+    status_id {
+	where_clause {pp.status_id = :status_id}
+    }
+    status_ids {
+	where_clause {$status_ids_where_clause}
+    }
+    party_id {
+	where_clause {$party_id_where_clause}
+    }
+    subproject_p {
+	where_clause {$subproject_where_clause}
+    }
+    page_num {}
+}
+
+foreach export_var $export_vars {
+    lappend filters "$export_var"
+    lappend filters {}
+}
+
 template::list::create \
     -name iv_offer \
     -key offer_id \
@@ -157,7 +191,7 @@ template::list::create \
         action {
 	    display_template {<if @iv_offer.status@ eq new><a href="@iv_offer.edit_link@">#invoices.Edit#</a>&nbsp;<a href="@iv_offer.delete_link@">#invoices.Delete#</a></if>}
 	}
-    } -actions $actions -sub_class narrow \
+    } -actions $actions -filters $filters -sub_class narrow \
     -orderby {
 	default_value project_id
 	offer_nr {
@@ -222,24 +256,7 @@ template::list::create \
     -page_size $page_size \
     -page_flush_p 1 \
     -page_query_name iv_offer_paginated \
-    -filters {
-        organization_id {
-            where_clause {t.organization_id = :organization_id}
-        }
-        project_ids {
-            where_clause {$project_where_clause}
-        }
-        status_id {
-            where_clause {pp.status_id = :status_id}
-        }
-	party_id {
-	    where_clause {$party_id_where_clause}
-	}
-	subproject_p {
-	    where_clause {$subproject_where_clause}
-	}
-	page_num {}
-    } \
+    -bulk_action_export_vars $export_vars \
     -formats {
 	normal {
 	    label "[_ invoices.Table]"

@@ -127,7 +127,7 @@ template::list::create \
 	}
 	status {
 	    label {[_ invoices.iv_invoice_status]}
-	    display_template {[_ invoices.iv_invoice_status_@iv_invoice.status@]}
+	    display_template {#invoices.iv_invoice_status_@iv_invoice.status@#}
 	}
         action {
 	    display_template {

@@ -25,6 +25,7 @@
   <msg key="Cancelled">Cancelled?</msg>
   <msg key="Categories">Categories</msg>
   <msg key="Category">Category</msg>
+  <msg key="Change_pricelist_of_customer">Change the pricelist of the customer</msg>
   <msg key="clear">clear</msg>
   <msg key="Client_Account_Man">Client Account Manager</msg>
   <msg key="Contact">Contact</msg>
@@ -50,6 +51,7 @@
   <msg key="Currency_paid">Currency paid</msg>
   <msg key="Customer">Customer</msg>
   <msg key="Customer_Invoices_Reports">Customer invoices report</msg>
+  <msg key="Customers_using_pricelist">The following customers are using this pricelist</msg>
   <msg key="Date_Range">Date Range:</msg>
   <msg key="day">Day</msg>
   <msg key="Delete">Delete</msg>
@@ -251,7 +253,7 @@
   <msg key="iv_offer_accept">Accept Offer</msg>
   <msg key="iv_offer_accepted_date">Accepted on</msg>
   <msg key="iv_offer_accepted_date_help">Accepted date</msg>
-  <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;%data.contact_salutation%, &lt;p&gt;thank you for your order! You'll find the details in the attached PDF file.&lt;p&gt;With best regards&lt;p&gt;%am_name;noquote%&lt;br&gt;Customer service&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;%data.contact_salutation%, &lt;p&gt;Thank you for placing the assignment with us.&lt;p&gt;Please find further details in the attached PDF file.&lt;p&gt;Yours sincerely,&lt;p&gt;%am_name;noquote%&lt;br&gt;Customer services&lt;br&gt;%am_directphoneno_int;noquote%&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_accepted_email_subject">Order confirmation # %offer_nr%</msg>
   <msg key="iv_offer_accepted_thanks">Thank you for accepting our offer. We will contact you as soon as possible.</msg>
   <msg key="iv_offer_Add">Cost Sheet for &quot;%organization_name%&quot;</msg>
@@ -282,7 +284,7 @@
   <msg key="iv_offer_Description_help">Description of the cost sheet</msg>
   <msg key="iv_offer_Edit">Edit Cost Sheet</msg>
   <msg key="iv_offer_edit_error">You are not allowed to edit an accepted or invoiced cost sheet</msg>
-  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;%data.contact_salutation%,&lt;p&gt;you'll find the requested offer in the attached PDF file.&lt;p&gt;To accept this offer, please klick &lt;a href=&quot;%accept_link;noquote%&quot;&gt;here&lt;/a&gt;.&lt;p&gt;With best regards&lt;p&gt;%am_name;noquote%&lt;br&gt;Kundenberatung&lt;/html&gt;&lt;/body&gt;</msg>
+  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;%data.contact_salutation%,&lt;p&gt;Please find attached the requested quote as a PDF file. If you would like to accept the quote and place the assignment with us, please click &lt;a href=&quot;%accept_link;noquote%&quot;&gt;here&lt;/a&gt;.&lt;p&gt;Yours sincerely,&lt;p&gt;%am_name;noquote%&lt;br&gt;Customer services&lt;br&gt;%am_directphoneno_int;noquote%&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_offer_email_subject">Offer # %offer_nr%</msg>
   <msg key="iv_offer_file">File upload</msg>
   <msg key="iv_offer_file_delete">Delete Files</msg>

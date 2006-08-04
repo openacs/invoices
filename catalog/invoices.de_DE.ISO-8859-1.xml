@@ -14,7 +14,7 @@
   <msg key="and">und</msg>
   <msg key="Apply_VAT">Mehrwertsteuer?</msg>
   <msg key="back">Zurück</msg>
-  <msg key="back_to_project">Zurück zum projekt</msg>
+  <msg key="back_to_project">Zurück zum Projekt</msg>
   <msg key="back_to_year">Zurück zu %year%</msg>
   <msg key="back_to_years">Zurück zu den Jahren</msg>
   <msg key="Between">Zwischen</msg>
@@ -25,6 +25,7 @@
   <msg key="Cancelled">Abgebrochen?</msg>
   <msg key="Categories">Kategorien</msg>
   <msg key="Category">Kategorie</msg>
+  <msg key="Change_pricelist_of_customer">Preisliste des Kunden ändern</msg>
   <msg key="clear">aufheben</msg>
   <msg key="Client_Account_Man">Kundenbetreuer des Kunden</msg>
   <msg key="Contact">Kontakt</msg>
@@ -50,6 +51,7 @@
   <msg key="Currency_paid">bezahlte Währung</msg>
   <msg key="Customer">Kunde</msg>
   <msg key="Customer_Invoices_Reports">Report der Kundenumsätze</msg>
+  <msg key="Customers_using_pricelist">Die folgenden Kunden nutzen diese Preisliste</msg>
   <msg key="Date_Range">Zeitraum:</msg>
   <msg key="day">Tag</msg>
   <msg key="Delete">Löschen</msg>
@@ -252,7 +254,8 @@
   <msg key="iv_offer_accepted_date">Auftragsdatum</msg>
   <msg key="iv_offer_accepted_date_help">Datum der Annahme</msg>
   <msg key="iv_offer_accepted_email">&lt;html&gt;&lt;body&gt;%data.contact_salutation%, &lt;p&gt;vielen Dank für Ihren Auftrag!&lt;p&gt;
-Die Details entnehmen Sie bitte der angehängten PDF-Datei.&lt;p&gt;Viele Gr&amp;uuml;&amp;szlig;e&lt;p&gt;%am_name;noquote%&lt;br&gt;Kundenberatung&lt;/html&gt;&lt;/body&gt;</msg>
+Die Details entnehmen Sie bitte der angehängten PDF-Datei.&lt;p&gt;Mit freundlichen Gr&amp;uuml;&amp;szlig;en&lt;p&gt;%am_name;noquote%&lt;br&gt;Kundenberatung&lt;br/&gt;
+Durchwahl: %am_directphoneno%&lt;br&gt;&lt;b&gt;WIENERS+WIENERS GmbH&lt;/b&gt;&lt;/body&gt;&lt;/html&gt;</msg>
   <msg key="iv_offer_accepted_email_subject">Auftragsbestätigung # %offer_nr%</msg>
   <msg key="iv_offer_accepted_thanks">Vielen Dank für die Annahme unseres Angebots. Wir werden Sie so schnell wie möglich diesbezüglich kontaktieren.</msg>
   <msg key="iv_offer_Add">Kostenaufstellung für &quot;%organization_name%&quot;</msg>
@@ -266,7 +269,7 @@ Die Details entnehmen Sie bitte der angehängten PDF-Datei.&lt;p&gt;Viele Gr&amp;
   <msg key="iv_offer_comment_help">Interner Kommentar der nicht dem Kunden gezeigt wird.</msg>
   <msg key="iv_offer_count_total">Anzahl Positionen</msg>
   <msg key="iv_offer_create_New">&lt;font color=green&gt;Vorausgefüllte Projektaufstellung hinzufügen&lt;/font&gt;</msg>
-  <msg key="iv_offer_creation_date">erstellt am</msg>
+  <msg key="iv_offer_creation_date">Erstellt am</msg>
   <msg key="iv_offer_creation_date_help">Erstelldatum</msg>
   <msg key="iv_offer_creation_user">Kundenberater</msg>
   <msg key="iv_offer_creation_user_help">Benutzer der die Aufstellung angelegt hat</msg>
@@ -277,13 +280,13 @@ Die Details entnehmen Sie bitte der angehängten PDF-Datei.&lt;p&gt;Viele Gr&amp;
   <msg key="iv_offer_currency">Währung</msg>
   <msg key="iv_offer_currency_help">Benutzte Währung</msg>
   <msg key="iv_offer_date_comment">Teillieferung</msg>
-  <msg key="iv_offer_date_comment_help">Interne Notizen, welche den Abgabetermin, welcher dem Kunden kommuniziert wurde, erläutern.</msg>
+  <msg key="iv_offer_date_comment_help">Interne Notizen, die den Abgabetermin, der dem Kunden kommuniziert wurde, erläutern.</msg>
   <msg key="iv_offer_Delete">Kostenaufstellung löschen</msg>
   <msg key="iv_offer_Description">Beschreibung</msg>
   <msg key="iv_offer_Description_help">Beschreibung der Kostenaufstellung</msg>
   <msg key="iv_offer_Edit">Projektaufstellung ändern</msg>
   <msg key="iv_offer_edit_error">Sie dürfen keine akzeptierte oder berechnete Kostenaufstellung ändern.</msg>
-  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;%data.contact_salutation%,&lt;p&gt;anbei erhalten Sie das gewünschte Angebot als PDF-Datei.&lt;p&gt;Um das Angebot freizugeben, klicken Sie bitte &lt;a href=&quot;%accept_link%&quot;&gt;hier&lt;/a&gt;.&lt;p&gt;Viele Gr&amp;uuml;&amp;szlig;e&lt;p&gt;%am_name;noquote%&lt;br&gt;Kundenberatung&lt;br/&gt;
+  <msg key="iv_offer_email">&lt;html&gt;&lt;body&gt;%data.contact_salutation%,&lt;p&gt;anbei erhalten Sie das gewünschte Angebot als PDF-Datei.&lt;p&gt;Wenn Sie das Angebot akzeptieren und den Auftrag erteilen möchten, klicken Sie bitte &lt;a href=&quot;%accept_link%&quot;&gt;hier&lt;/a&gt;.&lt;p&gt;Mit freundlichen Gr&amp;uuml;&amp;szlig;en&lt;p&gt;%am_name;noquote%&lt;br&gt;Kundenberatung&lt;br/&gt;
 Durchwahl: %am_directphoneno%&lt;br&gt;&lt;b&gt;WIENERS+WIENERS GmbH&lt;/b&gt;&lt;/body&gt;&lt;/html&gt;</msg>
   <msg key="iv_offer_email_subject">Angebot # %offer_nr%</msg>
   <msg key="iv_offer_file">Datei anhängen</msg>
@@ -292,7 +295,7 @@ Durchwahl: %am_directphoneno%&lt;br&gt;&lt;b&gt;WIENERS+WIENERS GmbH&lt;/b&gt;&l
   <msg key="iv_offer_file_help">Dateien zur internen Verwendung - diese werden nicht mit dem Angebot verschickt!</msg>
   <msg key="iv_offer_file_view">Dateien</msg>
   <msg key="iv_offer_finish_date">Lieferdatum</msg>
-  <msg key="iv_offer_finish_date_help">Abgabetermin zu dem das Projekt an den Kunden ausgeliefert werden muss</msg>
+  <msg key="iv_offer_finish_date_help">Abgabetermin, zu dem das Projekt an den Kunden ausgeliefert werden muss</msg>
   <msg key="iv_offer_finish_time">Timing Uhrzeit</msg>
   <msg key="iv_offer_finish_time_help">Uhrzeit des Abgabetermins für die Auslieferung des Projekts</msg>
   <msg key="iv_offer_item_1">Kostenposition</msg>

@@ -23,6 +23,7 @@ if {$offer_id eq ""} {
     ad_return_error "[_ invoices.missing_offer_list]" "[_ invoices.missing_offer_list_text]"
 }
 
+set agb_link ""
 set user_id [auth::require_login]
 set page_title "[_ invoices.iv_offer_send]"
 
@@ -45,7 +46,7 @@ set locale [lang::user::site_wide_locale -user_id $contact_id]
 set context [list [list [export_vars -base offer-list {organization_id}] "[_ invoices.iv_offer_2]"] [list [export_vars -base offer-ae {offer_id}] "[_ invoices.iv_offer_View]"] $page_title]
 
 set x [iv::util::get_x_field -offer_id $offer_rev_id]
-set accept_link [export_vars -base "[ad_url][ad_conn package_url]offer-accepted" {x {offer_id $offer_rev_id}}]
+set accept_link [export_vars -base "[ad_url][ad_conn package_url]offer-accepted" -url {x {offer_id $offer_rev_id}}]
 content::item::set_live_revision -revision_id $offer_rev_id
 
 if {[empty_string_p $accepted_date] || $type == "offer"} {

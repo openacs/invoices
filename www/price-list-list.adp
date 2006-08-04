@@ -3,4 +3,3 @@
 <property name="context">@context;noquote@</property>
 
 <listtemplate name="iv_price_list"></listtemplate>
-    

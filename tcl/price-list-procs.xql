@@ -64,4 +64,16 @@
       </querytext>
 </fullquery>
 
+<fullquery name="iv::price_list::get_default_list_id.get_oldest_price_list">
+      <querytext>
+
+        select min(li.item_id) as list_id 
+        from acs_objects o, iv_price_lists l, cr_items li
+        where o.object_id = l.list_id
+        and o.package_id = :package_id
+        and l.list_id = li.latest_revision
+
+      </querytext>
+</fullquery>   
+
 </queryset>

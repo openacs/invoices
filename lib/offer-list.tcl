@@ -1,5 +1,6 @@
 set required_param_list [list]
 set optional_param_list [list orderby elements base_url package_id page_num subproject_p export_vars status_ids]
+
 set optional_unset_list [list organization_id party_id]
 
 foreach required_param $required_param_list {
@@ -91,7 +92,7 @@ if {[exists_and_not_null organization_id]} {
 set timestamp_format "YYYY-MM-DD HH24:MI:SS"
 
 if {[exists_and_not_null organization_id]} {
-    set price_list_id [iv::price_list::get_list_id -organization_id $organization_id]
+    set price_list_id [iv::price_list::get_list_id -organization_id $organization_id -package_id [apm_package_id_from_key invoices]]
     if {![info exists actions]} {
 	set actions [list "[_ invoices.iv_invoice_2]" [export_vars -base "${base_url}invoice-list" {organization_id}] "[_ invoices.iv_invoice_2]" "[_ invoices.iv_price_list]" [export_vars -base "${base_url}price-list" {{list_id $price_list_id} organization_id}] "[_ invoices.iv_display_price_list]"]
 
@@ -110,7 +111,6 @@ if {[exists_and_not_null organization_id]} {
 } else {
     set actions ""
 }
-
 set filters {
     organization_id {
 	where_clause {t.organization_id = :organization_id}

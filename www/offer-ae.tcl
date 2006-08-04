@@ -764,7 +764,7 @@ ad_form -extend -name iv_offer_form -new_request {
 #   }
 } -edit_data {
 
-#    db_transaction {
+    db_transaction {
 	set new_offer_rev_id [iv::offer::edit \
 				  -offer_id $offer_id \
 				  -title $title \
@@ -828,7 +828,7 @@ ad_form -extend -name iv_offer_form -new_request {
 
 	    category::map_object -object_id $new_item_rev_id $item(category)
 	}
-#    }
+    }
 } -after_submit {
     # upload new file
     if {![empty_string_p $upload_file]} {

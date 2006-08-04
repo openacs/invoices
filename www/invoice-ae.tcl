@@ -458,7 +458,12 @@ ad_form -extend -name iv_invoice_form -new_request {
     set copy_p 0
     set email_p j
 
-    set description [lang::util::localize [join [db_list project_titles {}] ",\n"]]
+    if {[exists_and_not_null project_id]} {
+	set description [lang::util::localize [join [db_list project_titles {}] ",\n"]]
+    } else {
+	set description ""
+    }
+
     set due_date [db_string today {}]
     set title "[_ invoices.iv_invoice_1] $organization_name $due_date"
 

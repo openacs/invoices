@@ -40,7 +40,7 @@ if {($price_list_id == "") && ($delete_only != 1)} {
 	-elements {
 	    title {
 		label {[_ invoices.iv_price_list_1]}
-		display_template {<a href="@iv_pricelist_list.list_url@">@iv_pricelist_list.title@</a>}
+		display_template {<a href="@iv_pricelist_list.list_url@">@iv_pricelist_list.title;noquote@</a>}
 	    }
 	    action {
 		display_template {<a href="/invoices/price-list-choose?organization_id=$organization_id&price_list_id=@iv_pricelist_list.list_id@">\#invoices.ok\#</a>} 
@@ -51,6 +51,9 @@ if {($price_list_id == "") && ($delete_only != 1)} {
 
     db_multirow -extend {list_url} iv_pricelist_list iv_pricelist_list {} {
 	set list_url [export_vars -base "price-list" {list_id organization_id}]
+	if {$list_id == [parameter::get -parameter "DefaultPriceListID" -default ""]} {
+	    append title "<font color=red> *</font>"
+	}
     }
 
 

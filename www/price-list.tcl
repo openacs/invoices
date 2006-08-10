@@ -24,34 +24,37 @@ db_1row list_title {}
 set page_title $list_title
 set context [list [list "price-list-list" "[_ invoices.iv_price_list_2]"] $page_title]
 
-# ---
-# show the organizations that uses this price list
-# added 2006/07/31 by nfl
-set organization_values ""
-set organization_values [application_data_link::get_linked -from_object_id $list_id -to_object_type organization]
-# the standard price list isn't linked, so the result will be empty (nfl 31.07.2006)
+if {![string eq [iv::price_list::get_default_list_id] $list_id]} {
 
-template::list::create \
-    -name iv_customer_using_pricelist \
-    -key customer_id \
-    -elements {
-        customer_no {
-            label {}
-        }
-        customer_name {
-            label {}
-	    display_template {<a href="/contacts/@iv_customer_using_pricelist.customer_id@">@iv_customer_using_pricelist.customer_name@</a>}
-        }
+    # ---
+    # show the organizations that uses this price list
+    # added 2006/07/31 by nfl
+    set organization_values ""
+    set organization_values [application_data_link::get_linked -from_object_id $list_id -to_object_type organization]
+    # the standard price list isn't linked, so the result will be empty (nfl 31.07.2006)
+    
+    template::list::create \
+	-name iv_customer_using_pricelist \
+	-key customer_id \
+	-elements {
+	    customer_no {
+		label {}
+	    }
+	    customer_name {
+		label {}
+		display_template {<a href="/contacts/@iv_customer_using_pricelist.customer_id@">@iv_customer_using_pricelist.customer_name@</a>}
+	    }
+	} 
+    
+    multirow create iv_customer_using_pricelist customer_id customer_no customer_name
+    
+    foreach organization_id_new $organization_values {
+	set organization_name [contact::name -party_id $organization_id_new]
+	set organization_no [ams::value -object_id [content::item::get_best_revision -item_id $organization_id_new] -attribute_name client_id]
+	multirow append iv_customer_using_pricelist $organization_id_new $organization_no $organization_name 
     } 
-
-multirow create iv_customer_using_pricelist customer_id customer_no customer_name
-
-foreach organization_id_new $organization_values {
-    set organization_name [contact::name -party_id $organization_id_new]
-    set organization_no [ams::value -object_id [content::item::get_best_revision -item_id $organization_id_new] -attribute_name client_id]
-    multirow append iv_customer_using_pricelist $organization_id_new $organization_no $organization_name 
-} 
-
-# ---
+    
+    # ---
+}
 
 ad_return_template

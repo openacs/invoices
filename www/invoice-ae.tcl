@@ -526,11 +526,15 @@ ad_form -extend -name iv_invoice_form -new_request {
 
     # Get the VAT percent from the recieving company
     if {[person::person_p -party_id $recipient_id]} {
-	set rec_organization_id [contact::util::get_employee_organization -employee_id $recipient_id]
+	set contacts_package_id [lindex [application_link::get_linked -from_package_id $package_id -to_package_key contacts] 0]
+	set rec_organization_id [contact::util::get_employee_organization -employee_id $recipient_id -package_id $contacts_package_id]
     } else {
 	set rec_organization_id $recipient_id
     }
 
+    if {$rec_organization_id eq ""} {
+	ad_return_error "[_ invoices.no_organization_for_invoice]" "[_ invoices.lt_no_org_for_invoice]"
+    }
     set rec_orga_rev_id [content::item::get_best_revision -item_id $rec_organization_id]
     set vat_percent [ams::value -object_id $rec_orga_rev_id -attribute_name vat_percent]
 

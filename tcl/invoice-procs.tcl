@@ -36,7 +36,7 @@ ad_proc -public iv::invoice::new {
     }
     set folder_id [content::folder::get_folder_from_package -package_id $package_id]
 
-    set item_id [db_nextval t_acs_object_id_seq]
+    set item_id [db_string acs "select nextval('t_acs_object_id_seq') from dual"]
 
     db_transaction {
 	if {[empty_string_p $name]} {
@@ -292,13 +292,15 @@ ad_proc -public iv::invoice::parse_data {
 	if {[empty_string_p $credit_percent]} {
 	    set credit_percent 0
 	}
+	set credit_percent [string trimright $credit_percent 0]
+	set credit_percent [string trimright $credit_percent .]
 	if {$prev_project_id != $project_id} {
 	    set prev_project_id $project_id
 	    incr project_count
 	    set project_sum 0.
 	}
 	if {$price_per_unit > 1} {
-	    set item_units [format "%.1f" [expr $item_units * (1. + ($credit_percent / 100.))]]
+	    set item_units [expr $item_units * (1. + ($credit_percent / 100.))]
 	} else {
 	    set item_units [format "%.1f" $item_units]
 	}

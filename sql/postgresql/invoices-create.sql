@@ -143,7 +143,7 @@ create table iv_offer_items (
                                 constraint iv_offer_items_offer_fk
                                 references iv_offers,
         comment                 text,
-        item_units              numeric(12,1),
+        item_units              numeric(12,3),
         price_per_unit          numeric(12,3),
         rebate                  numeric(12,2),
         file_count              integer,
@@ -244,7 +244,7 @@ create table iv_invoice_items (
         offer_item_id           integer
                                 constraint iv_invoice_items_offer_fk
                                 references iv_offer_items,
-        item_units              numeric(12,1),
+        item_units              numeric(12,3),
         price_per_unit          numeric(12,3),
         rebate                  numeric(12,2),
         amount_total            numeric(12,2),

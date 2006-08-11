@@ -23,6 +23,11 @@ foreach optional_unset $optional_unset_list {
     }
 }
 
+# Quickfix
+if {[exists_and_not_null orderby] && $orderby eq "invoice_nr"} {
+    set orderby ""
+}
+
 if {[empty_string_p $no_actions_p]} {
     set no_actions_p 0
 }
@@ -42,6 +47,7 @@ if {[empty_string_p $package_id]} {
 if {[empty_string_p $base_url]} {
     set base_url [apm_package_url_from_id $package_id]
 }
+
 
 set row_list ""
 

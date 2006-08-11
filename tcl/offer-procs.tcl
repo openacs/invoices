@@ -37,8 +37,8 @@ ad_proc -public iv::offer::new {
     set folder_id [content::folder::get_folder_from_package -package_id $package_id]
     
     # Always set the sequence outside the transaction
-    set item_id [db_nextval t_acs_object_id_seq]
-    set revision_id [db_nextval t_acs_object_id_seq]
+    set item_id [db_string acs "select nextval('t_acs_object_id_seq') from dual"]
+    set revision_id [db_string acs "select nextval('t_acs_object_id_seq') from dual"]
     db_transaction {
 	if {[empty_string_p $name]} {
 	    set name "iv_offer_$item_id"
@@ -113,7 +113,7 @@ ad_proc -public iv::offer::edit {
 	set status new
     }
     set old_rev_id [content::item::get_best_revision -item_id $offer_id]
-    set new_rev_id [db_nextval t_acs_object_id_seq]
+    set new_rev_id [db_string acs "select nextval('t_acs_object_id_seq') from dual"]
     if {[catch {content::revision::new \
 			-item_id $offer_id \
 			-revision_id $new_rev_id \
@@ -137,7 +137,7 @@ ad_proc -public iv::offer::edit {
 					 [list vat $vat] \
 					 [list credit_percent $credit_percent] ]} ]
     } {
-	set new_rev_id [db_nextval t_acs_object_id_seq]
+	set new_rev_id [db_string acs "select nextval('t_acs_object_id_seq') from dual"]
 	set new_rev_id [content::revision::new \
 			    -item_id $offer_id \
 			    -revision_id $new_rev_id \
@@ -269,6 +269,13 @@ ad_proc -public iv::offer::parse_data {
     set rec_client_id [ams::value -attribute_name "client_id" -object_id $orga_revision_id -locale $locale]
     if {[empty_string_p $data(credit_percent)]} {
 	set data(credit_percent) 0
+    }
+
+    # Deutsche AGB für Deutschsprachige Kontakte
+    if {[string range $locale 0 1] eq "de"} {
+	set agb_link "http://www.wienersundwieners.de/pdf/WIENERS+WIENERS_AGB.pdf"
+    } else {
+	set agb_link "http://www.wienersundwieners.de/pdf/WIENERS+WIENERS_General_Terms_and_Conditions.pdf"
     }
 
     # offer contact data

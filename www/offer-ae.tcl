@@ -306,7 +306,10 @@ if {$_offer_id} {
 	    set item(item_units) 0
 	}
 	
-	ns_log Notice "Units $item(item_units)"
+	# Format the display of the units
+ 	set item(item_units) [string trimright $item(item_units) 0]
+ 	set item(item_units) [string trimright $item(item_units) .]
+
 	regsub {\[} $item(comment) {\(} item(comment)
 	regsub {\[} $item(description) {\(} item(description)
 	set item(price_per_unit) [format "%.2f" $item(price_per_unit)]

@@ -345,14 +345,16 @@ if {!$_invoice_id} {
 		set offer(credit_percent) 0.
 	    }
 	    if {$offer(price_per_unit) > 1.} {
-		set offer(credit) [expr $offer(item_units) * (($offer(credit_percent) + 100.) / 100.)]
+		set offer(credit_units) [expr $offer(item_units) * (($offer(credit_percent) + 100.) / 100.)]
 	    } else {
 		# do not add credit to items with price of 1 or less
-		set offer(credit) $offer(item_units)
+		set offer(credit_units) $offer(item_units)
 	    }
-	    set offer(credit) [format "%.2f" [expr $offer(credit) * $offer(price_per_unit)]]
+	    set offer(credit) [format "%.2f" [expr $offer(credit_units) * $offer(price_per_unit)]]
+	    ns_log Notice "Granted credit:: $offer(credit)"
 	    set offer(credit) [format "%.2f" [expr (1. - ($offer(rebate) / 100.)) * $offer(credit)]]
 	    set offer(credit) [format "%.2f" [expr $offer(credit) - $offer(amount)]]
+	    ns_log Notice "Total credit:: $offer(credit)"
 
 	    set offer_name ""
 	    if {![empty_string_p $offer(category)]} {

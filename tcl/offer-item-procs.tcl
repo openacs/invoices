@@ -85,9 +85,11 @@ ad_proc -public iv::offer_item::edit {
 
     Edit Offer Item
 } {
+
     set new_rev_id [db_nextval t_acs_object_id_seq]
-    if {[catch {content::revision::new \
+    set new_rev_id [content::revision::new \
 			-item_id $offer_item_id \
+			-revision_id $new_rev_id \
 			-content_type {iv_offer_item} \
 			-title $title \
 			-description $description \
@@ -103,28 +105,7 @@ ad_proc -public iv::offer_item::edit {
 					 [list sort_order $sort_order] \
 					 [list vat $vat] \
 					 [list parent_item_id $parent_item_id] ]
-     }
-	 ] 
-    } {
-	set new_rev_id [db_nextval t_acs_object_id_seq]
-	set new_rev_id [content::revision::new \
-			-item_id $offer_item_id \
-			-content_type {iv_offer_item} \
-			-title $title \
-			-description $description \
-			-attributes [list \
-					 [list comment $comment] \
-					 [list item_nr $item_nr] \
-					 [list offer_id $offer_id] \
-					 [list item_units $item_units] \
-					 [list price_per_unit $price_per_unit] \
-					 [list rebate $rebate] \
-					 [list file_count $file_count] \
-					 [list page_count $page_count] \
-					 [list sort_order $sort_order] \
-					 [list vat $vat] \
-					 [list parent_item_id $parent_item_id] ]
-			]
-    }
+		   ]
+    ns_log Notice "Revision_id $new_rev_id"
     return $new_rev_id
 }

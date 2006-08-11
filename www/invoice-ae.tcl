@@ -345,10 +345,10 @@ if {!$_invoice_id} {
 		set offer(credit_percent) 0.
 	    }
 	    if {$offer(price_per_unit) > 1.} {
-		set offer(credit) [format "%.1f" [expr $offer(item_units) * (($offer(credit_percent) + 100.) / 100.)]]
+		set offer(credit) [expr $offer(item_units) * (($offer(credit_percent) + 100.) / 100.)]
 	    } else {
 		# do not add credit to items with price of 1 or less
-		set offer(credit) [format "%.1f" $offer(item_units)]
+		set offer(credit) $offer(item_units)
 	    }
 	    set offer(credit) [format "%.2f" [expr $offer(credit) * $offer(price_per_unit)]]
 	    set offer(credit) [format "%.2f" [expr (1. - ($offer(rebate) / 100.)) * $offer(credit)]]
@@ -401,11 +401,13 @@ if {!$_invoice_id} {
 	if {[empty_string_p $offer(credit_percent)]} {
 	    set offer(credit_percent) 0.
 	}
+
+	# Do not round the credit given.
 	if {$offer(price_per_unit) > 1.} {
-	    set offer(credit) [format "%.1f" [expr $offer(item_units) * (($offer(credit_percent) + 100.) / 100.)]]
+	    set offer(credit) [expr $offer(item_units) * (($offer(credit_percent) + 100.) / 100.)]
 	} else {
 	    # do not add credit to items with price of 1 or less
-	    set offer(credit) [format "%.1f" $offer(item_units)]
+	    set offer(credit) $offer(item_units)
 	}
 	set offer(credit) [format "%.2f" [expr $offer(credit) * $offer(price_per_unit)]]
 	set offer(credit) [format "%.2f" [expr (1. - ($offer(rebate) / 100.)) * $offer(credit)]]

@@ -301,9 +301,9 @@ ad_proc -public iv::offer::parse_data {
     set sum 0.
     db_multirow -local -extend {amount_sum amount_total category} items offer_items {} {
 	if {$price_per_unit > 1} {
-	    set item_units [format "%.1f" [expr $item_units * (1. + ($data(credit_percent) / 100.))]]
+	    set item_units [expr $item_units * (1. + ($data(credit_percent) / 100.))]
 	} else {
-	    set item_units [format "%.1f" $item_units]
+	    set item_units $item_units
 	}
 	set amount_sum [format "%.2f" [expr $item_units * $price_per_unit]]
 	set amount_total [format "%.2f" [expr (1. - ($rebate / 100.)) * $amount_sum]]
@@ -340,6 +340,7 @@ ad_proc -public iv::offer::parse_data {
 	    set data(am_name) $am_name
 	    set data(am_directphoneno) [ad_html_to_text -no_format $account_manager(directphoneno)]
 	    set am_directphoneno $data(am_directphoneno)
+	    set am_directphoneno_int "+49 (0)[string trimleft $am_directphoneno 0]"
 	} else {
 	    # Someone else is sending the offer. We need to mark this in the name
 	    contact::employee::get -employee_id [lindex $account_manager_ids 0] -array account_manager
@@ -347,6 +348,7 @@ ad_proc -public iv::offer::parse_data {
 	    set data(am_name) $account_manager_name
 	    set data(am_directphoneno) [ad_html_to_text -no_format $account_manager(directphoneno)]
 	    set am_directphoneno $data(am_directphoneno)
+	    set am_directphoneno_int "+49 (0)[string trimleft $am_directphoneno 0]"
 	    set am_name "[_ contacts.pp] [contact::name -party_id $user_id]<p>$account_manager_name"
 	}
     } else {

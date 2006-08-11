@@ -306,6 +306,7 @@ if {$_offer_id} {
 	    set item(item_units) 0
 	}
 	
+	ns_log Notice "Units $item(item_units)"
 	regsub {\[} $item(comment) {\(} item(comment)
 	regsub {\[} $item(description) {\(} item(description)
 	set item(price_per_unit) [format "%.2f" $item(price_per_unit)]
@@ -315,7 +316,7 @@ if {$_offer_id} {
 	set item(category) [lang::util::localize [category::get_name $item(category_id)]]
 
 	# calculate credit from this item
-	set item_credit [format "%.1f" [expr $item(item_units) * (1+ ($_credit_percent / 100.))]]
+	set item_credit [expr $item(item_units) * (1+ ($_credit_percent / 100.))]
 	set item_credit [format "%.2f" [expr $item_credit * $item(price_per_unit)]]
 	set item_credit [format "%.2f" [expr (1. - ($item(rebate) / 100.)) * $item_credit]]
 	set total_credit [expr $total_credit + $item_credit - $item(amount_total)]
@@ -793,6 +794,7 @@ ad_form -extend -name iv_offer_form -new_request {
 	    incr counter
 	    array set item $items($i)
 
+	    ns_log Notice "$item(units)"
 	    if {[info exists offer_item_id($i)]} {
 		# new revision of existing item
 		set new_item_rev_id [iv::offer_item::edit \

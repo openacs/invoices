@@ -77,6 +77,8 @@ catch {
     }
 	
     set contacts_package_id [lindex [application_link::get_linked -from_package_id $package_id -to_package_key contacts] 0]
+
+    array unset org_data
     array set org_data [contacts::get_values \
 			    -group_name "Customers" \
 			    -object_type "organization" \

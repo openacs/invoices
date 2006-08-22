@@ -106,6 +106,5 @@ ad_proc -public iv::offer_item::edit {
 					 [list vat $vat] \
 					 [list parent_item_id $parent_item_id] ]
 		   ]
-    ns_log Notice "Revision_id $new_rev_id"
     return $new_rev_id
 }

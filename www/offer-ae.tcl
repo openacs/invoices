@@ -797,7 +797,6 @@ ad_form -extend -name iv_offer_form -new_request {
 	    incr counter
 	    array set item $items($i)
 
-	    ns_log Notice "$item(units)"
 	    if {[info exists offer_item_id($i)]} {
 		# new revision of existing item
 		set new_item_rev_id [iv::offer_item::edit \

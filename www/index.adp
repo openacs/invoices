@@ -20,6 +20,7 @@
   <li><a href="offer-first-reports">#invoices.First_Order_Reports#</a></li>
 </if>
 <li><a href="invoice-customer-reports">#invoices.Customer_Invoices_Reports#</a></li>
+<li><a href="offer-projects-reports">#invoices.Report_Projects#</a></li>
 <if @admin_p@ true>
   <li><a href="@fs_folder_url@">#invoices.iv_journal#</a></li>
 </if>

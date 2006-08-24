@@ -414,7 +414,6 @@
   <msg key="last_years">Last Years</msg>
   <msg key="Link_instances">Link package instances</msg>
   <msg key="lt_empty_offer_id">Sorry, the offer_id cannot be found on the URL. It is possible that when you left clicked, your email program did not transfer the whole URL - some email programs break up the URLs, which means the second part is lost when you left click. If this is the case, please just copy the second part of the URL and attach it to the first part in the browser. Thank you!</msg>
-  <msg key="lt_no_org_for_invoice">Sadly we were not able to find an organization where to send the invoice to. Please make sure that the invoice recipient is working at an organization and has an employment_relationship.</msg>
   <msg key="lt_no_such_invoice_no">We are sorry but the invoice number you are searching for does not exist in our system.</msg>
   <msg key="Mapped">Mapped</msg>
   <msg key="mass_invoice_email_body">The mass generation of invoices is finished.&lt;p&gt; %failed_projects_html%</msg>
@@ -428,7 +427,6 @@
   <msg key="New">New</msg>
   <msg key="New_clients">New Clients</msg>
   <msg key="no">No</msg>
-  <msg key="no_organization_for_invoice">No organization for invoice found</msg>
   <msg key="no_such_invoice_no">No such invoice number</msg>
   <msg key="None">None</msg>
   <msg key="Number_of_units">Number of units</msg>
@@ -467,6 +465,7 @@
   <msg key="Recipient">Recipient</msg>
   <msg key="report_customer_type">Customer type</msg>
   <msg key="report_new_customer">New customer</msg>
+  <msg key="Report_Projects">Report of projects</msg>
   <msg key="show_all_offer_projects">All projects</msg>
   <msg key="show_all_offers">All Offers</msg>
   <msg key="show_all_offers2">Show all offers</msg>

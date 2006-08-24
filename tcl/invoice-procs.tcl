@@ -302,7 +302,7 @@ ad_proc -public iv::invoice::parse_data {
 	if {$price_per_unit > 1} {
 	    set item_units [expr $item_units * (1. + ($credit_percent / 100.))]
 	} else {
-	    set item_units [format "%.1f" $item_units]
+	    set item_units $item_units
 	}
 	set amount_sum [format "%.2f" [expr $multiplier * $item_units * $price_per_unit]]
 	set amount_total [format "%.2f" [expr (1. - ($rebate / 100.)) * $amount_sum]]

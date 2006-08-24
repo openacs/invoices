@@ -64,19 +64,24 @@ catch {
     set title "[_ invoices.iv_invoice_1] [organizations::name -organization_id $customer_id] $due_date"
     
     db_1row offer_data {}
+
+    set contacts_package_id [lindex [application_link::get_linked -from_package_id $package_id -to_package_key contacts] 0]
     
     # Get the recipient information and data.
     if {$recipient_id eq ""} {
 	set rec_organization_id $customer_id
     } else {
 	if {[person::person_p -party_id $recipient_id]} {
-	    set rec_organization_id [contact::util::get_employee_organization -employee_id $recipient_id]
+	    set rec_organization_id [contact::util::get_employee_organization -employee_id $recipient_id -package_id $contacts_package_id]
 	} else {
 	    set rec_organization_id $recipient_id
 	}
     }
-	
-    set contacts_package_id [lindex [application_link::get_linked -from_package_id $package_id -to_package_key contacts] 0]
+    
+    # If for whatever the reason we cannot find the organization for the recipient, use the customer
+    if {$rec_organization_id eq ""} {
+	set rec_organization_id $customer_id
+    }
 
     array unset org_data
     array set org_data [contacts::get_values \

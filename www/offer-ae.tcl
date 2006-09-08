@@ -616,7 +616,17 @@ ad_form -extend -name iv_offer_form -new_request {
 	set vat_percent [format "%.1f" $org_data(vat_percent)]
     }
 } -edit_request {
+    #--- added 2006/08/29 by cognovis/nfl
+    set customer_payment [ams::value -object_id [content::item::get_best_revision -item_id $organization_id] -attribute_name "payment_days"]
+    #---
+
     db_1row get_data {}
+
+    #--- added 2006/08/29 by cognovis/nfl
+    if {![string eq "" $customer_payment]} {
+	set payment_days $customer_payment
+    }
+    #---
     
     regsub -all {\[} $comment {\(} comment
     set title [lang::util::localize $title]
@@ -649,6 +659,7 @@ ad_form -extend -name iv_offer_form -new_request {
 	set finish_date [lindex $finish_date 0]
     }
 } -on_submit {
+
     set category_ids [category::ad_form::get_categories -container_object_id $container_objects(offer_id)]
 
     set finish_date_list [split $finish_date "-"]
@@ -710,6 +721,7 @@ ad_form -extend -name iv_offer_form -new_request {
     set item_sum [format "%.2f" $item_sum]
 
 } -new_data {
+
     set old_offer_id [lindex [application_data_link::get_linked_content -from_object_id $project_id -to_content_type iv_offer] 0]
     if {![empty_string_p $old_offer_id]} {
 	# offer already created, redirect to offer
@@ -767,6 +779,8 @@ ad_form -extend -name iv_offer_form -new_request {
 	set offer_id [content::revision::item_id -revision_id $new_offer_rev_id]
 #   }
 } -edit_data {
+    ns_log Notice "*** edit_data (on save)"
+    ns_log Notice "PaymentDays: $payment_days"
 
     db_transaction {
 	set new_offer_rev_id [iv::offer::edit \

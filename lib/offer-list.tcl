@@ -1,7 +1,11 @@
+# status_ids: List of status_ids which should be displayed in the project
+# if set to "", all project status are displayed. If not provided the status_id parameter is used.
+
 set required_param_list [list]
-set optional_param_list [list orderby elements base_url package_id page_num subproject_p export_vars status_ids]
+set optional_param_list [list orderby elements base_url package_id page_num subproject_p export_vars]
 
 set optional_unset_list [list organization_id party_id]
+
 
 foreach required_param $required_param_list {
     if {![info exists $required_param]} {
@@ -29,11 +33,17 @@ if {![info exists status_id]} {
     db_1row get_offer_status_id {}
 }
 
-if {$status_ids eq ""} {
-    set status_ids_where_clause ""
+if {[info exists status_ids]} {
+    if {$status_ids eq ""} {
+	set status_ids_where_clause ""
+	unset status_id
+    } else {
+	set status_ids_where_clause "pp.status_id in ([join $status_ids ","])"
+	unset status_id
+    }
 } else {
-    set status_ids_where_clause "pp.status_id in ([join $status_ids ","])"
-    unset status_id
+    set status_ids_where_clause ""
+    set status_ids ""
 }
 
 if {![info exists format]} {

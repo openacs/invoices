@@ -1,6 +1,17 @@
 <?xml version="1.0"?>
 <queryset>
 
+--
+-- +++ READ THIS +++
+--
+-- Sept. 2006 cognovis/nfl
+-- projects_to_bill changed (and only that one!)
+-- now it's getting the information about the sum from iv_offers.amount_open
+-- instead of summing iv_offer_items
+-- so there is no support if more items will be added and amount_open won't be updated
+-- and there is no support for credit advices (Gutschriften)
+--
+
 <fullquery name="projects_to_bill">
     <querytext>
 	select 
@@ -19,7 +30,8 @@
                         pr.title,
                         pr.description,
 			o.creation_date,
-	   		sum(ofi.item_units * ofi.price_per_unit * (1-(ofi.rebate/100))) as amount_open,
+	   		-- sum(ofi.item_units * ofi.price_per_unit * (1-(ofi.rebate/100))) as amount_open_old,
+			io.amount_total as amount_open,
            		p.customer_id, 
 			p.recipient_id,
 			oz.name
@@ -29,9 +41,10 @@
 			pm_projects p,
          		acs_objects o, 
 			acs_data_links r, 
-			iv_offer_items ofi,
+			-- iv_offer_items ofi,
 			cr_items oi, 
-			organizations oz
+			organizations oz,
+			iv_offers io
     		where 
 			pi.latest_revision = pr.revision_id
     			and p.project_id = pr.revision_id
@@ -40,10 +53,11 @@
     			and r.object_id_two = oi.item_id
 	 	  	and p.status_id = :p_closed_id
 	 	  	and p.invoice_p = true
-    			and ofi.offer_id = oi.latest_revision
+    			-- and ofi.offer_id = oi.latest_revision
     			and p.customer_id = oz.organization_id
+			and io.offer_id = oi.latest_revision
     		group by 
-			oi.item_id, pi.item_id, pr.title, pr.description, o.creation_date, p.customer_id, oz.name, p.recipient_id) sub
+			oi.item_id, pi.item_id, pr.title, pr.description, o.creation_date, p.customer_id, oz.name, p.recipient_id, io.amount_total) sub
 		where	1=1 [template::list::filter_where_clauses -and -name projects]	
     			[template::list::page_where_clause -and -name projects -key sub.project_id]
     		[template::list::orderby_clause -name projects -orderby]
@@ -142,7 +156,6 @@
                         pr.title,
                         pr.description,
 			o.creation_date,
-	   		sum(ofi.item_units * ofi.price_per_unit * (1-(ofi.rebate/100))) as amount_open,
            		p.customer_id, 
 			p.recipient_id,
 			oz.name
@@ -152,9 +165,8 @@
 			pm_projects p,
          		acs_objects o, 
 			acs_data_links r, 
+			cr_items oi,
 			iv_offer_items ofi,
-         		acs_objects oo, 
-			cr_items oi, 
 			organizations oz
     		where 
 			pi.latest_revision = pr.revision_id
@@ -165,8 +177,6 @@
 	 	  	and p.status_id = :p_closed_id
 	 	  	and p.invoice_p = true
     			and ofi.offer_id = oi.latest_revision
-    			and oo.object_id = oi.item_id
-    			and oo.package_id = :package_id
     			and p.customer_id = oz.organization_id		
     			and not exists (select 1
                     			from iv_invoice_items ii, iv_invoices i, cr_items ci

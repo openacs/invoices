@@ -71,6 +71,18 @@ foreach element $elements {
     append row_list "$element {}\n"
 }
 
+# Make sure we don't kill ourself
+set new_elements [list] 
+foreach element $elements {
+    if {$element eq "count_total" || $element eq "count_billed"} {
+	# get rid of it
+    } else {
+	lappend new_elements $element
+    }
+}
+
+set elements $new_elements
+
 if {[lsearch $elements "count_total"] > -1 || [lsearch $elements "count_billed"] > -1} {
     set query "projects_to_bill2"
 } else {
@@ -119,12 +131,6 @@ template::list::create \
 	    label {[_ invoices.iv_invoice_amount_open]}
 	    display_template {@projects.amount_open@ @projects.currency@}
         }
-	count_total {
-	    label {[_ invoices.iv_invoice_count_total]}
-	}
-	count_billed {
-	    label {[_ invoices.iv_invoice_count_billed]}
-	}
 	creation_date {
 	    label {[_ invoices.iv_invoice_closed_date]}
 	}
@@ -167,12 +173,6 @@ template::list::create \
 	    orderby_asc {lower(r.description) asc, r.item_id}
 	    default_direction asc
 	}
-        amount_open {
-	    label {[_ invoices.iv_invoice_amount_open]}
-	    orderby_desc {sub.amount_open desc, r.item_id}
-	    orderby_asc {sub.amount_open asc, r.item_id}
-	    default_direction desc
-        }
 	creation_date {
 	    label {[_ invoices.iv_invoice_closed_date]}
 	    orderby {sub.creation_date}

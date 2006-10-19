@@ -483,7 +483,7 @@ ad_form -extend -name iv_invoice_form -new_request {
 	set rec_organization_id $organization_id
     } else {
 	if {[person::person_p -party_id $recipient_id]} {
-	    set rec_organization_id [contact::util::get_employee_organization -employee_id $recipient_id]
+	    set rec_organization_id [lindex [contact::util::get_employee_organization -employee_id $recipient_id] 0]
 	} else {
 	    set rec_organization_id $recipient_id
 	}
@@ -577,6 +577,10 @@ ad_form -extend -name iv_invoice_form -new_request {
 	foreach offer_item_id [array names offer_item_ids] {
 	    incr counter
 	    array set offer $offers($offer_item_id)
+	    if {![string is double -strict $offer(vat)]} {
+		set offer(vat) 0
+	    }
+
 	    set offer(vat) [expr $vat_percent * $offer(vat) / 100.]
 
 	    set new_item_rev_id [iv::invoice_item::new \
@@ -640,6 +644,9 @@ ad_form -extend -name iv_invoice_form -new_request {
 	foreach iv_item_id [array names offer_item_ids] {
 	    incr counter
 	    array set offer $offers($iv_item_id)
+	    if {![string is double -strict $offer(vat_old)]} {
+		set offer(vat_old) 0
+	    }
 	    set offer(vat) [expr $vat_percent * $offer(old_vat) / 100.]
 
 	    set new_item_rev_id [iv::invoice_item::edit \

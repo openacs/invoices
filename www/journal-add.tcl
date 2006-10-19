@@ -160,6 +160,7 @@ foreach invoice $new_invoices {
     } else {
 	set tax_account 4690
 	set tax_type 10
+	set final_amount $total_amount
     }
 
     append financial_text "F;0;940;;;$invoice_type;$invoice_date;$invoice_period;$invoice_nr;;$client_id;$tax_account;$tax_type;;$final_amount;$invoice_name;;;$currency;$country_code;$ust_id_nr;;;0;0\n"

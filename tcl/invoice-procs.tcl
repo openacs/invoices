@@ -348,19 +348,23 @@ ad_proc -public iv::invoice::parse_data {
 	    set data(am_name) $am_name
 	    set data(am_directphoneno) [ad_html_to_text -no_format $account_manager(directphoneno)]
 	    set am_directphoneno $data(am_directphoneno)
+	    set data(jobtitle) $account_manager(jobtitle)
 	} else {
 	    # Someone else is sending the offer. We need to mark this in the name
 	    contact::employee::get -employee_id [lindex $account_manager_ids 0] -array account_manager
+	    contact::employee::get -employee_id $user_id -array user_arr
 	    set account_manager_name "$account_manager(first_names) $account_manager(last_name)"
 	    set data(am_name) $account_manager_name
 	    set data(am_directphoneno) [ad_html_to_text -no_format $account_manager(directphoneno)]
 	    set am_directphoneno $data(am_directphoneno)
-	    set am_name "[_ contacts.pp] [contact::name -party_id $user_id]<p>$account_manager_name"
+	    set am_name "[_ contacts.pp] $user_arr(first_names) $user_arr(last_name)<p>$account_manager_name"
+	    set data(jobtitle) $user_arr(jobtitle)
 	}
     } else {
 	set default_orga_id [parameter::get_from_package_key -package_key contacts -parameter DefaultOrganizationID]
 	set am_name "[contact::name -party_id $default_orga_id]"
 	set am_directphoneno [ams::value -object_id [content::item::get_best_revision -item_id $default_orga_id] -attribute_name directphoneno]
+	set data(jobtitle) [ams::value -object_id [content::item::get_best_revision -item_id $user_id] -attribute_name jobtitle]
 	set data(am_name) "[contact::name -party_id $user_id]"
 	set data(am_directphoneno) [ad_html_to_text -no_format $am_directphoneno]
     }

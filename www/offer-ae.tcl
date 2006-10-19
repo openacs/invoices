@@ -232,7 +232,7 @@ if {$has_submit} {
 }
 
 ad_form -extend -name iv_offer_form -form {
-    {payment_days:integer,optional {mode display} {label "[_ invoices.iv_offer_payment_days]"} {html {size 5 maxlength 5}} {help_text "[_ invoices.iv_offer_payment_days_help]"}}
+    {payment_days:integer,optional {label "[_ invoices.iv_offer_payment_days]"} {html {size 5 maxlength 5}} {help_text "[_ invoices.iv_offer_payment_days_help]"}}
     {show_sum_p:text(select),optional {label "[_ invoices.iv_offer_show_sum_p]"} {options $boolean_options} {help_text "[_ invoices.iv_offer_show_sum_p_help]"}}
 }
 
@@ -616,18 +616,9 @@ ad_form -extend -name iv_offer_form -new_request {
 	set vat_percent [format "%.1f" $org_data(vat_percent)]
     }
 } -edit_request {
-    #--- added 2006/08/29 by cognovis/nfl
-    set customer_payment [ams::value -object_id [content::item::get_best_revision -item_id $organization_id] -attribute_name "payment_days"]
-    #---
 
     db_1row get_data {}
 
-    #--- added 2006/08/29 by cognovis/nfl
-    if {![string eq "" $customer_payment]} {
-	set payment_days $customer_payment
-    }
-    #---
-    
     regsub -all {\[} $comment {\(} comment
     set title [lang::util::localize $title]
     set description [lang::util::localize $description]

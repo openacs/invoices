@@ -178,10 +178,9 @@
 	 	  	and p.invoice_p = true
     			and ofi.offer_id = oi.latest_revision
     			and p.customer_id = oz.organization_id		
-    			and not exists (select 1
+    			and ofi.offer_item_id not in  (select ii.offer_item_id
                     			from iv_invoice_items ii, iv_invoices i, cr_items ci
-                    			where ii.offer_item_id = ofi.offer_item_id
-                    			and i.invoice_id = ii.invoice_id
+                    			where i.invoice_id = ii.invoice_id
                     			and ci.latest_revision = i.invoice_id
                     			and i.cancelled_p = 'f')
     		group by 

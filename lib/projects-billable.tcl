@@ -221,15 +221,7 @@ db_multirow -extend {project_link recipient currency} projects $query {} {
 	set recipient [person::name -person_id $recipient_id]
 	set name $recipient
     }
-    set dotlrn_club_id [lindex \
-			    [application_data_link::get_linked \
-				 -from_object_id $org_id \
-				 -to_object_type "dotlrn_club"] 0]
-    
-    set pm_base_url [apm_package_url_from_id \
-			 [dotlrn_community::get_package_id_from_package_key \
-			      -package_key "project-manager" \
-			      -community_id $dotlrn_club_id]]
 
+    set pm_base_url [apm_package_url_from_id [acs_object::package_id -object_id $project_id]]
     set project_link [export_vars -base "${pm_base_url}one" {{project_item_id $project_id}}]
 }

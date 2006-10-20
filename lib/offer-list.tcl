@@ -107,11 +107,13 @@ if {[exists_and_not_null organization_id]} {
 	set actions [list "[_ invoices.iv_invoice_2]" [export_vars -base "${base_url}invoice-list" {organization_id}] "[_ invoices.iv_invoice_2]" "[_ invoices.iv_price_list]" [export_vars -base "${base_url}price-list" {{list_id $price_list_id} organization_id}] "[_ invoices.iv_display_price_list]"]
 
 	# We are looking at an organization, try to get the base_url for the Project manager
-	set dotlrn_club_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type "dotlrn_club"] 0]
-
+	
+	set dotlrn_club_id [util_memoize [list lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type "dotlrn_club"] 0]]
+	
 	if {$dotlrn_club_id > 0} {
-	    set pm_base_url [apm_package_url_from_id [dotlrn_community::get_package_id_from_package_key -package_key "project-manager" -community_id $dotlrn_club_id]]
+	    set pm_package_id [dotlrn_community::get_package_id_from_package_key -package_key "project-manager" -community_id $dotlrn_club_id]
 	}
+	set pm_base_url [apm_package_url_from_id $pm_package_id]
 
 	if {[exists_and_not_null pm_base_url]} {
 	    lappend actions "[_ project-manager.Projects]" $pm_base_url "[_ project-manager.Projects]"
@@ -214,16 +216,6 @@ template::list::create \
 	    orderby {lower(cr.title)}
 	    default_direction asc
 	}
-	description {
-	    label {[_ invoices.iv_offer_Description]}
-	    orderby {lower(cr.description)}
-	    default_direction asc
-	}
-	comment {
-	    label {[_ invoices.iv_offer_comment]}
-	    orderby {lower(t.comment)}
-	    default_direction asc
-	}
 	project_id {
 	    label {[_ invoices.iv_offer_project]}
 	    orderby {lower(pr.title)}
@@ -231,24 +223,13 @@ template::list::create \
 	}
 	project_contact {
 	    label {[_ invoices.iv_offer_project_contact]}
-	    orderby_desc {lower(p2.last_name) desc, lower(p2.first_names) desc}
-	    orderby_asc {lower(p2.last_name) asc, lower(p2.first_names) asc}
+	    orderby_desc {contact__name(pp.contact_id) desc}
+	    orderby_asc {contact__name(pp.contact_id) asc}
 	    default_direction asc
 	}
 	amount_total {
 	    label {[_ invoices.iv_offer_amount_total]}
 	    orderby {t.amount_total}
-	    default_direction desc
-	}
-	creation_user {
-	    label {[_ invoices.iv_offer_creation_user]}
-	    orderby_desc {lower(p.last_name) desc, lower(p.first_names) desc}
-	    orderby_asc {lower(p.last_name) asc, lower(p.first_names) asc}
-	    default_direction asc
-	}
-	creation_date {
-	    label {[_ invoices.iv_offer_creation_date]}
-	    orderby {o.creation_date}
 	    default_direction desc
 	}
 	finish_date {

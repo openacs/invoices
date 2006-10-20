@@ -351,10 +351,10 @@ if {!$_invoice_id} {
 		set offer(credit_units) $offer(item_units)
 	    }
 	    set offer(credit) [format "%.2f" [expr $offer(credit_units) * $offer(price_per_unit)]]
-	    ns_log Notice "Granted credit:: $offer(credit)"
+	    ns_log Debug "Granted credit:: $offer(credit)"
 	    set offer(credit) [format "%.2f" [expr (1. - ($offer(rebate) / 100.)) * $offer(credit)]]
 	    set offer(credit) [format "%.2f" [expr $offer(credit) - $offer(amount)]]
-	    ns_log Notice "Total credit:: $offer(credit)"
+	    ns_log Debug "Total credit:: $offer(credit)"
 
 	    set offer_name ""
 	    if {![empty_string_p $offer(category)]} {

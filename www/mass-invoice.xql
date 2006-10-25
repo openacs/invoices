@@ -19,7 +19,8 @@
 	       vat_percent,
 	       vat,
 	       amount_total,
-	       amount_sum
+	       amount_sum,
+		status
 	from iv_offers o, cr_items i, acs_data_links r
 	where o.offer_id = i.latest_revision
 	and r.object_id_one = :project_item_id

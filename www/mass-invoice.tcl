@@ -62,8 +62,11 @@ catch {
     
     set due_date [db_string today {}]
     set title "[_ invoices.iv_invoice_1] [organizations::name -organization_id $customer_id] $due_date"
-    
+   
     db_1row offer_data {}
+    if {$status eq "billed"} {
+	ad_return_error "Already billed" "$title exists already"
+    }
 
     set contacts_package_id [lindex [application_link::get_linked -from_package_id $package_id -to_package_key contacts] 0]
     

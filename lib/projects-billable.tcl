@@ -101,6 +101,12 @@ if {$no_actions_p} {
 
 set normal_actions [list "[_ invoices.iv_invoice_url]" $base_url "[_ invoices.iv_invoice_url2]"]
 
+# Organization filter
+if {[exists_and_not_null organization_id]} {
+    set organization_where_clause "and p.customer_id = :organization_id"
+} else {
+    set organization_where_clause ""
+}
 
 template::list::create \
     -name projects \
@@ -173,11 +179,6 @@ template::list::create \
 	    orderby_asc {lower(r.description) asc, r.item_id}
 	    default_direction asc
 	}
-	creation_date {
-	    label {[_ invoices.iv_invoice_closed_date]}
-	    orderby {sub.creation_date}
-	    default_direction desc
-	}
     } -orderby_name orderby -html {width 100%} \
     -page_size_variable_p 1 \
     -page_size 1000 \
@@ -185,9 +186,6 @@ template::list::create \
     -page_query_name projects_to_bill_paginated \
     -filters {
 	page_num {}
-        organization_id {
-            where_clause {sub.customer_id = :organization_id}
-        }
     } \
     -formats {
 	normal {

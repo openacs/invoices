@@ -150,45 +150,38 @@
     <querytext>
 	select 
 		sub.project_id
-    	from (
-    		select 
-                        pi.item_id as project_id,
-                        pr.title,
-                        pr.description,
-			o.creation_date,
-           		p.customer_id, 
-			p.recipient_id,
-			oz.name
-	    	from 
-			cr_items pi, 
-			cr_revisions pr, 
-			pm_projects p,
-         		acs_objects o, 
+    	from ( select pi.item_id as project_id,
+	                        pr.title,
+        	                pr.description,
+           			p.customer_id, 
+				p.recipient_id
+			 from 
+				cr_items pi, 
+				cr_revisions pr, 
+				pm_projects p
+			where 
+				pi.latest_revision = pr.revision_id
+				$organization_where_clause
+    				and p.project_id = pr.revision_id
+		 	  	and p.status_id = :p_closed_id
+		 	  	and p.invoice_p = true) sub,
 			acs_data_links r, 
 			cr_items oi,
-			iv_offer_items ofi,
-			organizations oz
+			iv_offer_items ofi
     		where 
-			pi.latest_revision = pr.revision_id
-    			and p.project_id = pr.revision_id
-    			and o.object_id = p.project_id
-			and r.object_id_one = pi.item_id
+			r.object_id_one = sub.project_id
     			and r.object_id_two = oi.item_id
-	 	  	and p.status_id = :p_closed_id
-	 	  	and p.invoice_p = true
     			and ofi.offer_id = oi.latest_revision
-    			and p.customer_id = oz.organization_id		
     			and ofi.offer_item_id not in  (select ii.offer_item_id
                     			from iv_invoice_items ii, iv_invoices i, cr_items ci
                     			where i.invoice_id = ii.invoice_id
                     			and ci.latest_revision = i.invoice_id
                     			and i.cancelled_p = 'f')
-    		group by 
-			pi.item_id, pr.title, pr.description, o.creation_date, p.customer_id, oz.name, p.recipient_id
-	    ) sub
-    	where 1=1
     		[template::list::filter_where_clauses -and -name projects]	
+    		group by 
+			sub.project_id, sub.title, sub.description, sub.customer_id, sub.recipient_id, oi.name
     		[template::list::orderby_clause -name projects -orderby]
+	    
       </querytext>
 </fullquery>
 

@@ -505,56 +505,56 @@ ad_proc -public iv::offer::new_credit {
     set pm_package_id [dotlrn_community::get_package_id_from_package_key -package_key "project-manager" -community_id $dotlrn_club_id]
     set contacts_package_id [lindex [application_link::get_linked -from_package_id $package_id -to_package_key contacts] 0]
 
-    db_transaction {
-	set project_rev_id [pm::project::new \
-				-project_name "#invoices.credit_project_title#" \
-				-description "#invoices.credit_project_desc#" \
-				-mime_type "text/plain" \
-				-status_id 2 \
-				-organization_id $organization_id \
-				-creation_user $user_id \
-				-creation_ip $creation_ip \
-				-package_id $pm_package_id]
-
-	set project_id [pm::project::get_project_item_id -project_id $project_rev_id]
-	db_dml set_invoice_p {}
-
-	# grant employees read access to project
-	set employees_group_id [group::get_id -group_name "Employees"]
-	if { ![empty_string_p $employees_group_id] } {
-	    permission::grant -object_id $project_id -party_id $employees_group_id -privilege read
-	}
-
-	set currency [iv::price_list::get_currency -organization_id $organization_id]
-	set vat_percent "16.0"
-	array set org_data [contacts::get_values \
-				-group_name "Customers" \
-				-object_type "organization" \
-				-party_id $organization_id \
-				-contacts_package_id $contacts_package_id]
-	if {[info exists org_data(vat_percent)]} {
-	    set vat_percent [format "%.1f" $org_data(vat_percent)]
-	}
-
-	set new_offer_rev_id [iv::offer::new \
-				  -title "#invoices.credit_offer_title#" \
-				  -description "#invoices.credit_offer_desc#" \
-				  -offer_nr [db_nextval iv_offer_seq] \
-				  -organization_id $organization_id \
-				  -amount_total 0 \
-				  -amount_sum 0 \
-				  -currency $currency \
-				  -payment_days 0 \
-				  -vat_percent $vat_percent \
-				  -vat 0 \
-				  -credit_percent 0 \
-				  -package_id $package_id]
-
-	set offer_id [pm::project::get_project_item_id -project_id $new_offer_rev_id]
-	iv::offer::set_status -offer_id $offer_id -status credit
-	application_data_link::new -this_object_id $offer_id -target_object_id $project_id
+    set project_rev_id [pm::project::new \
+			    -project_name "#invoices.credit_project_title#" \
+			    -description "#invoices.credit_project_desc#" \
+			    -mime_type "text/plain" \
+			    -status_id 2 \
+			    -organization_id $organization_id \
+			    -creation_user $user_id \
+			    -creation_ip $creation_ip \
+			    -package_id $pm_package_id]
+    
+    set project_id [pm::project::get_project_item_id -project_id $project_rev_id]
+    db_dml set_invoice_p {}
+    
+    # grant employees read access to project
+    set employees_group_id [group::get_id -group_name "Employees"]
+    if { ![empty_string_p $employees_group_id] } {
+	permission::grant -object_id $project_id -party_id $employees_group_id -privilege read
     }
+    
+    set currency [iv::price_list::get_currency -organization_id $organization_id]
+    set vat_percent "16.0"
+    array set org_data [contacts::get_values \
+			    -group_name "Customers" \
+			    -object_type "organization" \
+			    -party_id $organization_id \
+			    -contacts_package_id $contacts_package_id]
+
+    if {[info exists org_data(vat_percent)]} {
+	set vat_percent [format "%.1f" $org_data(vat_percent)]
+    }
+    
+    set new_offer_rev_id [iv::offer::new \
+			      -title "#invoices.credit_offer_title#" \
+			      -description "#invoices.credit_offer_desc#" \
+			      -offer_nr [db_nextval iv_offer_seq] \
+			      -organization_id $organization_id \
+			      -amount_total 0 \
+			      -amount_sum 0 \
+			      -currency $currency \
+			      -payment_days 0 \
+			      -vat_percent $vat_percent \
+			      -vat 0 \
+			      -credit_percent 0 \
+			      -package_id $package_id]
+    
+    set offer_id [content::revision::item_id -revision_id $new_offer_rev_id]
+    iv::offer::set_status -offer_id $offer_id -status credit
+    application_data_link::new -this_object_id $offer_id -target_object_id $project_id
 }
+
 
 ad_proc -public iv::offer::pdf_folders {
     -organization_id:required

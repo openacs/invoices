@@ -112,8 +112,15 @@ if {[exists_and_not_null organization_id]} {
 	
 	if {$dotlrn_club_id > 0} {
 	    set pm_package_id [dotlrn_community::get_package_id_from_package_key -package_key "project-manager" -community_id $dotlrn_club_id]
+	} else {
+	    set pm_package_id ""
 	}
-	set pm_base_url [apm_package_url_from_id $pm_package_id]
+	
+	if {$pm_package_id eq ""} {
+	    set pm_base_url ""
+	} else {
+	    set pm_base_url [apm_package_url_from_id $pm_package_id]
+	}
 
 	if {[exists_and_not_null pm_base_url]} {
 	    lappend actions "[_ project-manager.Projects]" $pm_base_url "[_ project-manager.Projects]"

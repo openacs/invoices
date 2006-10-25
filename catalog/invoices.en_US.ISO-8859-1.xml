@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="invoices" package_version="1.0a4" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="invoices" package_version="1.0a6" locale="en_US" charset="ISO-8859-1">
 
   <msg key="accepted">Order confirmation</msg>
   <msg key="Accepted_date">Accepted on</msg>
@@ -424,6 +424,7 @@
   <msg key="Month">Month</msg>
   <msg key="month">Month</msg>
   <msg key="More_than_one_customer">More than one customer</msg>
+  <msg key="negative_rebate">Negative Rebate</msg>
   <msg key="New">New</msg>
   <msg key="New_clients">New Clients</msg>
   <msg key="no">No</msg>
@@ -485,6 +486,7 @@
   <msg key="Total">Total</msg>
   <msg key="Total2">Total</msg>
   <msg key="Total_amount">Total amount</msg>
+  <msg key="total_mount_less_amount_total">Amount total (%amount_total%) is greater than the sum of the items (%item_sum%). This is a negative rebate which is not allowed.</msg>
   <msg key="Total_offers">Total Offers</msg>
   <msg key="units">h</msg>
   <msg key="Unmounted">Unmounted</msg>

@@ -708,6 +708,7 @@ ad_form -extend -name iv_offer_form -new_request {
     if {[empty_string_p $amount_total]} {
 	set amount_total $amount_sum
     }
+    
     set vat [format "%.2f" [expr $vat_percent * $amount_total / 100.]]
     set item_sum [format "%.2f" $item_sum]
 
@@ -720,10 +721,15 @@ ad_form -extend -name iv_offer_form -new_request {
 	ad_script_abort
     }
 
-#    db_transaction {
-	if {[empty_string_p $amount_total]} {
-	    set amount_total $amount_sum
-	}
+    if {[empty_string_p $amount_total]} {
+	set amount_total $amount_sum
+    }
+    
+    if {$amount_total > $item_sum} {
+	ad_return_error "[_ invoices.negative_rebate]" "[_ invoices.total_mount_less_amount_total]"
+	ad_script_abort
+    }
+
 	set new_offer_rev_id [iv::offer::new  \
 				  -title $title \
 				  -description $description  \
@@ -768,10 +774,13 @@ ad_form -extend -name iv_offer_form -new_request {
 	    category::map_object -object_id $new_item_rev_id $item(category)
 	}
 	set offer_id [content::revision::item_id -revision_id $new_offer_rev_id]
-#   }
+
 } -edit_data {
-    ns_log Notice "*** edit_data (on save)"
-    ns_log Notice "PaymentDays: $payment_days"
+
+    if {$amount_total > $item_sum} {
+	ad_return_error "[_ invoices.negative_rebate]" "[_ invoices.total_mount_less_amount_total]"
+	ad_script_abort
+    }
 
     db_transaction {
 	set new_offer_rev_id [iv::offer::edit \

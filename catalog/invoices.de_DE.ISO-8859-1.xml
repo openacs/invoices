@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="invoices" package_version="1.0a4" locale="de_DE" charset="ISO-8859-1">
+<message_catalog package_key="invoices" package_version="1.0a6" locale="de_DE" charset="ISO-8859-1">
 
   <msg key="accepted">Auftragsbestätigungen</msg>
   <msg key="Accepted_date">Akzeptiert am</msg>
@@ -144,6 +144,7 @@
   <msg key="iv_invoice_cancel_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Stornorechnung&lt;/h3&gt;%data.contact_salutation%,&lt;p&gt;anbei finden Sie die Stornorechnung %data.invoice_nr%.&lt;p&gt;Mit freundlichen Gr&amp;uuml;&amp;szlig;en&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
   <msg key="iv_invoice_cancel_email_subject">Stornorechnung # %invoice_nr%</msg>
   <msg key="iv_invoice_cancellation">Storno durch</msg>
+  <msg key="iv_invoice_cancelled_help">Abgesagt</msg>
   <msg key="iv_invoice_cancelled_invoice">Storno für</msg>
   <msg key="iv_invoice_closed_date">beendet am</msg>
   <msg key="iv_invoice_contact">Kundenkontakt</msg>
@@ -154,6 +155,7 @@
   <msg key="iv_invoice_creation_date">erstellt am</msg>
   <msg key="iv_invoice_creation_date_help">Datum an dem die Rechnung angelegt wurde</msg>
   <msg key="iv_invoice_creation_user">erstellt von</msg>
+  <msg key="iv_invoice_creation_user_help">Benutzer welcher die Rechnung angelegt hat</msg>
   <msg key="iv_invoice_credit_1">Gutschrift</msg>
   <msg key="iv_invoice_credit_Add">Gutschrift erstellen</msg>
   <msg key="iv_invoice_credit_email">&lt;html&gt;&lt;body&gt;&lt;h3&gt;Gutschrift&lt;/h3&gt;%data.contact_salutation%,&lt;p&gt;anbei finden Sie die Rechnungsgutschrift %data.invoice_nr%.&lt;p&gt;Mit freundlichen Gr&amp;uuml;&amp;szlig;en&lt;br&gt;WIENERS + WIENERS GmbH&lt;br&gt;&lt;/html&gt;&lt;/body&gt;</msg>
@@ -161,6 +163,7 @@
   <msg key="iv_invoice_credit_New">Neue Gutschrift</msg>
   <msg key="iv_invoice_credit_New2">Neue Gutschrift erstellen</msg>
   <msg key="iv_invoice_currency">Währung</msg>
+  <msg key="iv_invoice_currency_help">Währung der Rechnung</msg>
   <msg key="iv_invoice_Delete">Rechnung löschen</msg>
   <msg key="iv_invoice_Description">Beschreibung</msg>
   <msg key="iv_invoice_Description_help">Beschreibung auf der Rechnung</msg>
@@ -294,6 +297,7 @@ Durchwahl: %am_directphoneno%&lt;br&gt;&lt;b&gt;WIENERS+WIENERS GmbH&lt;/b&gt;&l
   <msg key="iv_offer_file_delete_help">Zum Löschen von Dateien die entsprechende Checkbox markieren.</msg>
   <msg key="iv_offer_file_help">Dateien zur internen Verwendung - diese werden nicht mit dem Angebot verschickt!</msg>
   <msg key="iv_offer_file_view">Dateien</msg>
+  <msg key="iv_offer_file_view_help">Angebots Dateien Ansicht</msg>
   <msg key="iv_offer_finish_date">Lieferdatum</msg>
   <msg key="iv_offer_finish_date_help">Abgabetermin, zu dem das Projekt an den Kunden ausgeliefert werden muss</msg>
   <msg key="iv_offer_finish_time">Timing Uhrzeit</msg>
@@ -423,6 +427,7 @@ Durchwahl: %am_directphoneno%&lt;br&gt;&lt;b&gt;WIENERS+WIENERS GmbH&lt;/b&gt;&l
   <msg key="Month">Monat</msg>
   <msg key="month">Monat</msg>
   <msg key="More_than_one_customer">Mehr als ein Kunde</msg>
+  <msg key="negative_rebate">Negativer Rabatt</msg>
   <msg key="New">Neu</msg>
   <msg key="New_clients">Neue Kunden</msg>
   <msg key="no">Nein</msg>
@@ -484,6 +489,7 @@ Durchwahl: %am_directphoneno%&lt;br&gt;&lt;b&gt;WIENERS+WIENERS GmbH&lt;/b&gt;&l
   <msg key="Total">Insgesamt</msg>
   <msg key="Total2">Gesamt</msg>
   <msg key="Total_amount">Gesamtsumme</msg>
+  <msg key="total_mount_less_amount_total">Summe netto (%amount_total%) ist größer als die Gesamtsumme der Positionen (%item_sum%). Hier gäbe es einen negativen Rabatt der nicht erlaubt ist.</msg>
   <msg key="Total_offers">Alle Angebote</msg>
   <msg key="units">h</msg>
   <msg key="Unmounted">Unmounted</msg>

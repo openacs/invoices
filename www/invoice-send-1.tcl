@@ -26,7 +26,7 @@ if {[person::person_p -party_id $recipient_id]} {
 
 # warn if invoice already got sent
 set sent_p 0
-if {![empty_string_p $invoice_nr]} {
+if {$status eq "billed"} {
     set sent_p 1
 }
 
@@ -36,9 +36,9 @@ set invoice_copy [ams::value -attribute_name "invoice_copy" -object_id $rec_orga
 set boolean_options [list [list "[_ invoices.yes]" 1] [list "[_ invoices.no]" 0]]
 set email_options [list [list "[_ invoices.invoice_email]" t] [list "[_ invoices.invoice_display]" f]]
 
-if {$pdf_status != "sent"} {
-    lappend email_options  [list "[_ invoices.invoice_for_join]" j]
-}
+#if {$pdf_status != "sent"} {
+#    lappend email_options  [list "[_ invoices.invoice_for_join]" j]
+#}
 
 ad_form -name invoice_send -action invoice-send-1 -export {return_url} -form {
     {invoice_id:key}

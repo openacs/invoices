@@ -100,6 +100,11 @@ if {[multirow size documents] > 0} {
     # an invoice has been generated.
     # Store this fact as "Billed" in the system.
 
+    if {$status == "new" || [empty_string_p $status]} {
+	iv::invoice::set_status -invoice_id $invoice_id -status "billed"
+    }
+    
+    # move files to invoice_folder
     set root_folder_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type content_folder] 0]
     set invoice_folder_id [fs::get_folder -name "invoices_${root_folder_id}" -parent_id $root_folder_id]
     if {[empty_string_p $invoice_folder_id]} {
@@ -107,16 +112,10 @@ if {[multirow size documents] > 0} {
 	set invoice_folder_id $organization_id
     }
 
-    db_transaction {
-	# move files to invoice_folder
-	application_data_link::new -this_object_id $invoice_id -target_object_id $file_id
-	db_dml set_publish_status_and_parent {}
-	db_dml set_context_id {}
+    application_data_link::new -this_object_id $invoice_id -target_object_id $file_id
+    db_dml set_publish_status_and_parent {}
+    db_dml set_context_id {}
 
-	if {$status == "new" || [empty_string_p $status]} {
-	    iv::invoice::set_status -invoice_id $invoice_id -status "billed"
-	}
-    }
 }
 
 if {[empty_string_p $return_url]} { 

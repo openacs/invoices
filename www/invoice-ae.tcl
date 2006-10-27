@@ -298,7 +298,8 @@ if {!$has_submit} {
     }
 
     set boolean_options [list [list "[_ invoices.yes]" 1] [list "[_ invoices.no]" 0]]
-    set email_options [list [list "[_ invoices.invoice_email]" t] [list "[_ invoices.invoice_display]" f] [list "[_ invoices.invoice_for_join]" j]]
+#    set email_options [list [list "[_ invoices.invoice_email]" t] [list "[_ invoices.invoice_display]" f] [list "[_ invoices.invoice_for_join]" j]]
+    set email_options [list [list "[_ invoices.invoice_email]" t] [list "[_ invoices.invoice_display]" f]]
 
     ad_form -extend -name iv_invoice_form -form {
 	{opening_p:text(radio) {label "[_ invoices.iv_invoice_opening_p]"} {options $boolean_options}}
@@ -472,6 +473,7 @@ ad_form -extend -name iv_invoice_form -new_request {
     set title "[_ invoices.iv_invoice_1] $organization_name $due_date"
 
     db_1row offer_data {}
+
     set invoice_rebate $open_rebate
 
     set contacts_package_id [lindex [application_link::get_linked -from_package_id $package_id -to_package_key contacts] 0]
@@ -711,6 +713,11 @@ ad_form -extend -name iv_invoice_form -new_request {
 
 	    db_dml set_status {}
 	}
+    }
+
+    # Force opening if different recipient
+    if {![string eq $recipient_id $contact_id]} {
+	set opening_p 1
     }
 
     if {[empty_string_p $return_url]} {

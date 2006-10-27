@@ -20,7 +20,7 @@
 	       vat,
 	       amount_total,
 	       amount_sum,
-		status
+	       status
 	from iv_offers o, cr_items i, acs_data_links r
 	where o.offer_id = i.latest_revision
 	and r.object_id_one = :project_item_id
@@ -257,18 +257,6 @@
 		set status = :status
 		where offer_id = :offer_id
 		and status <> 'credit'
-      </querytext>
-</fullquery>
-
-<fullquery name="iv::invoice::set_status.update_status">
-      <querytext>
-
-	update iv_invoices
-	set status = :status
-	where invoice_id = (select latest_revision
-                          from cr_items
-                          where item_id = :invoice_id)
-
       </querytext>
 </fullquery>
 

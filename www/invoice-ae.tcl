@@ -733,4 +733,10 @@ ad_form -extend -name iv_invoice_form -new_request {
     ad_script_abort
 }
 
+if {[acs_user::site_wide_admin_p]} {
+    set odt_url [export_vars -base "invoice-documents" {invoice_id {invoice_p 1} {odt_p 1}}]
+} else {
+    set odt_url ""
+}
+
 ad_return_template

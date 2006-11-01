@@ -8,6 +8,7 @@ ad_page_contract {
     {opening_p 0}
     {invoice_p 1}
     {copy_p 0}
+    {odt_p 0}
     {file_ids ""}
     {return_url:optional ""}
     {display_p 1}
@@ -64,6 +65,13 @@ if {$copy_p} {
 # and return the content of all necessary document files
 # (opening, invoice/credit/cancellation, copy)
 set documents [iv::invoice::parse_data -invoice_id $invoice_id -types $document_types -email_text ""]
+
+# We want to get the odt file only
+if {$odt_p} {
+    set file [lindex $documents 1]
+    ad_returnredirect [export_vars -base "invoice.odt" -url {file}]
+    ad_script_abort
+}
 
 multirow create documents file_id file_title file_url
 set files {}

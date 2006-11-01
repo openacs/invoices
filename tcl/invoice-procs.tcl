@@ -244,6 +244,9 @@ ad_proc -public iv::invoice::parse_data {
     }
 
     # invoice recipient data
+    # default is the organization who is associated with the project
+
+    set rec_organization_id $data(organization_id)
     if {[organization::organization_p -party_id $data(recipient_id)]} {
 	# recipient is organization
 	set rec_organization_id $data(recipient_id)
@@ -251,10 +254,18 @@ ad_proc -public iv::invoice::parse_data {
 	set attribute_list {name company_name_ext address town_line country country_code salutation salutation_letter}
     } else {
 	# recipient is person
-	set rec_organization_id [contact::util::get_employee_organization -employee_id $data(recipient_id)]
+	set rec_organization_list [contact::util::get_employee_organization -employee_id $data(recipient_id)]
+	if {[llength $rec_organization_list] > 1} {
+	    if {[lsearch $rec_organization_list $data(organization_id)] > -1} {
+		set rec_organization_id $data(organization_id)
+	    } else {
+		set rec_organization_id [lindex $rec_organization_list 0]
+	    }
+	}
 	contact::employee::get -employee_id $data(recipient_id) -array recipient_data
 	set attribute_list {name company_name_ext address town_line country country_code salutation salutation_letter}
     }
+
     set rec_orga_revision_id [content::item::get_best_revision -item_id $rec_organization_id]
     set rec_client_id [ams::value -attribute_name "client_id" -object_id $rec_orga_revision_id -locale $rec_locale]
     set data(rec_vat_ident_number) [ams::value -attribute_name "VAT_ident_number" -object_id $rec_orga_revision_id -locale $rec_locale]

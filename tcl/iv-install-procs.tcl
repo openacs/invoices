@@ -287,6 +287,7 @@ ad_proc -public -callback pm::task_close -impl invoices {
 } {
     Create new cost every time a project task is closed
 } {
+    if {0} {
     set task_rev_id [pm::task::get_revision_id -task_item_id $task_id]
     set project_rev_id [pm::project::get_project_id -project_item_id [pm::task::project_item_id -task_item_id $task_id]]
 
@@ -350,6 +351,7 @@ ad_proc -public -callback pm::task_close -impl invoices {
 	}
 
 	array unset price
+    }
     }
 }
 

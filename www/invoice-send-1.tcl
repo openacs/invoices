@@ -18,8 +18,19 @@ db_1row invoice_data {}
 
 set context [list [list [export_vars -base invoice-list {organization_id}] "[_ invoices.iv_invoice_2]"] [list [export_vars -base invoice-ae {invoice_id}] "[_ invoices.iv_invoice_View]"] $page_title]
 
+# Get the organization for the invoice
+# Default is the organization associated with the invoice
+set rec_organization_id $organization_id
+
 if {[person::person_p -party_id $recipient_id]} {
-    set rec_organization_id [contact::util::get_employee_organization -employee_id $recipient_id]
+    set rec_organization_list [contact::util::get_employee_organization -employee_id $recipient_id]
+    if {[llength $rec_organization_list] > 1} {
+	if {[lsearch $rec_organization_list $organization_id] > -1} {
+	    set rec_organization_id $organization_id
+	} else {
+	    set rec_organization_id [lindex $rec_organization_list 0]
+	}
+    }
 } else {
     set rec_organization_id $recipient_id
 }

@@ -730,34 +730,97 @@ ad_form -extend -name iv_offer_form -new_request {
 	ad_script_abort
     }
 
-	set new_offer_rev_id [iv::offer::new  \
-				  -title $title \
-				  -description $description  \
-				  -comment $comment  \
-				  -reservation $reservation  \
-				  -offer_nr $offer_nr \
-				  -organization_id $organization_id \
-				  -amount_total $amount_total \
-				  -amount_sum $item_sum \
-				  -currency $currency \
-				  -finish_date $finish_date \
-				  -date_comment $date_comment \
-				  -payment_days $payment_days \
-				  -show_sum_p $show_sum_p \
-				  -vat_percent $vat_percent \
-				  -vat $vat \
-				  -credit_percent $credit_percent]
+    set new_offer_rev_id [iv::offer::new  \
+			      -title $title \
+			      -description $description  \
+			      -comment $comment  \
+			      -reservation $reservation  \
+			      -offer_nr $offer_nr \
+			      -organization_id $organization_id \
+			      -amount_total $amount_total \
+			      -amount_sum $item_sum \
+			      -currency $currency \
+			      -finish_date $finish_date \
+			      -date_comment $date_comment \
+			      -payment_days $payment_days \
+			      -show_sum_p $show_sum_p \
+			      -vat_percent $vat_percent \
+			      -vat $vat \
+			      -credit_percent $credit_percent]
+    
+    if {[exists_and_not_null category_ids]} {
+	category::map_object -object_id $new_offer_rev_id $category_ids
+    }
+    
+    set counter 0
+    foreach i [array names items] {
+	incr counter
+	array set item $items($i)
+	
+	set new_item_rev_id [iv::offer_item::new \
+				 -offer_id $new_offer_rev_id \
+				 -title $item(title) \
+				 -description $item(description)  \
+				 -comment $item(comment)  \
+				 -item_nr $item(nr) \
+				 -item_units $item(units) \
+				 -price_per_unit $item(price) \
+				 -rebate $item(rebate) \
+				 -page_count $item(page_count) \
+				 -file_count $item(file_count) \
+				 -sort_order $counter \
+				 -vat $item(vat) ]
+	
+	category::map_object -object_id $new_item_rev_id $item(category)
+    }
+    set offer_id [content::revision::item_id -revision_id $new_offer_rev_id]
+    
+} -edit_data {
+    
+    if {$amount_total > $item_sum} {
+	ad_return_error "[_ invoices.negative_rebate]" "[_ invoices.total_mount_less_amount_total]"
+	ad_script_abort
+    }
 
-	if {[exists_and_not_null category_ids]} {
-	    category::map_object -object_id $new_offer_rev_id $category_ids
-	}
+    set new_offer_rev_id [iv::offer::edit \
+			      -offer_id $offer_id \
+			      -title $title \
+			      -description $description \
+			      -comment $comment  \
+			      -reservation $reservation  \
+			      -offer_nr $offer_nr \
+			      -organization_id $organization_id \
+			      -amount_total $amount_total \
+			      -amount_sum $item_sum \
+			      -currency $currency \
+			      -finish_date $finish_date \
+			      -date_comment $date_comment \
+			      -payment_days $payment_days \
+			      -show_sum_p $show_sum_p \
+			      -vat_percent $vat_percent \
+			      -vat $vat \
+			      -credit_percent $credit_percent]
+    if {$amount_total eq 0} {
+	ns_log Notice "PA edited. Total amount 0: $offer_id :: $title"
+    }
 
-	set counter 0
-	foreach i [array names items] {
-	    incr counter
-	    array set item $items($i)
+    if {$vat eq 0} {
+	ns_log Notice "PA edited. VAT 0: $offer_id :: $title"
+    }
 
-	    set new_item_rev_id [iv::offer_item::new \
+    if {[exists_and_not_null category_ids]} {
+	category::map_object -object_id $new_offer_rev_id $category_ids
+    }
+    
+    set counter 0
+    foreach i [array names items] {
+	incr counter
+	array set item $items($i)
+	
+	if {[info exists offer_item_id($i)]} {
+	    # new revision of existing item
+	    set new_item_rev_id [iv::offer_item::edit \
+				     -offer_item_id $offer_item_id($i) \
 				     -offer_id $new_offer_rev_id \
 				     -title $item(title) \
 				     -description $item(description)  \
@@ -770,83 +833,26 @@ ad_form -extend -name iv_offer_form -new_request {
 				     -file_count $item(file_count) \
 				     -sort_order $counter \
 				     -vat $item(vat) ]
-
-	    category::map_object -object_id $new_item_rev_id $item(category)
+	} else {
+	    # add new item
+	    set new_item_rev_id [iv::offer_item::new \
+				     -offer_id $new_offer_rev_id \
+				     -title $item(title) \
+				     -description $item(description) \
+				     -comment $item(comment) \
+				     -item_nr $item(nr) \
+				     -item_units $item(units) \
+				     -price_per_unit $item(price) \
+				     -rebate $item(rebate) \
+				     -page_count $item(page_count) \
+				     -file_count $item(file_count) \
+				     -sort_order $counter \
+				     -vat $item(vat) ]
 	}
-	set offer_id [content::revision::item_id -revision_id $new_offer_rev_id]
-
-} -edit_data {
-
-    if {$amount_total > $item_sum} {
-	ad_return_error "[_ invoices.negative_rebate]" "[_ invoices.total_mount_less_amount_total]"
-	ad_script_abort
+	
+	category::map_object -object_id $new_item_rev_id $item(category)
     }
 
-    db_transaction {
-	set new_offer_rev_id [iv::offer::edit \
-				  -offer_id $offer_id \
-				  -title $title \
-				  -description $description \
-				  -comment $comment  \
-				  -reservation $reservation  \
-				  -offer_nr $offer_nr \
-				  -organization_id $organization_id \
-				  -amount_total $amount_total \
-				  -amount_sum $item_sum \
-				  -currency $currency \
-				  -finish_date $finish_date \
-				  -date_comment $date_comment \
-				  -payment_days $payment_days \
-				  -show_sum_p $show_sum_p \
-				  -vat_percent $vat_percent \
-				  -vat $vat \
-				  -credit_percent $credit_percent]
-
-	if {[exists_and_not_null category_ids]} {
-	    category::map_object -object_id $new_offer_rev_id $category_ids
-	}
-
-	set counter 0
-	foreach i [array names items] {
-	    incr counter
-	    array set item $items($i)
-
-	    if {[info exists offer_item_id($i)]} {
-		# new revision of existing item
-		set new_item_rev_id [iv::offer_item::edit \
-					 -offer_item_id $offer_item_id($i) \
-					 -offer_id $new_offer_rev_id \
-					 -title $item(title) \
-					 -description $item(description)  \
-					 -comment $item(comment)  \
-					 -item_nr $item(nr) \
-					 -item_units $item(units) \
-					 -price_per_unit $item(price) \
-					 -rebate $item(rebate) \
-					 -page_count $item(page_count) \
-					 -file_count $item(file_count) \
-					 -sort_order $counter \
-					 -vat $item(vat) ]
-	    } else {
-		# add new item
-		set new_item_rev_id [iv::offer_item::new \
-					 -offer_id $new_offer_rev_id \
-					 -title $item(title) \
-					 -description $item(description) \
-					 -comment $item(comment) \
-					 -item_nr $item(nr) \
-					 -item_units $item(units) \
-					 -price_per_unit $item(price) \
-					 -rebate $item(rebate) \
-					 -page_count $item(page_count) \
-					 -file_count $item(file_count) \
-					 -sort_order $counter \
-					 -vat $item(vat) ]
-	    }
-
-	    category::map_object -object_id $new_item_rev_id $item(category)
-	}
-    }
 } -after_submit {
     # upload new file
     if {![empty_string_p $upload_file]} {

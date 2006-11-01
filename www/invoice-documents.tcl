@@ -1,6 +1,7 @@
 ad_page_contract {
     List to display all invoice documents.
 
+    @param opening_p
     @author Timo Hentschel (timo@timohentschel.de)
     @creation-date 2005-06-21
 } {

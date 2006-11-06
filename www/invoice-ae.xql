@@ -268,7 +268,7 @@
 <fullquery name="get_credit_offer">
       <querytext>
 
-		select of.offer_id as credit_offer_rev_id
+		select of.offer_id as credit_offer_rev_id, of.amount_total
 		from iv_offers of, cr_items oi, acs_data_links r,
 		     acs_objects o, pm_projects p, cr_items pi
 		where r.object_id_one = pi.item_id

@@ -212,7 +212,7 @@
 <fullquery name="get_credit_offer">
       <querytext>
 
-		select of.offer_id as credit_offer_rev_id
+		select of.offer_id as credit_offer_rev_id, of.amount_total
 		from iv_offers of, cr_items oi, acs_data_links r,
 		     acs_objects o, pm_projects p, cr_items pi
 		where r.object_id_one = pi.item_id
@@ -223,7 +223,7 @@
 		and o.package_id = :package_id
 		and pi.latest_revision = p.project_id
 		and p.status_id = 2
-		and p.customer_id = :organization_id
+		and p.customer_id = :customer_id
 
       </querytext>
 </fullquery>

@@ -23,6 +23,7 @@ set has_edit 0
 set offer_ids [list]
 set files [list]
 set failed_project_ids [list]
+set failed_invoice_ids [list]
 
 if {$__new_p} {
     set project_id [string trim $project_id "{}"]
@@ -81,40 +82,39 @@ foreach project_item_id $project_id {
 	    set rec_organization_id $recipient_id
 	}
     }
-    
+
     # If for whatever the reason we cannot find the organization for the recipient, use the customer
     if {![exists_and_not_null rec_organization_id]} {
 	set rec_organization_id $customer_id
     }
-    
-    array unset org_data
-    array set org_data [contacts::get_values \
-			    -group_name "Customers" \
-			    -object_type "organization" \
-			    -party_id $rec_organization_id \
-			    -contacts_package_id $contacts_package_id]
-    
-    if {[info exists org_data(vat_percent)]} {
-	set vat_percent [format "%.1f" $org_data(vat_percent)]
-    } else {
-	set vat_percent [format "%.1f" 0]
-    }
-    
+
+    set vat_percent "0"
+    set vat_percent [ams::value -object_id [content::item::get_best_revision -item_id $rec_organization_id] -attribute_name "vat_percent"]
+    set vat_percent [format "%.1f" $vat_percent]
+
+    ns_log Notice "Massinvoice for $customer_id :: $rec_organization_id :: $vat_percent"
+
     set credit_category_id [parameter::get -parameter "CreditCategory"]
     set description [lang::util::localize [pm::project::name -project_item_id $project_item_id]]	
     
     # If an invoice exists with this description 
     
-    if {[db_string existing_invoice "select 1 from iv_invoicesx where description = :description and status = 'new' limit 1" -default 0]} {
+    if {[db_string existing_invoice "select 1 from iv_invoicesx iv, cr_items ci where description = :description and ci.latest_revision = iv.invoice_id and status = 'new' limit 1" -default 0]} {
+	lappend failed_project_ids $project_item_id
 	continue
     }
     
-    # We are getting the invoice_nr here as we are generating the PDF now.
-    set invoice_nr [db_nextval iv_invoice_seq]
     
     set currency [iv::price_list::get_currency -organization_id $rec_organization_id]	
-    
+
+    # Variable to track if an error occurs in the transaction
+    set failed_p 0
+
     db_transaction {
+
+	# We are getting the invoice_nr here as we are generating the PDF now.
+	set invoice_nr [db_nextval iv_invoice_seq]
+
 	set new_invoice_rev_id [iv::invoice::new  \
 				    -title $title \
 				    -description $description  \
@@ -130,11 +130,11 @@ foreach project_item_id $project_id {
 				    -vat_percent $vat_percent \
 				    -vat $vat]
 	
+
 	set invoice_id [content::revision::item_id -revision_id $new_invoice_rev_id]
 	if {[exists_and_not_null category_ids]} {
 	    category::map_object -object_id $new_invoice_rev_id $category_ids
 	}
-	
 	
 	###### Prepare invoice items ###########
 	
@@ -143,7 +143,7 @@ foreach project_item_id $project_id {
 	
 	# Can't use db_foreach as we are in a transaction
 	set offer_items_list [db_list_of_lists offer_items {}]
-	
+
 	foreach offer_items $offer_items_list {
 	    
 	    template::util::list_to_array $offer_items offer [list title description offer_item_id item_units offer_id \
@@ -162,6 +162,7 @@ foreach project_item_id $project_id {
 	    if {[empty_string_p $offer(credit_percent)]} {
 		set offer(credit_percent) 0.
 	    }
+
 	    if {$offer(price_per_unit) > 1.} {
 		set offer(credit) [format "%.1f" [expr $offer(item_units) * (($offer(credit_percent) + 100.) / 100.)]]
 	    } else {
@@ -171,7 +172,7 @@ foreach project_item_id $project_id {
 	    set offer(credit) [format "%.2f" [expr $offer(credit) * $offer(price_per_unit)]]
 	    set offer(credit) [format "%.2f" [expr (1. - ($offer(rebate) / 100.)) * $offer(credit)]]
 	    set offer(credit) [format "%.2f" [expr $offer(credit) - $offer(amount)]]
-	    
+
 	    set offer_name ""
 	    if {![empty_string_p $offer(category)]} {
 		set offer_name "$offer(category): "
@@ -186,11 +187,15 @@ foreach project_item_id $project_id {
 	    
 	    set total_amount [expr $total_amount + $offer(amount) + $offer(credit)]
 	    set total_credit [expr $total_credit + $offer(credit)]
-	    
+
 	    # Insert the invoice item
 	    incr counter
-	    set offer(vat) [expr $vat_percent * $offer(vat) / 100.]
-	    
+	    if {[exists_and_not_null offer(vat)]} {
+		set offer(vat) [expr $vat_percent * $offer(vat) / 100.]
+	    } else {
+		set offer(vat) 0
+	    }
+
 	    set new_item_rev_id [iv::invoice_item::new \
 				     -invoice_id $new_invoice_rev_id \
 				     -title $offer(title) \
@@ -210,12 +215,14 @@ foreach project_item_id $project_id {
 		lappend offer_ids $offer(offer_id)
 	    }
 	}
-	
+
+	# We have a credit. This needs to be added to the customer
 	# add credit offer entry
 	if {$total_credit > 0.} {
 	    set vat_credit [format "%.2f" [expr $total_credit * $vat_percent / 100.]]
-	    db_1row get_credit_offer {}
-	    
+
+ 	    db_0or1row get_credit_offer {}
+
 	    # add new offer item
 	    set offer_item_rev_id [iv::offer_item::new \
 				       -offer_id $credit_offer_rev_id \
@@ -228,83 +235,106 @@ foreach project_item_id $project_id {
 				       -rebate 0 \
 				       -sort_order $invoice_id \
 				       -vat $vat_credit]
-	    
+
+	    # update amount total
+	    set total_amount [expr $amount_total + $total_credit]
+	    db_dml update_amount_total "update iv_offers set amount_total=:total_amount where offer_id = :credit_offer_rev_id"
 	    category::map_object -object_id $offer_item_rev_id $credit_category_id
 	}
 	
     } on_error {
 	
 	lappend failed_project_ids $project_item_id
+	set failed_p 1
 	continue
     }
     
     ############ PDF Generation ################
+
+    # Only do this if the project did not fail :-)
     
-    set locale [lang::user::site_wide_locale -user_id $recipient_id]
-    
-    if {$total_amount >= 0} {
-	
-	# send invoice
-	set invoice_title [lang::util::localize "#invoices.file_invoice#_${invoice_nr}.pdf" $locale]
-	set document_types invoice
-	
-    } elseif {[empty_string_p $parent_invoice_id]} {
-	
-	# send credit
-	set invoice_title [lang::util::localize "#invoices.file_invoice_credit#_${invoice_nr}.pdf" $locale]
-	set document_types credit
-    } else {
-	
-	# send cancellation
-	set invoice_title [lang::util::localize "#invoices.file_invoice_cancel#_${invoice_nr}.pdf" $locale]
-	set document_types cancel
-    }
-    
-    if {![string eq $recipient_id $contact_id]} {
-	lappend document_types opening
-    }
-    
-    # substitute variables in invoice text
-    # and return the content of all necessary document files
-    # (opening, invoice/credit/cancellation, copy)
-    set documents [iv::invoice::parse_data -invoice_id $invoice_id -types $document_types -email_text ""]
-    
-    set file_title $invoice_title
-    
-    set document_file [lreplace $documents 0 0]
-    
-    # Import the PDF
-    if {![empty_string_p $document_file]} {
-	set file_size [file size $document_file]
-	
-	# We need to keep the file in the filesystem so we can later 
-	# join the files into one PDF for printout.
-	# Still the single PDF needs to be stored along with the invoice.
-	
-	util_unlist [contact::oo::import_oo_pdf -oo_file $document_file -printer_name "pdfconv" -title $file_title -parent_id $invoice_id -return_pdf_with_id] file_item_id file_mime_type file_name
-	
-	lappend files $file_name
-	
-	# The PDF has been generated. Set it to billed immediately as it will show up in the printout
-	iv::invoice::set_status -invoice_id $invoice_id -status "billed"
-	
-	# an invoice has been generated. Now move it to the folder
-	
+    if {!$failed_p} {
 	if {[catch {
-	    set root_folder_id [lindex [application_data_link::get_linked -from_object_id $customer_id -to_object_type content_folder] 0]
-	    set invoice_folder_id [fs::get_folder -name "invoices_${root_folder_id}" -parent_id $root_folder_id]
-	    if {[empty_string_p $invoice_folder_id]} {
-		# use folder of party if no invoice-folder exists
-		set invoice_folder_id $organization_id
+	    set locale [lang::user::site_wide_locale -user_id $recipient_id]
+	    
+	    if {![string eq $recipient_id $contact_id]} {
+		set document_types opening
+	    } else {
+		set document_types [list]
 	    }
 	    
-	    # move files to invoice_folder
-	    application_data_link::new -this_object_id $invoice_id -target_object_id $file_item_id
+	    if {$total_amount >= 0} {
+		
+		# send invoice
+		set invoice_title [lang::util::localize "#invoices.file_invoice#_${invoice_nr}.pdf" $locale]
+		lappend document_types invoice
+		
+	    } elseif {[empty_string_p $parent_invoice_id]} {
+		
+		# send credit
+		set invoice_title [lang::util::localize "#invoices.file_invoice_credit#_${invoice_nr}.pdf" $locale]
+		lappend document_types credit
+	    } else {
+		
+		# send cancellation
+		set invoice_title [lang::util::localize "#invoices.file_invoice_cancel#_${invoice_nr}.pdf" $locale]
+		lappend document_types cancel
+	    }
 	    
-	    db_dml set_publish_status_and_parent {}
-	    db_dml set_context_id {}
+	    # substitute variables in invoice text
+	    # and return the content of all necessary document files
+	    # (opening, invoice/credit/cancellation, copy)
+	    set documents [iv::invoice::parse_data -invoice_id $invoice_id -types $document_types -email_text ""]
+	    
+	    set file_title $invoice_title
+	    
+	    set document_file [lreplace $documents 0 0]
 	}]} {
-	    ns_log Error "Error in moving the PDF  $file_name to the invoice folder"
+	    set failed_p 1
+	    ns_log Error "Could not prepare document for invoice $invoice_id"
+	    continue
+	}
+	
+	# Import the PDF
+	if {![empty_string_p $document_file] && !$failed_p} {
+		
+	    # We need to keep the file in the filesystem so we can later 
+	    # join the files into one PDF for printout.
+	    # Still the single PDF needs to be stored along with the invoice.
+	    
+	    if {[catch {
+		foreach document_file_one $document_file {
+		    util_unlist [contact::oo::import_oo_pdf_using_jooconverter -oo_file $document_file_one -printer_name "pdfconv" -title $file_title -parent_id $invoice_id -return_pdf_with_id] file_item_id file_mime_type file_name
+		    
+		    lappend files $file_name
+		}
+		
+		# The PDF has been generated. Set it to billed immediately as it will show up in the printout
+		iv::invoice::set_status -invoice_id $invoice_id -status "billed"
+		
+		# an invoice has been generated. Now move it to the folder
+	    }]} {
+		set failed_p 1
+		lappend failed_invoice_ids $invoice_id
+		ns_log Error "Could not generate PDF for invoice $invoice_id"
+	    }
+	    
+	    if {$failed_p || [catch {
+		set root_folder_id [lindex [application_data_link::get_linked -from_object_id $customer_id -to_object_type content_folder] 0]
+		set invoice_folder_id [fs::get_folder -name "invoices_${root_folder_id}" -parent_id $root_folder_id]
+		if {[empty_string_p $invoice_folder_id]} {
+		    # use folder of party if no invoice-folder exists
+		    set invoice_folder_id $customer_id
+		}
+		
+		# move files to invoice_folder
+		application_data_link::new -this_object_id $invoice_id -target_object_id $file_item_id
+		
+		db_dml set_publish_status_and_parent {}
+		db_dml set_context_id {}
+	    }]} {
+		ns_log Error "Error in moving the PDF  $file_name to the invoice folder"
+	    }
 	}
     }
 }
@@ -344,6 +374,16 @@ if {[exists_and_not_null failed_project_ids]} {
     append failed_projects_html "</ul>"
 } else {
     set failed_projects_html ""
+}
+
+if {[exists_and_not_null failed_invoice_ids]} {
+    set failed_invoices_html "[_ invoices.mass_invoice_error]<ul>"
+    foreach failed_invoice_id $failed_invoice_ids {
+	append failed_invoices_html "<li><a href=\"[export_vars -base "[apm_package_url_from_id $package_id]/invoice-ae" -url {{invoice_id $failed_invoice_id} {mode display}}]\">[pm::project::name -project_item_id $failed_project_id]</a></li>"
+    }
+    append failed_invoices_html "</ul>"
+} else {
+    set failed_invoices_html ""
 }
 
 # and send out the e-mail

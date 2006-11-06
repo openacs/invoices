@@ -57,6 +57,7 @@ if {![info exists offer_id] || $__new_p} {
     set page_title "[_ invoices.iv_offer_Add2]"
     set _offer_id 0
     set files ""
+    # Get the current credit information
     set list_id [iv::price_list::get_list_id -organization_id $organization_id]
     if {[empty_string_p $list_id]} {
 	set currency [parameter::get -parameter "DefaultCurrency" -default "EUR" -package_id $package_id]
@@ -64,11 +65,21 @@ if {![info exists offer_id] || $__new_p} {
     } else {
 	db_1row get_currency_and_credit_percent {}
     }
+    
 } else {
     db_1row get_organization_and_currencies {}
     set files {}
     db_foreach get_files {} {
 	lappend files [list "<a href=\"download/$file_name?item_id=$file_id\">$file_name</a> ($file_length bytes)" $file_id]
+    }
+    
+    # Get the current credit information
+    set list_id [iv::price_list::get_list_id -organization_id $organization_id]
+    if {[empty_string_p $list_id]} {
+	set currency [parameter::get -parameter "DefaultCurrency" -default "EUR" -package_id $package_id]
+	set _credit_percent 0
+    } else {
+	db_1row get_currency_and_credit_percent {}
     }
 
     set cur_vat_percent [format "%.1f" $cur_vat_percent]

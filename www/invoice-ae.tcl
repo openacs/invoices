@@ -42,12 +42,12 @@ if { ![exists_and_not_null invoice_id] } {
 		set more_error_p 1
 	    }
 	} else {
-	    # No projects where supllied
+	    # No projects where supplied
 	    set projects_error_p 1
 	}
     } else {
 	if { [llength $project_id] == 0 } {
-	    # No projects where supllied
+	    # No projects where supplied
 	    set projects_error_p 1
 	} else {
 	    set organizations [db_list get_organizations ""]
@@ -64,7 +64,7 @@ if { ![exists_and_not_null invoice_id] } {
 	ad_return_error "[_ invoices.More_than_one_customer]" "[_ invoices.You_have_selected_more]"
     }
     if { $projects_error_p } {
-	ad_return_error "[_ invoices.No_project_id]" "[_ invoices.You_must_suplly_project_id].<br>&nbsp;"
+	ad_return_error "[_ invoices.No_project_id]" "[_ invoices.You_must_supply_project_id].<br>&nbsp;"
     }
 }
 
@@ -454,6 +454,10 @@ if {$mode == "display"} {
     ad_form -extend -name iv_invoice_form -form {
 	{send:text(submit) {label "[_ invoices.iv_invoice_send]"} {value t}}
     }
+    set parent_id [content::item::get_best_revision -item_id $invoice_id]
+    set cancel_url [export_vars -base "invoice-cancellation" -url {organization_id parent_id}]
+} else {
+    set cancel_url ""
 }
 
 
@@ -616,6 +620,9 @@ ad_form -extend -name iv_invoice_form -new_request {
 				       -rebate 0 \
 				       -sort_order $invoice_id \
 				       -vat $vat_credit]
+	    # update amount total
+	    set total_amount [expr $amount_total + $total_credit]
+	    db_dml update_amount_total "update iv_offers set amount_total=:total_amount where offer_id = :credit_offer_rev_id"
 
 	    category::map_object -object_id $offer_item_rev_id $credit_category_id
 	}
@@ -646,7 +653,7 @@ ad_form -extend -name iv_invoice_form -new_request {
 	foreach iv_item_id [array names offer_item_ids] {
 	    incr counter
 	    array set offer $offers($iv_item_id)
-	    if {![string is double -strict $offer(vat_old)]} {
+	    if {![exists_and_not_null offer(vat_old)] || ![string is double -strict $offer(vat_old)]} {
 		set offer(vat_old) 0
 	    }
 	    set offer(vat) [expr $vat_percent * $offer(old_vat) / 100.]

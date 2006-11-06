@@ -8,3 +8,6 @@
 <if @odt_url@ ne "">
 <a href="@odt_url@">invoice.odt</a>
 </if>    
+<if @cancel_url@ ne "">
+<a href="@cancel_url@">#invoices.Invoice_Cancel#</a>
+</if>    

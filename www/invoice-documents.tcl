@@ -77,7 +77,30 @@ if {$odt_p} {
 multirow create documents file_id file_title file_url
 set files {}
 set documents [lreplace $documents 0 0]
-foreach document_file $documents type $document_types {
+if {[llength $document_types] > 1} {
+    foreach document_file $documents type $document_types {
+	switch $type {
+	    opening {
+		set file_title [lang::util::localize "#invoices.file_invoice_opening#_${invoice_nr}.pdf" $locale]
+	    }
+	    invoice_copy {
+		set file_title [lang::util::localize "#invoices.file_invoice_copy#_${invoice_nr}.pdf" $locale]
+	    }
+	    default { set file_title $invoice_title }
+	}
+	
+	if {![empty_string_p $document_file]} {
+	    set file_size [file size $document_file]
+	    util_unlist [contact::oo::import_oo_pdf -oo_file $document_file -printer_name "pdfconv" -title $file_title -parent_id $invoice_id -no_import] file_mime_type file_name
+	    
+	    lappend files $file_name
+	}
+    }
+    set file_id [contact::oo::join_pdf -filenames $files -title $invoice_title -parent_id $invoice_id]
+} else {
+    set type $document_types
+    set document_file $documents
+
     switch $type {
 	opening {
 	    set file_title [lang::util::localize "#invoices.file_invoice_opening#_${invoice_nr}.pdf" $locale]
@@ -87,16 +110,12 @@ foreach document_file $documents type $document_types {
 	}
 	default { set file_title $invoice_title }
     }
-
+    
     if {![empty_string_p $document_file]} {
-	set file_size [file size $document_file]
-	util_unlist [contact::oo::import_oo_pdf -oo_file $document_file -printer_name "pdfconv" -title $file_title -parent_id $invoice_id -no_import] file_mime_type file_name
-
-	lappend files $file_name
+	set file_id [contact::oo::import_oo_pdf -oo_file $document_file -printer_name "pdfconv" -title $file_title -parent_id $invoice_id]
     }
 }
 
-set file_id [contact::oo::join_pdf -filenames $files -title $invoice_title -parent_id $invoice_id]
 multirow append documents $file_id $invoice_title [export_vars -base "/tracking/download/$invoice_title" {file_id}]
 
 # delete old files

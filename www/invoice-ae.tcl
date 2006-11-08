@@ -462,10 +462,14 @@ if {$mode == "display"} {
 
 
 ad_form -extend -name iv_invoice_form -new_request {
-    set opening_p 0
+    if {$recipient_id eq $contact_id} {
+	set opening_p 0
+    } else {
+	set opening_p 1
+    }
     set invoice_p 1
     set copy_p 0
-    set email_p j
+    set email_p f
 
     if {[exists_and_not_null project_id]} {
 	set description [lang::util::localize [join [db_list project_titles {}] ",\n"]]
@@ -720,11 +724,6 @@ ad_form -extend -name iv_invoice_form -new_request {
 
 	    db_dml set_status {}
 	}
-    }
-
-    # Force opening if different recipient
-    if {![string eq $recipient_id $contact_id]} {
-	set opening_p 1
     }
 
     if {[empty_string_p $return_url]} {

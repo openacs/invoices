@@ -29,9 +29,7 @@ if {!$valid_x_p} {
 set page_title "[_ invoices.offer_accept]"
 
 if {$valid_x_p && [empty_string_p $template_src]} {
-    db_transaction {
-	iv::offer::accept -offer_id $offer_id
-	callback iv::offer_accept -offer_id $offer_id
-	callback iv::offer_accepted -offer_id $offer_id -comment ""
-    }
+    iv::offer::accept -offer_id $offer_id
+    callback iv::offer_accept -offer_id $offer_id
+    callback iv::offer_accepted -offer_id $offer_id -comment ""
 }

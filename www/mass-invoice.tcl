@@ -304,7 +304,7 @@ foreach project_item_id $project_id {
 	    
 	    if {[catch {
 		foreach document_file_one $document_file {
-		    util_unlist [contact::oo::import_oo_pdf_using_jooconverter -oo_file $document_file_one -printer_name "pdfconv" -title $file_title -parent_id $invoice_id -return_pdf_with_id] file_item_id file_mime_type file_name
+		    util_unlist [contact::oo::import_oo_pdf -oo_file $document_file_one -printer_name "pdfconv" -title $file_title -parent_id $invoice_id -return_pdf_with_id] file_item_id file_mime_type file_name
 		    
 		    lappend files $file_name
 		}

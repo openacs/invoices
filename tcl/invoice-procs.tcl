@@ -209,8 +209,9 @@ ad_proc -public iv::invoice::parse_data {
     db_1row get_data {} -column_array data
 
     set locale [lang::user::site_wide_locale -user_id $data(recipient_id)]
-    set contact_locale [lang::user::site_wide_locale -user_id $data(contact_id)]
     set rec_locale $locale
+    set contact_locale [lang::user::site_wide_locale -user_id $data(contact_id)]
+    set data(contact_creation_date) [lc_time_fmt $data(creation_date) [lc_get -locale $contact_locale d_fmt]]
     set data(creator_name) "$data(first_names) $data(last_name)"
     set data(amount_diff) [format "%.2f" [expr abs($data(total_amount) - $data(amount_sum))]]
     set total_amount_diff $data(amount_diff)
@@ -220,33 +221,19 @@ ad_proc -public iv::invoice::parse_data {
     set data(vat) [lc_numeric [format "%.2f" $data(vat)] "" $locale]
     set data(amount_sum) [lc_numeric [format "%.2f" $data(amount_sum)] "" $locale]
     set data(total_amount) [lc_numeric [format "%.2f" $data(total_amount)] "" $locale]
-
-    set data(contact_creation_date) [lc_time_fmt $data(creation_date) [lc_get -locale $contact_locale d_fmt]]
     set time_format [lc_get -locale $locale d_fmt]
     set data(creation_date) [lc_time_fmt $data(creation_date) $time_format]
     set data(invoice_date) [lc_time_fmt $data(invoice_date) $time_format]
     set data(due_date) [lc_time_fmt $data(due_date) $time_format]
     set name [contact::name -party_id $data(recipient_id)]
     set data(recipient_name) $name
-    set orga_revision_id [content::item::get_best_revision -item_id $data(organization_id)]
-    set contact_client_id [ams::value -attribute_name "client_id" -object_id $orga_revision_id -locale $contact_locale]
-    set data(vat_number) [ams::value -attribute_name "VAT_ident_number" -object_id $orga_revision_id -locale $contact_locale]
-    set rec_revision_id [content::item::get_best_revision -item_id $data(recipient_id)]
-
-    # invoice contact data
-    contact::employee::get -employee_id $data(contact_id) -array contact_data
-    foreach attribute {name company_name_ext address town_line country country_code salutation salutation_letter} {
-	if {[info exists contact_data($attribute)]} {
-	    set data(contact_$attribute) $contact_data($attribute)
-	} else {
-	    set data(contact_$attribute) ""
-	}
-    }
+    
+    # Salutation for the E-Mail
+    set data(contact_salutation) [contact::salutation_not_cached -party_id $data(contact_id) -type salutation]
 
     # invoice recipient data
     # default is the organization who is associated with the project
 
-    set rec_organization_id $data(organization_id)
     if {[organization::organization_p -party_id $data(recipient_id)]} {
 	# recipient is organization
 	set rec_organization_id $data(recipient_id)
@@ -261,13 +248,16 @@ ad_proc -public iv::invoice::parse_data {
 	    } else {
 		set rec_organization_id [lindex $rec_organization_list 0]
 	    }
+	} else {
+	    # We only have one linked organization
+	    set rec_organization_id  [lindex $rec_organization_list 0]
 	}
-	contact::employee::get -employee_id $data(recipient_id) -array recipient_data
+	contact::employee::get -employee_id $data(recipient_id) -array recipient_data -organization_id $rec_organization_id
 	set attribute_list {name company_name_ext address town_line country country_code salutation salutation_letter}
     }
 
     set rec_orga_revision_id [content::item::get_best_revision -item_id $rec_organization_id]
-    set rec_client_id [ams::value -attribute_name "client_id" -object_id $rec_orga_revision_id -locale $rec_locale]
+    set data(rec_client_id) [ams::value -attribute_name "client_id" -object_id $rec_orga_revision_id -locale $rec_locale]
     set data(rec_vat_ident_number) [ams::value -attribute_name "VAT_ident_number" -object_id $rec_orga_revision_id -locale $rec_locale]
 
     foreach attribute $attribute_list {
@@ -388,7 +378,19 @@ ad_proc -public iv::invoice::parse_data {
     foreach document_type $types {
 	# get the url to the document templates
 	if {$document_type == "opening"} {
+	    # invoice contact data
+	    contact::employee::get -employee_id $data(contact_id) -array contact_data
+	    foreach attribute {name company_name_ext address town_line country country_code salutation salutation_letter} {
+		if {[info exists contact_data($attribute)]} {
+		    set data(contact_$attribute) $contact_data($attribute)
+		} else {
+		    set data(contact_$attribute) ""
+		}
+	    }
 	    set template_path [parameter::get -parameter InvoiceOpeningTemplate]
+	    
+	    # Make sure to use th contacts locale for the opening letter.
+	    set locale $contact_locale
 	} else {
 	    set template_path [parameter::get -parameter InvoiceTemplate]
 	}

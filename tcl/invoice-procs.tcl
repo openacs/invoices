@@ -200,7 +200,7 @@ ad_proc -public iv::invoice::parse_data {
 
     Substitute templates with invoice data.
 
-    @returns list of invoice texts
+    @return list of invoice texts
 } {
     set package_id [ad_conn package_id]
     set user_id [ad_conn user_id]
@@ -421,7 +421,7 @@ ad_proc -public iv::invoice::template_files {
 
     Get template content and styles.
 
-    @returns tcl-list if content and styles document
+    @return tcl-list if content and styles document
 } {
     set filename "[acs_root_dir]/$template/content.xml"
     set file [open $filename]

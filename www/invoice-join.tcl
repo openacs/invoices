@@ -26,7 +26,7 @@ db_transaction {
     db_1row last_checkout {}
 
     set tmpdir [ns_tmpnam]
-    ns_mkdir $tmpdir
+    file mkdir $tmpdir
     set files {}
     db_foreach pdfs_to_join {} {
 	ns_cp "${root_dir}$content" "${tmpdir}/[file tail $content].pdf"

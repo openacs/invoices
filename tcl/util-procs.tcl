@@ -53,7 +53,7 @@ ad_proc -private iv::util::set_default_objects {
 ad_proc -public iv::util::get_x_field {
     -offer_id:required
 } {
-    Creates the x-field for the email (for authentification)
+    Creates the x-field for the email (for authentication)
 } {
     db_1row get_offer_creator_data {}
     return [ns_sha1 "$offer_id $user_password $user_salt"]

@@ -36,7 +36,7 @@ if { [exists_and_not_null date_range_end] } {
     }
 }
 
-if {![info exist filters_p] } { 
+if {![info exists filters_p] } { 
     set filters_p 1
 }
 

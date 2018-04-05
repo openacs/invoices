@@ -39,7 +39,7 @@
   <msg key="Costs">Costs</msg>
   <msg key="count">Count</msg>
   <msg key="Create_mass_invoices">Creating mass invoices</msg>
-  <msg key="Create_mass_invoices2">We are generating an invoices for each of the projects marked. Please wait until we are finished. You will recieve an E-Mail with a PDF containing all generated invoices for later printout.</msg>
+  <msg key="Create_mass_invoices2">We are generating an invoices for each of the projects marked. Please wait until we are finished. You will receive an E-Mail with a PDF containing all generated invoices for later printout.</msg>
   <msg key="Create_new_pricelist_for_customer">New price list for the client</msg>
   <msg key="Creation_Date">Creation Date</msg>
   <msg key="credit_offer_desc">Credit awarded by projects</msg>

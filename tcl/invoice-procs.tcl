@@ -537,7 +537,7 @@ ad_proc -public iv::invoice::year_month_day_filter {
     -base:required
 } {
     Returns and html filter to use in any adp page for sort data according to date. Return
-    the variables year, month, day and any extra variable you recieved in extra_vars to the base
+    the variables year, month, day and any extra variable you received in extra_vars to the base
     page (url).
     
     @author Miguel Marin (miguelmarin@viaro.net)

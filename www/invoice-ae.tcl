@@ -27,7 +27,7 @@ if { ![exists_and_not_null invoice_id] } {
     if { [exists_and_not_null organization_id] } {
 	# We already have the organization_id so we need to check
 	# if there are project_id's and if the customer (organization_id)
-	# of the projects is the same that the one we recieved.
+	# of the projects is the same that the one we received.
 
 	if { ![string equal [llength $project_id] 0] } {
 	    set organizations [db_list get_organizations ""]
@@ -538,7 +538,7 @@ ad_form -extend -name iv_invoice_form -new_request {
     set total_amount [format "%.2f" $total_amount]
 
 
-    # Get the VAT percent from the recieving company
+    # Get the VAT percent from the receiving company
     if {[person::person_p -party_id $recipient_id]} {
 	set contacts_package_id [lindex [application_link::get_linked -from_package_id $package_id -to_package_key contacts] 0]
 	set rec_organization_id [contact::util::get_employee_organization -employee_id $recipient_id -package_id $contacts_package_id]

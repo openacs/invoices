@@ -50,7 +50,7 @@ ad_form -name aggregate -form {
     }
 }
 
-# We select wich inlcude we want according to the values present on the
+# We select which include we want according to the values present on the
 # variables year and month
 set include_src "/packages/invoices/lib/report-year"
 if { ![empty_string_p $year] } {

@@ -9,7 +9,7 @@ if {$offer_id eq "" || $x eq ""} {
     ad_return_complaint 1 [_ invoices.lt_empty_offer_id]
 }
 
-# Retrieving the value of the parameter to know wich include to call
+# Retrieving the value of the parameter to know which include to call
 set template_src [parameter::get -parameter "OfferAccept"]
 
 if {![db_0or1row check_offer_id {}]} {

@@ -38,7 +38,7 @@ foreach cc_id $cc_contact_ids {
 }
 set cc_emails [join $cc_emails ", "]
 
-# We don't want to use a seperate offer number but use the project_title
+# We don't want to use a separate offer number but use the project_title
 set offer_nr $project_title
 
 set locale [lang::user::site_wide_locale -user_id $contact_id]

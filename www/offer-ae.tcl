@@ -605,7 +605,7 @@ ad_form -extend -name iv_offer_form -new_request {
 	set title "[_ invoices.iv_offer_1] $organization_name $today"
     }
     set title [lang::util::localize $title]
-    # We do not want a seperate offer_number but use the project title
+    # We do not want a separate offer_number but use the project title
     # set offer_nr [db_nextval iv_offer_seq]
     set amount_sum "0.00"
     set amount_total "0.00"

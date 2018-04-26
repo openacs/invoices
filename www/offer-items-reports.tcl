@@ -20,4 +20,4 @@ set context [list $page_title]
 
 set base_url [ad_conn url]
 
-set elements [list]
+set elements {}

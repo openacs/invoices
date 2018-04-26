@@ -11,7 +11,7 @@ ad_page_contract {
 
 set user_id [auth::require_login]
 set page_title "[_ invoices.admin]"
-set context [list]
+set context {}
 set categories_url "categories-admin"
 set linking_url "linking"
 set package_id [ad_conn package_id]

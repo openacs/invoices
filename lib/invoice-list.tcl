@@ -66,7 +66,7 @@ set bulk_actions [list "[_ invoices.iv_invoice_pay]" "${base_url}invoice-pay" "[
 set invoice_cancel_p [permission::permission_p -party_id $user_id -object_id $package_id -privilege invoice_cancel]
 set return_url [ad_return_url]
 
-set actions [list]
+set actions {}
 if { [info exists organization_id] } {
     set dotlrn_club_id [lindex [application_data_link::get_linked -from_object_id $organization_id -to_object_type "dotlrn_club"] 0]
     set pm_base_url [apm_package_url_from_id [dotlrn_community::get_package_id_from_package_key -package_key "project-manager" -community_id $dotlrn_club_id]]

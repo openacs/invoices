@@ -20,10 +20,10 @@ set user_id [auth::require_login]
 set date_format "YYYY-MM-DD"
 set has_submit 0
 set has_edit 0
-set offer_ids {}
-set files {}
-set failed_project_ids {}
-set failed_invoice_ids {}
+set offer_ids [list]
+set files [list]
+set failed_project_ids [list]
+set failed_invoice_ids [list]
 
 if {$__new_p} {
     set project_id [string trim $project_id "{}"]
@@ -54,7 +54,7 @@ foreach project_item_id $project_id {
     set project_title 0
     set total_amount 0.
     set total_credit 0.
-    set offer_ids {}	
+    set offer_ids [list]	
     
     #####  INSERT INVOICE #################
     
@@ -260,7 +260,7 @@ foreach project_item_id $project_id {
 	    if {![string eq $recipient_id $contact_id]} {
 		set document_types opening
 	    } else {
-		set document_types {}
+		set document_types [list]
 	    }
 	    
 	    if {$total_amount >= 0} {

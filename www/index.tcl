@@ -13,7 +13,7 @@ set user_id [auth::require_login]
 set admin_p [permission::permission_p -object_id [ad_conn package_id] -privilege admin]
 
 set page_title "[_ invoices.invoices]"
-set context {}
+set context [list]
 
 set folder_id [parameter::get -parameter "JournalFolderID"]
 acs_object::get -object_id $folder_id -array folder

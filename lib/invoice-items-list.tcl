@@ -64,7 +64,7 @@ set categories_p 0
 
 # Elements to construnct row_lists
 if { [exists_and_not_null elements] } {
-    set row_list {}
+    set row_list [list]
     foreach element $elements {
 	if { ![string equal $element "categories"] } {
 	    lappend row_list $element
@@ -79,16 +79,16 @@ if { [exists_and_not_null elements] } {
 }
 
 # Create the elements for the list template
-set elements {}
-set categories_filter {}
+set elements [list]
+set categories_filter [list]
 
 # We are going to create the elements for each mapped category tree
 if { $categories_p } {
     set categories_trees [db_list_of_lists get_category_trees { }]
     
-    set mapped_objects {}
-    set multirow_extend {}
-    set tree_ids {}
+    set mapped_objects [list]
+    set multirow_extend [list]
+    set tree_ids [list]
     
     foreach tree $categories_trees {
 	set tree_name [lindex $tree 0]

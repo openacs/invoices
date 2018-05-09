@@ -56,7 +56,7 @@ multirow foreach invoices {
 }
 
 set return_url [export_vars -base invoice-list {organization_id}]
-set actions {}
+set actions [list]
 set bulk_actions [list "[_ invoices.iv_invoice_send]" "invoices-send" "[_ invoices.iv_invoice_send]" "[_ invoices.iv_invoice_save]" "invoices-save" "[_ invoices.iv_invoice_save]"]
 
 template::list::create \

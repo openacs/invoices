@@ -271,6 +271,10 @@ if {$has_submit} {
 } else {
 
     # we are adding/editing data
+
+    ::template::head::add_javascript \
+        -src /resources/acs-templating/calendar.js
+
     ad_form -extend -name iv_invoice_form -form {
 	{currency:text(select) {mode display} {label "[_ invoices.iv_invoice_currency]"} {options $currency_options} {help_text "[_ invoices.iv_invoice_currency_help]"}}
 	{due_date:text,optional {label "[_ invoices.iv_invoice_due_date]"} {html {size 12 maxlength 10 id sel1}} {help_text "[_ invoices.iv_invoice_due_date_help]"} {after_html {<input type='reset' value=' ... ' onclick=\"return showCalendar('sel1', 'y-m-d');\"> \[<b>y-m-d </b>\]}}}

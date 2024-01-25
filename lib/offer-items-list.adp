@@ -1,4 +1,5 @@
 <if @filters_p@>
+<script src="/resources/acs-templating/calendar.js"></script>
 <table>
 <tr>
     <td>

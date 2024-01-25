@@ -52,6 +52,9 @@ if {![empty_string_p [category_tree::get_mapped_trees $container_objects(invoice
     category::ad_form::add_widgets -container_object_id $container_objects(invoice_id) -categorized_object_id $_invoice_id -form_name iv_invoice_cancel_form
 }
 
+::template::head::add_javascript \
+    -src /resources/acs-templating/calendar.js
+
 ad_form -extend -name iv_invoice_cancel_form -form {
     {invoice_nr:text {label "[_ invoices.iv_invoice_invoice_nr]"} {html {size 80 maxlength 200}} {help_text "[_ invoices.iv_invoice_invoice_nr_help]"}}
     {currency:text(select) {mode display} {label "[_ invoices.iv_invoice_currency]"} {options $currency_options} {help_text "[_ invoices.iv_invoice_currency_help]"}}

@@ -888,9 +888,9 @@ ad_form -extend -name iv_offer_form -new_request {
 
 	    set path "[cr_fs_path][cr_create_content_file_path $file_id ""]"
 	    foreach revision [glob -directory $path "*"] {
-		ns_unlink $revision
+		file delete $revision
 	    }
-	    ns_rmdir $path
+	    file delete $path
 	}
     }
 

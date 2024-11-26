@@ -120,7 +120,7 @@ multirow append documents $file_id $invoice_title [export_vars -base "/tracking/
 
 # delete old files
 foreach one_file $files {
-    ns_unlink $one_file
+    file delete $one_file
 }
 
 if {[multirow size documents] > 0} {

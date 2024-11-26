@@ -223,9 +223,9 @@ set data(journal) $journal_text2
 ######
 
 # create tmp-folder for zip
-set tmp_path [ns_tmpnam]
+set tmp_path [ns_mktemp]
 file mkdir $tmp_path
-set zip_path [ns_tmpnam]
+set zip_path [ns_mktemp]
 file mkdir $zip_path
 set zip_file_id [db_nextval acs_object_id_seq]
 set item_name "journal_${today}.zip"

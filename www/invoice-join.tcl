@@ -25,11 +25,11 @@ set invoice_title [lang::util::localize "#invoices.file_joined_invoice#_${today}
 db_transaction {
     db_1row last_checkout {}
 
-    set tmpdir [ns_tmpnam]
+    set tmpdir [ns_mktemp]
     file mkdir $tmpdir
     set files {}
     db_foreach pdfs_to_join {} {
-	ns_cp "${root_dir}$content" "${tmpdir}/[file tail $content].pdf"
+	file copy "${root_dir}$content" "${tmpdir}/[file tail $content].pdf"
 	lappend files "${tmpdir}/[file tail $content].pdf"
     }
 
@@ -42,10 +42,10 @@ db_transaction {
 
 	# delete old files
 	foreach one_file $files {
-	    ns_unlink $one_file
+	    file delete $one_file
 	}
     }
-    ns_rmdir $tmpdir
+    file delete $tmpdir
 }
 
 set actions [list "[_ invoices.ok]" $return_url "[_ invoices.ok]"]
